@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Enrolaê · case study · bruna cristina</title>
+<link rel="stylesheet" href="colors_and_type.css" />
+<script src="image-slot.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bc-cream); color: var(--bc-ink); font-family: var(--font-ui); font-weight: 300; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  :root { --en-terra:#C4622D; --en-marrom:#5C3317; --en-pessego:#E8A882; --en-creme:#F5EAD8; --en-ocre:#C8963C; }
+
+  .top-bar { position: sticky; top: 0; z-index: 50; background: var(--bc-cream); border-bottom: 1.5px solid var(--bc-ink); padding: 14px clamp(20px,5vw,56px); display: flex; align-items: center; justify-content: space-between; }
+  .top-bar a.back { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-weight: 500; }
+  .top-bar a.back:hover { color: var(--en-terra); }
+  .top-bar .crumb { font-family: var(--font-display); font-style: italic; font-size: 18px; opacity: .6; }
+
+  section { padding: clamp(48px,7vw,96px) clamp(20px,5vw,80px); }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .display { font-family: var(--font-display); font-weight: 300; line-height: .95; letter-spacing: -.04em; }
+  .eyebrow { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--fg-3); font-weight: 500; }
+
+  /* HERO */
+  .cs-hero { background: var(--en-creme); padding-top: 56px; color: var(--en-marrom); }
+  .cs-hero .meta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+  .chip { border: 1.5px solid var(--en-marrom); border-radius: 999px; padding: 6px 16px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 500; }
+  .chip--solid { background: var(--en-terra); color: var(--en-creme); border-color: var(--en-terra); }
+  .cs-hero h1 { font-size: clamp(56px,10vw,152px); margin: 0 0 32px; }
+  .cs-hero h1 em { font-style: italic; color: var(--en-terra); }
+  .cs-cover { aspect-ratio: 16/9; border: 2px solid var(--en-marrom); border-radius: 32px; overflow: hidden; background: var(--en-terra); }
+  .cs-cover img.hero-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* INFO */
+  .info-strip { background: var(--en-marrom); color: var(--en-creme); }
+  .info-strip .container { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; padding: 32px 0; }
+  .info-cell .label { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; opacity: .6; margin-bottom: 6px; }
+  .info-cell .val { font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: 22px; }
+
+  /* OVERVIEW */
+  .overview { background: var(--bc-sand); }
+  .overview .grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 56px; align-items: start; }
+  .overview h2 { font-size: clamp(36px,5vw,64px); margin: 0; }
+  .overview p { font-size: 17px; line-height: 1.7; margin: 0 0 18px; }
+  .overview p strong { font-weight: 500; }
+
+  /* ANTES & DEPOIS */
+  .ba-section { background: var(--bc-cream); }
+  .ba-section h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 32px; }
+  .ba-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .ba-card { border: 2px solid var(--en-marrom); border-radius: 28px; padding: 36px 32px; aspect-ratio: 4/3; display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; transition: transform .3s var(--ease-soft); position: relative; }
+  .ba-card:hover { transform: translateY(-6px); }
+  .ba-card.before { background: #E8DCC8; color: var(--en-marrom); }
+  .ba-card.after { background: var(--en-terra); color: var(--en-creme); }
+  .ba-card .tag { position: absolute; top: 24px; left: 32px; background: var(--bc-cream); color: var(--en-marrom); padding: 4px 14px; border-radius: 999px; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; border: 1.5px solid var(--en-marrom); }
+  .ba-card h3 { font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: 36px; margin: 0; }
+  .ba-card p { font-size: 15px; line-height: 1.5; margin: 0; opacity: .9; }
+
+  /* CHALLENGE */
+  .ca-section { background: var(--en-pessego); }
+  .ca-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .ca-card { border: 1.5px solid var(--en-marrom); border-radius: 28px; padding: 36px 32px; }
+  .ca-card.challenge { background: var(--bc-cream); transform: rotate(-1deg); color: var(--en-marrom); }
+  .ca-card.approach { background: var(--en-marrom); color: var(--en-creme); transform: rotate(1deg); border-color: var(--en-creme); }
+  .ca-card .num { font-family: var(--font-display); font-weight: 300; font-size: 56px; letter-spacing: -.04em; color: var(--en-terra); }
+  .ca-card.approach .num { color: var(--en-pessego); }
+  .ca-card h3 { font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: 36px; margin: 0 0 14px; }
+  .ca-card p { font-size: 16px; line-height: 1.6; margin: 0 0 14px; }
+
+  /* PALETTE */
+  .palette { background: var(--en-creme); }
+  .palette h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 32px; color: var(--en-marrom); }
+  .palette-row { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; }
+  .swatch { aspect-ratio: 1; border-radius: 20px; border: 1.5px solid var(--en-marrom); display: flex; flex-direction: column; justify-content: flex-end; padding: 18px; transition: transform .3s var(--ease-soft); cursor: default; }
+  .swatch:hover { transform: translateY(-6px); }
+  .swatch .hex { font-size: 13px; letter-spacing: .12em; font-weight: 500; }
+  .swatch .name { font-family: var(--font-display); font-style: italic; font-size: 18px; }
+
+  /* LOGOS SECTION */
+  .logos-section { background: var(--en-marrom); color: var(--en-creme); }
+  .logos-section h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 32px; }
+  .logo-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .logo-tile { aspect-ratio: 1; border-radius: 22px; border: 1.5px solid rgba(255,255,255,.2); overflow: hidden; transition: transform .3s var(--ease-soft); }
+  .logo-tile:hover { transform: rotate(-1deg) scale(1.02); }
+  .logo-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* MOCKUPS */
+  .mockup { background: var(--bc-cream); }
+  .mockup h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 32px; }
+  .gallery-slider { position: relative; }
+  .slider-wrap { overflow: hidden; border-radius: 24px; border: 1.5px solid var(--en-marrom); }
+  .slider-track { display: flex; transition: transform .45s cubic-bezier(.4,0,.2,1); will-change: transform; }
+  .slide { flex: 0 0 100%; aspect-ratio: 16/9; position: relative; overflow: hidden; background: var(--en-creme); }
+  .slide image-slot { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .slide image-slot::part(frame) { border-radius: 0; }
+  .slide image-slot::part(ring) { display: none; }
+  .slider-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 20px; }
+  .slider-btn { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--en-marrom); background: var(--bc-cream); color: var(--en-marrom); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all .2s; flex-shrink: 0; }
+  .slider-btn:hover { background: var(--en-terra); color: var(--en-creme); border-color: var(--en-terra); }
+  .slider-dots { display: flex; gap: 8px; align-items: center; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--en-marrom); opacity: .25; cursor: pointer; transition: opacity .2s, transform .2s; border: none; padding: 0; }
+  .dot.active { opacity: 1; transform: scale(1.3); }
+
+  /* DELIVERABLES */
+  .deliverables { background: var(--en-creme); }
+  .deliverables h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 32px; color: var(--en-marrom); }
+  .deliv-list { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+  .deliv-item { border: 1.5px solid var(--en-marrom); border-radius: 18px; padding: 22px 26px; background: var(--bc-cream); display: flex; justify-content: space-between; align-items: center; gap: 16px; color: var(--en-marrom); transition: transform .2s var(--ease-soft); }
+  .deliv-item:hover { transform: translateX(4px); }
+  .deliv-item .name { font-family: var(--font-display); font-style: italic; font-size: 24px; }
+  .deliv-item .meta { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; opacity: .6; }
+
+  /* CTA */
+  .cta { background: var(--en-terra); color: var(--en-creme); padding: clamp(72px,10vw,120px) clamp(20px,5vw,80px); text-align: center; }
+  .cta h2 { font-size: clamp(56px,10vw,168px); line-height: .9; letter-spacing: -.05em; margin: 0; }
+  .cta h2 em { font-style: italic; }
+  .cta .sub { margin: 24px auto 32px; max-width: 540px; font-size: 17px; line-height: 1.5; color: var(--en-creme); }
+  .cta-row { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .btn-big { background: var(--en-creme); color: var(--en-terra); border: 2px solid var(--en-creme); border-radius: 999px; padding: 20px 40px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-size: 15px; transition: all .2s var(--ease-soft); display: inline-block; }
+  .btn-big:hover { transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--en-marrom); }
+  .btn-ghost-light { background: transparent; color: var(--en-creme); border: 2px solid var(--en-creme); border-radius: 999px; padding: 20px 32px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; font-size: 14px; display: inline-block; transition: all .2s var(--ease-soft); }
+  .btn-ghost-light:hover { background: var(--en-creme); color: var(--en-terra); }
+
+  footer { background: var(--bc-ink); color: var(--bc-cream); padding: 24px clamp(20px,5vw,80px); display: flex; justify-content: space-between; align-items: center; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; flex-wrap: wrap; gap: 16px; }
+
+  @media (max-width: 900px) {
+    .info-strip .container, .palette-row { grid-template-columns: 1fr 1fr; }
+    .overview .grid, .ba-grid, .ca-grid { grid-template-columns: 1fr; }
+    .mockup-grid, .logo-grid { grid-template-columns: repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="index.html" class="back">← voltar ao portifólio</a>
+  <span class="crumb">case study · enrolaê</span>
+</div>
+
+<section class="cs-hero">
+  <div class="container">
+    <div class="meta-row">
+      <span class="chip chip--solid">rebranding</span>
+      <span class="chip">cosméticos naturais</span>
+      <span class="chip">2025</span>
+    </div>
+    <h1 class="display">enrolaê — feito à mão, com <em>história</em>.</h1>
+    <div class="cs-cover">
+      <img src="assets/mockups/enrolae/sacola.jpg" class="hero-img" alt="Enrolaê · hero" />
+    </div>
+  </div>
+</section>
+
+<div class="info-strip">
+  <div class="container">
+    <div class="info-cell"><div class="label">cliente</div><div class="val">enrolaê</div></div>
+    <div class="info-cell"><div class="label">setor</div><div class="val">cosméticos naturais</div></div>
+    <div class="info-cell"><div class="label">entregas</div><div class="val">rebranding + brandbook</div></div>
+    <div class="info-cell"><div class="label">ano</div><div class="val">2025</div></div>
+  </div>
+</div>
+
+<section class="overview">
+  <div class="container grid">
+    <div>
+      <div class="eyebrow">— overview</div>
+      <h2 class="display" style="margin-top:12px;">o briefing</h2>
+    </div>
+    <div>
+      <p>a enrolaê é uma marca de <strong>cosméticos naturais</strong> voltada para <strong>cabelos crespos e cacheados</strong> — já existia há alguns anos, mas com identidade visual desalinhada do produto. logo amador, comunicação inconsistente, sem manual de uso.</p>
+      <p>fizemos o <strong>rebranding completo</strong>: novo logo, paleta inspirada nos tons da terra, sistema tipográfico, papelaria e diretrizes de uso. uma marca que combina com a feitura à mão sem parecer ultrapassada.</p>
+    </div>
+  </div>
+</section>
+
+<section class="ba-section">
+  <div class="container">
+    <div class="eyebrow">— antes &amp; depois</div>
+    <h2 class="display" style="margin-top:12px;">a transformação</h2>
+    <div class="ba-grid">
+      <div class="ba-card before">
+        <span class="tag">antes</span>
+        <h3>logo amador</h3>
+        <p>tipografia sem personalidade, cores fora de tom, sem sistema de aplicação.</p>
+      </div>
+      <div class="ba-card after">
+        <span class="tag">depois</span>
+        <h3>marca atual</h3>
+        <p>logotipo manuscrito, paleta terrosa, papelaria texturizada — feita pra durar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="ca-section">
+  <div class="container">
+    <div class="ca-grid">
+      <div class="ca-card challenge">
+        <div class="num">01.</div>
+        <h3>o desafio</h3>
+        <p>como modernizar uma marca <strong>sem perder o DNA artesanal</strong>? o público fiel reconhecia a marca antiga mesmo sem amar.</p>
+      </div>
+      <div class="ca-card approach">
+        <div class="num">02.</div>
+        <h3>a abordagem</h3>
+        <p>logo manuscrito que <strong>preserva a alma do feito à mão</strong>, mas com construção tipográfica precisa. paleta terrosa pra reforçar o tom natural.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="palette">
+  <div class="container">
+    <div class="eyebrow" style="color:var(--en-marrom);">— paleta cromática</div>
+    <h2 class="display" style="margin-top:12px;">cores da marca</h2>
+    <div class="palette-row">
+      <div class="swatch" style="background:#C4622D;color:var(--en-creme);"><span class="name">terra</span><span class="hex">#C4622D</span></div>
+      <div class="swatch" style="background:#5C3317;color:var(--en-creme);"><span class="name">marrom</span><span class="hex">#5C3317</span></div>
+      <div class="swatch" style="background:#E8A882;color:var(--en-marrom);"><span class="name">pêssego</span><span class="hex">#E8A882</span></div>
+      <div class="swatch" style="background:#C8963C;color:var(--en-marrom);"><span class="name">ocre</span><span class="hex">#C8963C</span></div>
+      <div class="swatch" style="background:#F5EAD8;color:var(--en-marrom);"><span class="name">creme</span><span class="hex">#F5EAD8</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="logos-section">
+  <div class="container">
+    <div class="eyebrow" style="color:var(--en-creme);opacity:.7;">— sistema de logos</div>
+    <h2 class="display" style="margin-top:12px;">variações da marca</h2>
+    <div class="logo-grid">
+      <div class="logo-tile">
+        <img src="assets/mockups/enrolae/logos/logo-creme-terracota.jpg" alt="logotipo creme · terracota" />
+      </div>
+      <div class="logo-tile">
+        <img src="assets/mockups/enrolae/logos/logo-marrom-creme.jpg" alt="logotipo marrom · creme" />
+      </div>
+      <div class="logo-tile">
+        <img src="assets/mockups/enrolae/logos/logo-ocre-marrom.jpg" alt="logotipo ocre · marrom" />
+      </div>
+      <div class="logo-tile">
+        <img src="assets/mockups/enrolae/logos/logo-creme-pessego.jpg" alt="logotipo creme · pêssego" />
+      </div>
+      <div class="logo-tile">
+        <img src="assets/mockups/enrolae/logos/logo-pessego-marrom.jpg" alt="logotipo pêssego · marrom" />
+      </div>
+      <div class="logo-tile">
+        <img src="assets/mockups/enrolae/logos/logo-ocre-terracota.jpg" alt="logotipo ocre · terracota" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mockup">
+  <div class="container">
+    <div class="eyebrow">— aplicações</div>
+    <h2 class="display" style="margin-top:12px;">aplicações visuais</h2>
+    <div class="gallery-slider">
+      <div class="slider-wrap">
+        <div class="slider-track">
+          <div class="slide"><image-slot id="en-1" src="assets/mockups/enrolae/sacola.jpg" placeholder="sacola"></image-slot></div>
+          <div class="slide"><image-slot id="en-2" src="assets/mockups/enrolae/moodboard.jpg" placeholder="moodboard"></image-slot></div>
+        </div>
+      </div>
+      <div class="slider-nav">
+        <button class="slider-btn prev">←</button>
+        <div class="slider-dots">
+          <button class="dot active"></button>
+          <button class="dot"></button>
+        </div>
+        <button class="slider-btn next">→</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <h2 class="display">curtiu? <em>bora criar</em><br>algo assim?</h2>
+  <p class="sub">se sua marca tá precisando de um respiro novo, me chama. primeira conversa é sempre por minha conta ☕</p>
+  <div class="cta-row">
+    <a href="index.html#contato" class="btn-big">entrar em contato →</a>
+    <a href="index.html#branding" class="btn-ghost-light">ver outros cases</a>
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 bruna cristina · todos os direitos reservados</div>
+  <div>case study · enrolaê</div>
+</footer>
+
+<script>
+document.querySelectorAll('.gallery-slider').forEach(function(slider){
+  var track=slider.querySelector('.slider-track');
+  var slides=track.querySelectorAll('.slide');
+  var dots=slider.querySelectorAll('.dot');
+  var n=slides.length,cur=0;
+  function go(i){cur=(i+n)%n;track.style.transform='translateX(-'+cur*100+'%)';dots.forEach(function(d,j){d.classList.toggle('active',j===cur);});}
+  slider.querySelector('.prev').addEventListener('click',function(){go(cur-1);});
+  slider.querySelector('.next').addEventListener('click',function(){go(cur+1);});
+  dots.forEach(function(d,i){d.addEventListener('click',function(){go(i);});});
+  go(0);
+});
+</script>
+</body>
+</html>

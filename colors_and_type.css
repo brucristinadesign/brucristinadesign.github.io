@@ -1,0 +1,230 @@
+/* ==========================================================================
+   Bruna Cristina — Colors & Type
+   Personal brand identity for Brazilian designer Bruna Cristina.
+   Aesthetic: editorial / boutique / playful-elegant. PT-BR copy.
+   ========================================================================== */
+
+@font-face {
+  font-family: "Fraunces";
+  src: url("fonts/Fraunces-Variable.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fraunces";
+  src: url("fonts/Fraunces-Italic-Variable.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fraunces SuperSoft";
+  src: url("fonts/Fraunces-72pt-SuperSoft-LightItalic.ttf") format("truetype");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("fonts/Inter-Variable.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("fonts/Inter-Italic-Variable.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  /* ---------- Base palette (sampled from Figma) ---------- */
+  --bc-yellow:    #FCD067;   /* sun yellow — primary accent, CTAs, highlights */
+  --bc-green:     #4CEAA8;   /* mint green — secondary accent */
+  --bc-mint:      #AFD6D5;   /* dusty teal — soft backgrounds */
+  --bc-orange:    #EE592F;   /* tangerine red — energy, hero accents */
+  --bc-cream:     #FFFFF8;   /* warm off-white — main surface */
+  --bc-sand:      #E8E1D9;   /* warm beige — neutral surface */
+  --bc-ink:       #000000;   /* true black — type, hairline strokes */
+  --bc-charcoal:  #353638;   /* near-black — secondary on light */
+  --bc-mute:      #6F6F6F;   /* warm gray — eyebrow / metadata */
+  --bc-white:     #FFFFFF;
+
+  /* ---------- Semantic foreground ---------- */
+  --fg-1: var(--bc-ink);
+  --fg-2: var(--bc-charcoal);
+  --fg-3: var(--bc-mute);
+  --fg-on-dark: var(--bc-cream);
+
+  /* ---------- Semantic backgrounds ---------- */
+  --bg-default: var(--bc-cream);
+  --bg-warm:    var(--bc-sand);
+  --bg-sun:     var(--bc-yellow);
+  --bg-mint:    var(--bc-mint);
+  --bg-grass:   var(--bc-green);
+  --bg-flame:   var(--bc-orange);
+  --bg-ink:     var(--bc-ink);
+
+  /* ---------- Type families ---------- */
+  --font-display: "Fraunces", "Times New Roman", serif;
+  --font-display-soft: "Fraunces SuperSoft", "Fraunces", serif;
+  --font-ui: "Inter", system-ui, -apple-system, "Helvetica Neue", sans-serif;
+
+  /* ---------- Type scale (display heavy, very tight tracking) ---------- */
+  --fs-mega:     clamp(120px, 20vw, 334px);  /* hero "Portifólio" */
+  --fs-display:  clamp(90px, 14vw, 228px);   /* slide titles "My/Service" */
+  --fs-h1:       clamp(64px, 9vw, 204px);    /* "Headline" specimen */
+  --fs-h2:       80px;                       /* italic accent "Branding" */
+  --fs-h3:       52px;
+  --fs-h4:       40px;
+  --fs-eyebrow:  44px;                       /* section label, big tracking */
+  --fs-body:     16px;
+  --fs-caption:  13px;
+
+  /* tight letter-spacing on display, generous on eyebrow caps */
+  --tracking-mega: -0.066em;
+  --tracking-display: -0.066em;
+  --tracking-h2: -0.066em;
+  --tracking-eyebrow: 0.196em;       /* ≈ 8.56px @ 44px */
+  --tracking-eyebrow-sm: 0.18em;
+  --tracking-body: 0;
+
+  --leading-tight: 0.9;
+  --leading-snug: 1.1;
+  --leading-body: 1.5;
+
+  /* ---------- Spacing (8pt) ---------- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+  --sp-9: 96px;
+  --sp-10: 128px;
+
+  /* ---------- Radii ---------- */
+  --r-sm: 8px;
+  --r-md: 22px;        /* card radius from Figma */
+  --r-lg: 36px;
+  --r-pill: 999px;
+
+  /* ---------- Strokes ---------- */
+  --stroke-hairline: 1px solid var(--bc-ink);
+  --stroke-card: 1px solid var(--bc-ink);
+  --stroke-thick: 3px solid var(--bc-ink);
+
+  /* ---------- Elevation: brand uses NO drop shadows. Use ink hairline borders. ---------- */
+  --shadow-none: none;
+
+  /* ---------- Motion ---------- */
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 160ms;
+  --dur-base: 280ms;
+  --dur-slow: 520ms;
+}
+
+/* ==========================================================================
+   Element defaults
+   ========================================================================== */
+html, body {
+  background: var(--bg-default);
+  color: var(--fg-1);
+  font-family: var(--font-ui);
+  font-size: var(--fs-body);
+  line-height: var(--leading-body);
+  font-weight: 300;            /* Bruna's house weight is Light */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, .h1 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: var(--fs-h1);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-display);
+  color: var(--fg-1);
+  margin: 0;
+}
+h2, .h2 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: var(--fs-h2);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-h2);
+  margin: 0;
+}
+h3, .h3 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: var(--fs-h3);
+  line-height: var(--leading-snug);
+  letter-spacing: -0.04em;
+  margin: 0;
+}
+h4, .h4 {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: var(--fs-h4);
+  line-height: var(--leading-snug);
+  margin: 0;
+}
+
+.eyebrow {
+  font-family: var(--font-ui);
+  font-weight: 300;
+  font-size: var(--fs-eyebrow);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.eyebrow--sm {
+  font-size: 13px;
+  letter-spacing: var(--tracking-eyebrow-sm);
+}
+
+.support, p {
+  font-family: var(--font-ui);
+  font-weight: 300;
+  font-size: var(--fs-body);
+  line-height: var(--leading-body);
+  color: var(--fg-2);
+}
+
+.italic-accent {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: -0.04em;
+}
+
+/* ==========================================================================
+   Brand utilities
+   ========================================================================== */
+.bc-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 18px;
+  border-radius: var(--r-pill);
+  border: var(--stroke-hairline);
+  background: var(--bc-cream);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--fg-1);
+}
+
+.bc-page-frame {
+  /* sheet/slide layout: clean fill, eyebrow top, page index bottom-right */
+  position: relative;
+}

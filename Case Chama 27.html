@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Chama 27 · case study · bruna cristina</title>
+<link rel="stylesheet" href="colors_and_type.css" />
+<script src="image-slot.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bc-cream); color: var(--bc-ink); font-family: var(--font-ui); font-weight: 300; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  :root { --c27-green:#2E7D5A; --c27-deep:#0F3324; --c27-mint:#D4F0D4; --c27-yellow:#F5D547; }
+
+  .top-bar { position: sticky; top: 0; z-index: 50; background: var(--bc-cream); border-bottom: 1.5px solid var(--bc-ink); padding: 14px clamp(20px,5vw,56px); display: flex; align-items: center; justify-content: space-between; }
+  .top-bar a.back { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-weight: 500; }
+  .top-bar a.back:hover { color: var(--c27-green); }
+  .top-bar .crumb { font-family: var(--font-display); font-style: italic; font-size: 18px; opacity: .6; }
+
+  section { padding: clamp(48px,7vw,96px) clamp(20px,5vw,80px); }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .display { font-family: var(--font-display); font-weight: 300; line-height: .95; letter-spacing: -.04em; }
+  .eyebrow { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--fg-3); font-weight: 500; }
+
+  /* HERO */
+  .cs-hero { background: var(--c27-mint); padding-top: 56px; color: var(--c27-deep); }
+  .cs-hero .meta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+  .chip { border: 1.5px solid var(--c27-deep); border-radius: 999px; padding: 6px 16px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 500; }
+  .chip--solid { background: var(--c27-green); color: #fff; border-color: var(--c27-green); }
+  .cs-hero h1 { font-size: clamp(56px,10vw,152px); margin: 0 0 32px; }
+  .cs-hero h1 em { font-style: italic; color: var(--c27-green); }
+  .cs-cover { aspect-ratio: 16/9; border: 2px solid var(--c27-deep); border-radius: 32px; overflow: hidden; background: var(--c27-green); }
+  .cs-cover img.hero-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* INFO */
+  .info-strip { background: var(--c27-deep); color: var(--c27-mint); }
+  .info-strip .container { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; padding: 32px 0; }
+  .info-cell .label { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; opacity: .6; margin-bottom: 6px; }
+  .info-cell .val { font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: 22px; }
+
+  /* OVERVIEW */
+  .overview { background: var(--bc-sand); }
+  .overview .grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 56px; align-items: start; }
+  .overview h2 { font-size: clamp(36px,5vw,64px); margin: 0; }
+  .overview p { font-size: 17px; line-height: 1.7; margin: 0 0 18px; }
+  .overview p strong { font-weight: 500; }
+
+  /* CHALLENGE */
+  .ca-section { background: var(--bc-cream); }
+  .ca-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .ca-card { border: 1.5px solid var(--bc-ink); border-radius: 28px; padding: 36px 32px; }
+  .ca-card.challenge { background: var(--c27-yellow); transform: rotate(-1deg); color: var(--c27-deep); }
+  .ca-card.approach { background: var(--c27-yellow); color: var(--c27-deep); transform: rotate(1deg); border-color: var(--bc-ink); }
+  .ca-card .num { font-family: var(--font-display); font-weight: 300; font-size: 56px; letter-spacing: -.04em; color: var(--c27-deep); }
+  .ca-card h3 { font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: 36px; margin: 0 0 14px; }
+  .ca-card p { font-size: 16px; line-height: 1.6; margin: 0 0 14px; }
+
+  /* APP ICONS */
+  .app-section { background: var(--c27-green); color: #fff; }
+  .app-section h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 40px; }
+  .icons-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+  .icon-tile { background: #fff; border: 1.5px solid var(--c27-deep); border-radius: 32px; padding: 40px 24px; display: flex; flex-direction: column; align-items: center; gap: 20px; transition: transform .3s var(--ease-soft); }
+  .icon-tile:hover { transform: translateY(-8px) rotate(-1deg); }
+  .icon-tile img { width: 100%; max-width: 140px; aspect-ratio: 1; object-fit: contain; border-radius: 28px; }
+  .icon-tile .role { color: var(--c27-deep); font-family: var(--font-display); font-style: italic; font-size: 24px; }
+  .icon-tile .meta { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--c27-deep); opacity: .6; font-weight: 500; }
+
+  /* MOCKUP BENTO */
+  .mockup-section { background: var(--c27-mint); color: var(--c27-deep); }
+  .mockup-section h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 32px; }
+  .gallery-slider { position: relative; }
+  .slider-wrap { overflow: hidden; border-radius: 24px; border: 1.5px solid var(--c27-deep); }
+  .slider-track { display: flex; transition: transform .45s cubic-bezier(.4,0,.2,1); will-change: transform; }
+  .slide { flex: 0 0 100%; aspect-ratio: 16/9; position: relative; overflow: hidden; background: var(--bc-cream); }
+  .slide image-slot { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .slide image-slot::part(frame) { border-radius: 0; }
+  .slide image-slot::part(ring) { display: none; }
+  .slider-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 20px; }
+  .slider-btn { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--c27-deep); background: var(--c27-mint); color: var(--c27-deep); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all .2s; flex-shrink: 0; }
+  .slider-btn:hover { background: var(--c27-green); color: #fff; border-color: var(--c27-green); }
+  .slider-dots { display: flex; gap: 8px; align-items: center; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c27-deep); opacity: .25; cursor: pointer; transition: opacity .2s, transform .2s; border: none; padding: 0; }
+  .dot.active { opacity: 1; transform: scale(1.3); }
+
+  /* DELIVERABLES */
+  .deliverables { background: var(--bc-cream); }
+  .deliverables h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 32px; }
+  .deliv-list { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+  .deliv-item { border: 1.5px solid var(--bc-ink); border-radius: 18px; padding: 22px 26px; background: var(--bc-cream); display: flex; justify-content: space-between; align-items: center; gap: 16px; transition: transform .2s var(--ease-soft); }
+  .deliv-item:hover { transform: translateX(4px); }
+  .deliv-item .name { font-family: var(--font-display); font-style: italic; font-size: 24px; }
+  .deliv-item .meta { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; opacity: .6; }
+
+  /* CTA */
+  .cta { background: var(--c27-yellow); color: var(--c27-deep); padding: clamp(72px,10vw,120px) clamp(20px,5vw,80px); text-align: center; }
+  .cta h2 { font-size: clamp(56px,10vw,168px); line-height: .9; letter-spacing: -.05em; margin: 0; }
+  .cta h2 em { font-style: italic; }
+  .cta .sub { margin: 24px auto 32px; max-width: 540px; font-size: 17px; line-height: 1.5; color: var(--c27-deep); }
+  .cta-row { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .btn-big { background: var(--c27-deep); color: var(--c27-yellow); border: 2px solid var(--c27-deep); border-radius: 999px; padding: 20px 40px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-size: 15px; transition: all .2s var(--ease-soft); display: inline-block; }
+  .btn-big:hover { transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--c27-green); }
+  .btn-ghost-light { background: transparent; color: var(--c27-deep); border: 2px solid var(--c27-deep); border-radius: 999px; padding: 20px 32px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; font-size: 14px; display: inline-block; transition: all .2s var(--ease-soft); }
+  .btn-ghost-light:hover { background: var(--c27-deep); color: var(--c27-yellow); }
+
+  footer { background: var(--bc-ink); color: var(--bc-cream); padding: 24px clamp(20px,5vw,80px); display: flex; justify-content: space-between; align-items: center; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; flex-wrap: wrap; gap: 16px; }
+
+  @media (max-width: 900px) {
+    .info-strip .container { grid-template-columns: 1fr 1fr; }
+    .overview .grid, .ca-grid { grid-template-columns: 1fr; }
+    .icons-row { grid-template-columns: 1fr 1fr; }
+    .slider-wrap { border-radius: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="index.html" class="back">← voltar ao portifólio</a>
+  <span class="crumb">case study · chama 27</span>
+</div>
+
+<section class="cs-hero">
+  <div class="container">
+    <div class="meta-row">
+      <span class="chip chip--solid">rebranding</span>
+      <span class="chip">mobilidade urbana</span>
+      <span class="chip">2025</span>
+    </div>
+    <h1 class="display">chama 27 — <em>mobilidade</em> sem ruído.</h1>
+    <div class="cs-cover">
+      <img src="assets/mockups/chama27/outdoor-rua.jpg" class="hero-img" alt="Chama 27 · hero" />
+    </div>
+  </div>
+</section>
+
+<div class="info-strip">
+  <div class="container">
+    <div class="info-cell"><div class="label">cliente</div><div class="val">chama 27</div></div>
+    <div class="info-cell"><div class="label">setor</div><div class="val">mobilidade · app</div></div>
+    <div class="info-cell"><div class="label">entregas</div><div class="val">rebranding + brandbook</div></div>
+    <div class="info-cell"><div class="label">ano</div><div class="val">2025</div></div>
+  </div>
+</div>
+
+<section class="overview">
+  <div class="container grid">
+    <div>
+      <div class="eyebrow">— overview</div>
+      <h2 class="display" style="margin-top:12px;">o briefing</h2>
+    </div>
+    <div>
+      <p>chama 27 é uma plataforma de mobilidade urbana com <strong>dois apps separados</strong>: um para passageiros, outro para motoristas. precisava de uma identidade única, mas com leituras visuais distintas em cada interface.</p>
+      <p>desenhei o sistema completo: símbolo, paleta, três variações de ícone de app, regras de aplicação e o brandbook para guiar o time de desenvolvimento.</p>
+    </div>
+  </div>
+</section>
+
+<section class="ca-section">
+  <div class="container">
+    <div class="ca-grid">
+      <div class="ca-card challenge">
+        <div class="num">01.</div>
+        <h3>o desafio</h3>
+        <p>como construir <strong>uma só marca, dois apps</strong> sem confundir o usuário? cada app tem público, comportamento e contexto diferentes.</p>
+      </div>
+      <div class="ca-card approach">
+        <div class="num">02.</div>
+        <h3>a abordagem</h3>
+        <p>ícone-base único, com <strong>cores e variações que assinam o papel</strong> de cada app — passageiro, motorista, marca-mãe. mesmo DNA, leituras diferentes.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="app-section">
+  <div class="container">
+    <div class="eyebrow" style="color:var(--c27-mint);opacity:.8;">— sistema de ícones</div>
+    <h2 class="display" style="margin-top:12px;">três apps, uma marca</h2>
+    <div class="icons-row">
+      <div class="icon-tile">
+        <img src="assets/mockups/chama27/logo-app.png" alt="app principal" />
+        <span class="role">marca-mãe</span>
+        <span class="meta">institucional</span>
+      </div>
+      <div class="icon-tile">
+        <img src="assets/mockups/chama27/icon-clientes.png" alt="passageiro" />
+        <span class="role">passageiro</span>
+        <span class="meta">app · consumidor</span>
+      </div>
+      <div class="icon-tile">
+        <img src="assets/mockups/chama27/icon-motorista.png" alt="motorista" />
+        <span class="role">motorista</span>
+        <span class="meta">app · parceiro</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mockup-section">
+  <div class="container">
+    <div class="eyebrow">— aplicações</div>
+    <h2 class="display" style="margin-top:12px;">aplicações visuais</h2>
+    <div class="gallery-slider">
+      <div class="slider-wrap">
+        <div class="slider-track">
+          <div class="slide"><image-slot id="c27-1" src="assets/mockups/chama27/outdoor-rua.jpg" placeholder="outdoor · rua"></image-slot></div>
+          <div class="slide"><image-slot id="c27-2" src="assets/mockups/chama27/camisa.jpg" placeholder="camisa"></image-slot></div>
+          <div class="slide"><image-slot id="c27-3" src="assets/mockups/chama27/chapeu.jpg" placeholder="chapéu"></image-slot></div>
+          <div class="slide"><image-slot id="c27-4" src="assets/mockups/chama27/icone-celular.jpg" placeholder="ícone app"></image-slot></div>
+          <div class="slide"><image-slot id="c27-5" src="assets/mockups/chama27/stories.jpg" placeholder="stories mockup"></image-slot></div>
+          <div class="slide"><image-slot id="c27-6" src="assets/mockups/chama27/papelaria.jpg" placeholder="papelaria"></image-slot></div>
+        </div>
+      </div>
+      <div class="slider-nav">
+        <button class="slider-btn prev">←</button>
+        <div class="slider-dots">
+          <button class="dot active"></button>
+          <button class="dot"></button>
+          <button class="dot"></button>
+          <button class="dot"></button>
+          <button class="dot"></button>
+          <button class="dot"></button>
+        </div>
+        <button class="slider-btn next">→</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <h2 class="display">curtiu? <em>bora criar</em><br>algo assim?</h2>
+  <p class="sub">se sua marca tá precisando de um respiro novo, me chama. primeira conversa é sempre por minha conta ☕</p>
+  <div class="cta-row">
+    <a href="index.html#contato" class="btn-big">entrar em contato →</a>
+    <a href="index.html#branding" class="btn-ghost-light">ver outros cases</a>
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 bruna cristina · todos os direitos reservados</div>
+  <div>case study · chama 27</div>
+</footer>
+
+<script>
+document.querySelectorAll('.gallery-slider').forEach(function(slider){
+  var track=slider.querySelector('.slider-track');
+  var slides=track.querySelectorAll('.slide');
+  var dots=slider.querySelectorAll('.dot');
+  var n=slides.length,cur=0;
+  function go(i){cur=(i+n)%n;track.style.transform='translateX(-'+cur*100+'%)';dots.forEach(function(d,j){d.classList.toggle('active',j===cur);});}
+  slider.querySelector('.prev').addEventListener('click',function(){go(cur-1);});
+  slider.querySelector('.next').addEventListener('click',function(){go(cur+1);});
+  dots.forEach(function(d,i){d.addEventListener('click',function(){go(i);});});
+  go(0);
+});
+</script>
+</body>
+</html>
