@@ -159,7 +159,7 @@
   .ads h2 { color: var(--cream); }
   .ads .case-sub { color: var(--cream); }
   .ads-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-  .ad-card { aspect-ratio: 4/5; border: 1.5px solid var(--cream); border-radius: 20px; overflow: hidden; background: var(--navy); display: flex; flex-direction: column; color: var(--cream); transition: transform .3s var(--ease-soft); }
+  .ad-card { aspect-ratio: 4/5; border: 1.5px solid var(--cream); border-radius: 20px; overflow: hidden; background: var(--navy); display: flex; flex-direction: column; color: var(--cream); transition: transform .3s var(--ease-soft); cursor: zoom-in; }
   .ad-card:hover { transform: rotate(-1deg) translateY(-4px); }
   .ad-card .ad-image { flex: 1; width: 100%; min-height: 0; display: block; }
   .ad-card .ad-image::part(frame) { border-radius: 0; }
@@ -190,8 +190,8 @@
   .ai-format p { font-size: 14px; line-height: 1.55; margin: 0; }
 
   .ai-gallery916 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; max-width: 1200px; margin: 0 auto; }
-  .ai-card916 { aspect-ratio: 9/16; border: 1.5px solid var(--navy); border-radius: 18px; overflow: hidden; position: relative; transition: all .3s var(--ease-soft); background: var(--cream); display: block; cursor: zoom-in; box-shadow: 3px 3px 0 var(--navy); }
-  .ai-card916:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--navy); }
+  .ai-card916 { aspect-ratio: 9/16; border: 1.5px solid var(--navy); border-radius: 18px; overflow: hidden; position: relative; transition: all .3s var(--ease-soft); background: var(--cream); display: block; cursor: zoom-in; }
+  .ai-card916:hover { transform: translate(-2px,-2px); }
   .ai-card916 image-slot { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .ai-card916 image-slot::part(frame) { border-radius: 0; }
   .ai-card916 image-slot::part(ring) { display: none; }
@@ -216,8 +216,8 @@
   .brand-included { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 48px; }
   .brand-included span { background: var(--cream); border: 1.5px solid var(--navy); border-radius: 999px; padding: 6px 16px; font-size: 13px; }
   .brand-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; max-width: 1100px; margin: 0 auto; align-items: stretch; }
-  .brand-card-v2 { background: var(--cream); border: 1.5px solid var(--navy); border-radius: 28px; overflow: hidden; transition: transform .3s var(--ease-soft); display: flex; flex-direction: column; box-shadow: 4px 4px 0 var(--navy); }
-  .brand-card-v2:hover { transform: translate(-3px,-3px); box-shadow: 7px 7px 0 var(--navy); }
+  .brand-card-v2 { background: var(--cream); border: 1.5px solid var(--navy); border-radius: 28px; overflow: hidden; transition: transform .3s var(--ease-soft); display: flex; flex-direction: column; }
+  .brand-card-v2:hover { transform: translate(-3px,-3px); }
   .brand-card-v2 .bc-preview { aspect-ratio: 4/3; width: 100%; display: block; background: var(--cream); }
   .brand-card-v2 .bc-preview::part(frame) { border-radius: 0; }
   .brand-card-v2 .bc-preview::part(ring) { display: none; }
@@ -303,6 +303,7 @@
       <a href="#servicos" class="tab" data-c="pink">serviços</a>
       <a href="#ads" class="tab" data-c="yellow">ads</a>
       <a href="#branding" class="tab" data-c="mint">branding</a>
+      <a href="ai.html" class="tab" data-c="sky" style="background:var(--pink)">ia studio</a>
       <a href="#contato" class="tab" data-c="sky">contato</a>
     </div>
     <span class="nav-signature">Bruna Cristina</span>
@@ -313,9 +314,7 @@
 <!-- COVER -->
 <section class="cover" id="home">
   <div class="cover-meta">
-    <span class="num-tag">PORTFÓLIO · 2026</span>
-    <span class="num-tag">·</span>
-    <span class="num-tag">GRAPHIC DESIGNER · BRASIL</span>
+    <span class="num-tag">PORTFÓLIO · 2026 · GRAPHIC DESIGNER · BRASIL</span>
   </div>
   <div class="cover-stack">
     <h1 class="cover-title">Portfólio</h1>
@@ -361,12 +360,12 @@
 <section class="services" id="servicos">
   <div class="services-head">
     <div class="eyebrow-sm">— o que eu faço</div>
-    <h2 class="display" style="margin-top: 16px;">My Service <em>Offerings</em></h2>
+    <h2 class="display" style="margin-top: 16px;">meus <em>serviços</em></h2>
   </div>
   <div class="service-list">
     <a href="#ads" class="service-row"><span class="service-num">001</span><span class="service-pill">Criativos Estáticos</span><span class="service-desc">posts, carrosséis, ads e banners</span><span class="service-arrow">→</span></a>
     <a href="#email" class="service-row"><span class="service-num">002</span><span class="service-pill">E-mail Marketing</span><span class="service-desc">e-mails estratégicos e automações</span><span class="service-arrow">→</span></a>
-    <a href="#ai-visual" class="service-row"><span class="service-num">003</span><span class="service-pill">AI Visual</span><span class="service-desc">imagens geradas com direção criativa</span><span class="service-arrow">→</span></a>
+    <a href="ai.html" class="service-row"><span class="service-num">003</span><span class="service-pill">AI Visual</span><span class="service-desc">imagens geradas com direção criativa</span><span class="service-arrow">→</span></a>
     <a href="#branding" class="service-row"><span class="service-num">004</span><span class="service-pill">Branding &amp; Identidade Visual</span><span class="service-desc">do conceito à aplicação</span><span class="service-arrow">→</span></a>
   </div>
 </section>
@@ -377,7 +376,7 @@
     <div class="case-head">
       <div>
         <span class="eyebrow-sm" style="color: var(--cream); opacity: .8;">— criativos de conversão</span>
-        <h2 class="display" style="margin-top: 10px;">Criativos <em>Ads</em></h2>
+        <h2 class="display" style="margin-top: 10px;">criativos <em>ads</em></h2>
       </div>
       <div class="case-sub">
         <span class="chip-pill" style="background: var(--cream); color: var(--navy);">ads · social · banners</span>
@@ -425,7 +424,8 @@
   <div class="container">
     <div class="case-head">
       <div>
-        <h2 class="display" style="margin-top: 10px;">E-mail <em>Marketing</em></h2>
+        <span class="eyebrow-sm">— e-mail marketing</span>
+        <h2 class="display" style="margin-top: 10px;">e-mail <em>marketing</em></h2>
       </div>
       <div class="case-sub">
         <span class="chip-pill">automáticos · manuais · sazonais</span>
@@ -478,86 +478,14 @@
   </div>
 </section>
 
-<!-- AI VISUAL -->
-<section class="case-section ai-visual" id="ai-visual">
-  <div class="container">
-    <div class="case-head">
-      <div>
-        <span class="eyebrow-sm">— do briefing à imagem</span>
-        <h2 class="display" style="margin-top: 10px;">AI <em>Visual</em></h2>
-      </div>
-      <div class="case-sub">
-        <span class="chip-pill" style="background: var(--cream); color: var(--navy); border-color: var(--navy);">do briefing à imagem</span>
-      </div>
-    </div>
-    <p class="ai-intro">Criação de imagens por inteligência artificial com direção criativa do início ao fim. Não é só apertar um botão — é briefing, conceito, curadoria e entrega de imagens com intenção e identidade.</p>
-    <div class="ai-formats">
-      <div class="ai-format"><h4>Serviço puro</h4><p>briefing → direção criativa → curadoria → imagens finais entregues prontas pra uso.</p></div>
-      <div class="ai-format"><h4>Add-on de Branding</h4><p>complemento ao seu projeto de identidade visual: book de personagem, cenários, mockups e key visuals.</p></div>
-    </div>
-
-    <!-- 9:16 gallery grid — 12 cards (Guday IA + Lahza IA) -->
-    <div class="ai-gallery916" id="ai-gallery">
-      <div class="ai-card916" data-idx="0">
-        <span class="ia-mark">AI</span>
-        <image-slot id="ai-g1" src="assets/ai-visual/guday-ia-01.jpg" placeholder="Guday · AI Shooting"></image-slot>
-      </div>
-      <div class="ai-card916" data-idx="1">
-        <span class="ia-mark">AI</span>
-        <image-slot id="ai-g2" src="assets/ai-visual/guday-ia-02.jpg" placeholder="Guday · AI Shooting"></image-slot>
-      </div>
-      <div class="ai-card916" data-idx="2">
-        <span class="ia-mark">AI</span>
-        <image-slot id="ai-g3" src="assets/ai-visual/guday-ia-03.jpg" placeholder="Guday · AI Shooting"></image-slot>
-      </div>
-      <div class="ai-card916" data-idx="3">
-        <span class="ia-mark">AI</span>
-        <image-slot id="ai-g4" src="assets/ai-visual/guday-ia-04.jpg" placeholder="Guday · AI Shooting"></image-slot>
-      </div>
-      <div class="ai-card916" data-idx="4">
-        <span class="ia-mark">AI</span>
-        <image-slot id="ai-g5" src="assets/ai-visual/guday-ia-05.jpg" placeholder="Guday · AI Shooting"></image-slot>
-      </div>
-      <div class="ai-card916" data-idx="5">
-        <span class="ia-mark">AI</span>
-        <image-slot id="ai-g6" src="assets/ai-visual/guday-ia-06.jpg" placeholder="Guday · Creatina em Gummies"></image-slot>
-      </div>
-      <div class="ai-card916" data-idx="6">
-        <span class="ia-mark">AI</span>
-        <image-slot id="ai-g7" src="assets/ai-visual/guday-creatina-duo.webp" placeholder="Guday · Creatina em Gummies"></image-slot>
-      </div>
-      <div class="ai-card916" data-idx="7">
-        <span class="ia-mark">AI</span>
-        <image-slot id="ai-g8" src="assets/ai-visual/guday-ia-08.jpg" placeholder="Guday · AI Shooting"></image-slot>
-      </div>
-      <div class="ai-card916" data-idx="8">
-        <span class="ia-mark">AI</span>
-        <image-slot id="ai-g9" src="assets/ai-visual/guday-matcha.jpg" placeholder="Guday · CoQ10 Matcha"></image-slot>
-      </div>
-      <div class="ai-card916" data-idx="9">
-        <span class="ia-mark">AI</span>
-        <image-slot id="ai-g10" src="assets/ai-visual/lahza-splash.jpg" placeholder="Lahza · Splash"></image-slot>
-      </div>
-      <div class="ai-card916" data-idx="10">
-        <span class="ia-mark">AI</span>
-        <image-slot id="ai-g11" src="assets/ai-visual/guday-matcha-lifestyle.webp" placeholder="Guday · CoQ10+Matcha"></image-slot>
-      </div>
-      <div class="ai-card916" data-idx="11">
-        <span class="ia-mark">AI</span>
-        <image-slot id="ai-g12" src="assets/ai-visual/lahza-ia-04.jpg" placeholder="Lahza · AI Shooting"></image-slot>
-      </div>
-    </div>
-
-    <!-- lightbox (shared) -->
-    <div class="lightbox" id="lightbox">
-      <button class="lightbox-close" id="lb-close" aria-label="fechar">✕</button>
-      <button class="lightbox-nav prev" id="lb-prev" aria-label="anterior">←</button>
-      <img class="lightbox-img" id="lb-img" alt="" />
-      <button class="lightbox-nav next" id="lb-next" aria-label="próximo">→</button>
-      <div class="lightbox-counter" id="lb-counter">01 / 12</div>
-    </div>
-  </div>
-</section>
+<!-- lightbox (ads) -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lb-close" aria-label="fechar">✕</button>
+  <button class="lightbox-nav prev" id="lb-prev" aria-label="anterior">←</button>
+  <img class="lightbox-img" id="lb-img" alt="" />
+  <button class="lightbox-nav next" id="lb-next" aria-label="próximo">→</button>
+  <div class="lightbox-counter" id="lb-counter">01 / 08</div>
+</div>
 
 <!-- BRANDING -->
 <section class="case-section branding" id="branding">
@@ -565,7 +493,7 @@
     <div class="case-head">
       <div>
         <span class="eyebrow-sm">— do conceito à aplicação</span>
-        <h2 class="display" style="margin-top: 10px;">Branding &amp; <em>Identidade Visual</em></h2>
+        <h2 class="display" style="margin-top: 10px;">branding &amp; <em>identidade visual</em></h2>
       </div>
       <div class="case-sub"><span class="chip-pill">do conceito à aplicação</span></div>
     </div>
@@ -655,6 +583,14 @@
   </div>
 </section>
 
+<!-- VOLTAR AO TOPO -->
+<div style="text-align:center; padding: 40px 20px 0; background: var(--cream); border-top: 1.5px solid var(--navy);">
+  <a href="#home" id="back-to-top" style="display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--navy);border-radius:999px;padding:12px 28px;font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);background:var(--cream);transition:all .2s var(--ease-soft);">↑ voltar ao topo</a>
+</div>
+<style>
+  #back-to-top:hover { background: var(--navy); color: var(--cream); transform: translateY(-2px); }
+</style>
+
 <!-- CTA / FOOTER -->
 <section class="cta-footer" id="contato">
   <div class="container">
@@ -690,7 +626,7 @@
 
 <script>
 /* ── NAV: active tab on scroll ───────────────────── */
-const sections = ['home','servicos','ads','branding','contato'];
+const sections = ['home','servicos','ads','email','branding','contato'];
 const tabs = document.querySelectorAll('.tab');
 const setActive = id => tabs.forEach(t => t.classList.toggle('is-active', t.getAttribute('href') === '#' + id));
 const io = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); }), { rootMargin: '-40% 0px -50% 0px' });
@@ -716,9 +652,9 @@ document.querySelectorAll('.js-magnetic').forEach(btn => {
   btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
 });
 
-/* ── AI VISUAL 9:16 GALLERY + LIGHTBOX ──────────── */
+/* ── ADS LIGHTBOX ────────────────────────────────── */
 (() => {
-  const cards   = Array.from(document.querySelectorAll('.ai-card916'));
+  const cards    = Array.from(document.querySelectorAll('.ad-card'));
   const lightbox = document.getElementById('lightbox');
   const lbImg    = document.getElementById('lb-img');
   const lbCounter= document.getElementById('lb-counter');

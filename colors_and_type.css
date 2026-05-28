@@ -74,7 +74,7 @@
   --font-ui: "Inter", system-ui, -apple-system, "Helvetica Neue", sans-serif;
 
   /* ---------- Type scale (display heavy, very tight tracking) ---------- */
-  --fs-mega:     clamp(120px, 20vw, 334px);  /* hero "Portifólio" */
+  --fs-mega:     clamp(120px, 20vw, 334px);  /* hero "Portfólio" */
   --fs-display:  clamp(90px, 14vw, 228px);   /* slide titles "My/Service" */
   --fs-h1:       clamp(64px, 9vw, 204px);    /* "Headline" specimen */
   --fs-h2:       80px;                       /* italic accent "Branding" */
