@@ -290,25 +290,22 @@
   /* ── RESPONSIVE · MOBILE (≤540px) ────────────────── */
   @media (max-width: 540px) {
 
-    /* NAV: rolagem horizontal, sem quebra de linha */
-    .nav-wrap { padding: 10px 0 0; }
-    .nav { padding: 0 12px; }
+    /* NAV: cabe tudo em uma linha */
+    .nav-wrap { padding: 8px 0 0; }
+    .nav { padding: 0 8px; }
     .nav-tabs {
       flex-wrap: nowrap;
-      overflow-x: auto;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      gap: 3px;
-      padding-bottom: 0;
+      gap: 2px;
+      justify-content: stretch;
     }
-    .nav-tabs::-webkit-scrollbar { display: none; }
     .tab {
-      padding: 7px 12px 9px;
-      font-size: 10px;
-      letter-spacing: .08em;
-      border-radius: 12px 12px 0 0;
+      padding: 6px 8px 8px;
+      font-size: 9px;
+      letter-spacing: 0.04em;
+      border-radius: 10px 10px 0 0;
       white-space: nowrap;
-      flex-shrink: 0;
+      flex: 1;
+      text-align: center;
     }
 
     /* COVER */
