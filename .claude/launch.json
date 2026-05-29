@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "portfolio",
+      "runtimeExecutable": "ruby",
+      "runtimeArgs": ["-run", "-e", "httpd", "/Users/brunacristina/Documents/Claude/Projects/MARCA PESSOAL", "-p", "4321"],
+      "port": 4321,
+      "autoPort": true
+    }
+  ]
+}

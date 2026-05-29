@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tangeritta · case study · bruna cristina</title>
+<link rel="stylesheet" href="colors_and_type.css" />
+<script src="image-slot.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bc-cream); color: var(--bc-ink); font-family: var(--font-ui); font-weight: 300; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  :root { --tg-lilas:#eda2f9; --tg-laranja:#e27a47; --tg-verde:#34925b; --tg-creme:#efeedb; --tg-tang:#f49631; --tg-salmao:#ff8552; --tg-dark:#2A1810; }
+
+  .top-bar { position: sticky; top: 0; z-index: 50; background: var(--bc-cream); border-bottom: 1.5px solid var(--bc-ink); padding: 14px clamp(20px,5vw,56px); display: flex; align-items: center; justify-content: space-between; }
+  .top-bar a.back { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; font-weight: 500; }
+  .top-bar a.back:hover { color: var(--tg-tang); }
+  .top-bar .crumb { font-family: var(--font-display); font-style: italic; font-size: 18px; }
+
+  section { padding: clamp(48px,7vw,96px) clamp(20px,5vw,80px); }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .display { font-family: var(--font-display); font-weight: 300; line-height: .95; letter-spacing: -.04em; }
+  .eyebrow { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--fg-3); font-weight: 500; }
+
+  .cs-hero { background: var(--tg-creme); padding-top: 56px; color: var(--tg-dark); }
+  .cs-hero .meta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+  .chip { border: 1.5px solid var(--tg-dark); border-radius: 999px; padding: 6px 16px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 500; }
+  .chip--solid { background: var(--tg-tang); color: var(--tg-creme); border-color: var(--tg-tang); }
+  .cs-hero h1 { font-size: clamp(56px,10vw,152px); margin: 0 0 32px; }
+  .cs-hero h1 em { font-style: italic; color: var(--tg-tang); }
+  .cs-cover { aspect-ratio: 16/9; border: 2px solid var(--tg-dark); border-radius: 32px; overflow: hidden; background: linear-gradient(135deg, var(--tg-lilas), var(--tg-tang), var(--tg-verde)); display: flex; align-items: center; justify-content: center; position: relative; }
+  .cs-cover .wordmark { font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: clamp(56px,11vw,180px); color: var(--tg-creme); letter-spacing: -.04em; text-shadow: 0 4px 32px rgba(0,0,0,.2); z-index: 2; }
+  .cs-cover .deco { position: absolute; width: 30%; opacity: .9; }
+  .cs-cover .deco.d1 { top: -10%; left: -5%; transform: rotate(-15deg); }
+  .cs-cover .deco.d2 { bottom: -10%; right: -5%; transform: rotate(20deg); width: 35%; }
+
+  .info-strip { background: var(--tg-dark); color: var(--tg-creme); }
+  .info-strip .container { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; padding: 32px 0; }
+  .info-cell .label { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; opacity: .6; margin-bottom: 6px; }
+  .info-cell .val { font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: 22px; }
+
+  .overview { background: var(--bc-sand); }
+  .overview .grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 56px; align-items: start; }
+  .overview h2 { font-size: clamp(36px,5vw,64px); margin: 0; }
+  .overview p { font-size: 17px; line-height: 1.7; color: var(--fg-1); margin: 0 0 18px; }
+  .overview p strong { font-weight: 500; }
+
+  .ca-section { background: var(--bc-cream); }
+  .ca-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .ca-card { border: 1.5px solid var(--bc-ink); border-radius: 28px; padding: 36px 32px; }
+  .ca-card.challenge { background: var(--tg-lilas); transform: rotate(-1deg); color: var(--tg-dark); }
+  .ca-card.approach { background: var(--tg-tang); color: var(--tg-creme); transform: rotate(1deg); border-color: var(--tg-tang); }
+  .ca-card .num { font-family: var(--font-display); font-weight: 300; font-size: 56px; letter-spacing: -.04em; }
+  .ca-card.approach .num { color: var(--tg-creme); }
+  .ca-card.challenge .num { color: var(--tg-tang); }
+  .ca-card h3 { font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: 36px; margin: 0 0 14px; }
+  .ca-card p { font-size: 16px; line-height: 1.6; margin: 0 0 14px; }
+
+  .palette { background: var(--tg-creme); }
+  .palette h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 32px; color: var(--tg-dark); }
+  .palette-row { display: grid; grid-template-columns: repeat(6,1fr); gap: 12px; }
+  .swatch { aspect-ratio: 1; border-radius: 20px; border: 1.5px solid var(--tg-dark); display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; transition: transform .3s var(--ease-soft); }
+  .swatch:hover { transform: translateY(-6px); }
+  .swatch .hex { font-size: 12px; letter-spacing: .12em; font-weight: 500; }
+  .swatch .name { font-family: var(--font-display); font-style: italic; font-size: 16px; }
+
+  .elements { background: var(--tg-verde); color: var(--tg-creme); }
+  .elements h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 40px; }
+  .el-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+  .el-tile { background: var(--tg-creme); border: 1.5px solid var(--tg-dark); border-radius: 24px; padding: 32px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; transition: transform .3s var(--ease-soft); position: relative; }
+  .el-tile:hover { transform: rotate(-2deg) translateY(-6px); }
+  .el-tile img { width: 80%; height: 80%; object-fit: contain; }
+  .el-tile .lbl { position: absolute; bottom: 12px; left: 12px; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--tg-dark); font-weight: 600; opacity: .7; }
+
+  .gallery { background: var(--bc-cream); }
+  .gallery h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 32px; }
+  .tg-mockup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .tg-tile { aspect-ratio: 1; border: 1.5px solid var(--tg-dark); border-radius: 22px; overflow: hidden; display: block; background: var(--bc-cream); }
+  .tg-tile::part(frame) { border-radius: 0; }
+  .tg-tile::part(ring) { display: none; }
+
+  .deliverables { background: var(--tg-creme); }
+  .deliverables h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 32px; color: var(--tg-dark); }
+  .deliv-list { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+  .deliv-item { border: 1.5px solid var(--tg-dark); border-radius: 18px; padding: 22px 26px; background: var(--bc-cream); display: flex; justify-content: space-between; align-items: center; gap: 16px; color: var(--tg-dark); }
+  .deliv-item .name { font-family: var(--font-display); font-style: italic; font-size: 24px; }
+  .deliv-item .meta { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; opacity: .6; }
+  .deliv-item.pdf { background: var(--tg-tang); color: var(--tg-creme); border-color: var(--tg-tang); }
+  .deliv-item.pdf:hover { transform: translateY(-4px); }
+
+  .cs-testi { background: var(--tg-lilas); }
+  .cs-testi-card { max-width: 880px; margin: 0 auto; border: 1.5px solid var(--tg-dark); border-radius: 32px; background: var(--bc-cream); padding: 48px 40px; text-align: center; }
+  .cs-testi-card .q { font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: clamp(24px,3.4vw,40px); line-height: 1.2; letter-spacing: -.02em; color: var(--tg-dark); }
+  .cs-testi-card .q em { color: var(--tg-tang); }
+  .cs-testi-card .who { margin-top: 18px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--tg-dark); opacity: .65; font-weight: 600; }
+
+  .cta { background: var(--tg-tang); color: var(--tg-creme); position: relative; overflow: hidden; }
+  .cta h2 { font-size: clamp(56px,10vw,168px); text-align: center; line-height: .9; letter-spacing: -.05em; margin: 0; }
+  .cta h2 em { font-style: italic; }
+  .cta .sub { text-align: center; margin: 24px auto 32px; max-width: 540px; font-size: 17px; line-height: 1.5; }
+  .cta-row { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .btn-big { background: var(--tg-creme); color: var(--tg-tang); border: 2px solid var(--tg-creme); border-radius: 999px; padding: 20px 40px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-size: 15px; transition: all .2s var(--ease-soft); }
+  .btn-big:hover { transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--tg-dark); }
+  .btn-ghost-light { background: transparent; color: var(--tg-creme); border: 2px solid var(--tg-creme); border-radius: 999px; padding: 20px 32px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; font-size: 14px; }
+  .btn-ghost-light:hover { background: var(--tg-creme); color: var(--tg-tang); }
+
+  footer { background: var(--bc-ink); color: var(--bc-cream); padding: 24px clamp(20px,5vw,80px); display: flex; justify-content: space-between; align-items: center; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; flex-wrap: wrap; gap: 16px; }
+
+  @media (max-width: 900px) {
+    .info-strip .container, .palette-row { grid-template-columns: 1fr 1fr; }
+    .overview .grid, .ca-grid, .deliv-list { grid-template-columns: 1fr; }
+    .tg-mockup-grid { grid-template-columns: repeat(2, 1fr); }
+    .el-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a href="Portfolio Site.html" class="back">← voltar ao portifólio</a>
+  <span class="crumb">case study · tangeritta</span>
+</div>
+
+<section class="cs-hero">
+  <div class="container">
+    <div class="meta-row">
+      <span class="chip chip--solid">branding · case principal</span>
+      <span class="chip">moda fitness</span>
+      <span class="chip">2024</span>
+    </div>
+    <h1 class="display">tangeritta — performance com <em>doçura</em>.</h1>
+    <div class="cs-cover">
+      <img src="assets/cases/tangeritta/adesivo-2.png" class="deco d1" alt="" />
+      <span class="wordmark">tangeritta.</span>
+      <img src="assets/cases/tangeritta/adesivo-3.png" class="deco d2" alt="" />
+    </div>
+  </div>
+</section>
+
+<div class="info-strip">
+  <div class="container">
+    <div class="info-cell"><div class="label">cliente</div><div class="val">tangeritta</div></div>
+    <div class="info-cell"><div class="label">setor</div><div class="val">moda fitness · feminina</div></div>
+    <div class="info-cell"><div class="label">entregas</div><div class="val">brand · elementos · papelaria</div></div>
+    <div class="info-cell"><div class="label">ano</div><div class="val">2024</div></div>
+  </div>
+</div>
+
+<section class="overview">
+  <div class="container grid">
+    <div>
+      <div class="eyebrow">— overview</div>
+      <h2 class="display" style="margin-top: 12px;">o briefing</h2>
+    </div>
+    <div>
+      <p>a tangeritta é uma marca de <strong>moda fitness feminina</strong> que queria sair da estética genérica do segmento — preto, cinza, performance fria. queriam algo <strong>colorido, divertido, com personalidade</strong> mas sem perder o tom esportivo.</p>
+      <p>construímos a identidade completa do zero: logotipo, paleta vibrante de seis cores, sistema de elementos gráficos (adesivos, padrões, quadriculados) e papelaria — tudo pensado pra escalar entre etiqueta de roupa, embalagem, social e brindes.</p>
+    </div>
+  </div>
+</section>
+
+<section class="ca-section">
+  <div class="container">
+    <div class="ca-grid">
+      <div class="ca-card challenge">
+        <div class="num">01.</div>
+        <h3>o desafio</h3>
+        <p>como criar uma marca de fitness que <strong>não pareça mais uma</strong>? o segmento é saturado, todo mundo usa as mesmas referências visuais.</p>
+      </div>
+      <div class="ca-card approach">
+        <div class="num">02.</div>
+        <h3>a abordagem</h3>
+        <p>paleta de <strong>seis cores fortes</strong>, tipografia chunky com italic como assinatura, sistema de adesivos e padrões que dão flexibilidade pra qualquer aplicação.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="palette">
+  <div class="container">
+    <div class="eyebrow" style="color: var(--tg-dark);">— paleta cromática</div>
+    <h2 class="display" style="margin-top: 12px;">seis cores, infinitas combinações</h2>
+    <div class="palette-row">
+      <div class="swatch" style="background: var(--tg-lilas); color: var(--tg-dark);"><span class="name">lilás</span><span class="hex">#EDA2F9</span></div>
+      <div class="swatch" style="background: var(--tg-laranja); color: var(--tg-creme);"><span class="name">laranja</span><span class="hex">#E27A47</span></div>
+      <div class="swatch" style="background: var(--tg-verde); color: var(--tg-creme);"><span class="name">verde</span><span class="hex">#34925B</span></div>
+      <div class="swatch" style="background: var(--tg-creme); color: var(--tg-dark);"><span class="name">creme</span><span class="hex">#EFEEDB</span></div>
+      <div class="swatch" style="background: var(--tg-tang); color: var(--tg-creme);"><span class="name">tangerina</span><span class="hex">#F49631</span></div>
+      <div class="swatch" style="background: var(--tg-salmao); color: var(--tg-creme);"><span class="name">salmão</span><span class="hex">#FF8552</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="elements">
+  <div class="container">
+    <div class="eyebrow" style="color: var(--tg-creme); opacity: .8;">— sistema de elementos</div>
+    <h2 class="display" style="margin-top: 12px;">adesivos &amp; padrões</h2>
+    <div class="el-grid">
+      <div class="el-tile"><img src="assets/cases/tangeritta/adesivo-2.png" alt="" /><span class="lbl">adesivo 01</span></div>
+      <div class="el-tile"><img src="assets/cases/tangeritta/adesivo-3.png" alt="" /><span class="lbl">adesivo 02</span></div>
+      <div class="el-tile"><img src="assets/cases/tangeritta/pattern.png" alt="" /><span class="lbl">pattern</span></div>
+      <div class="el-tile"><img src="assets/cases/tangeritta/quadriculado.png" alt="" /><span class="lbl">quadriculado</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="gallery">
+  <div class="container">
+    <div class="eyebrow">— peças do projeto</div>
+    <h2 class="display" style="margin-top: 12px;">o sistema visual</h2>
+    <div class="tg-mockup-grid">
+      <image-slot id="tg-mockup-1" class="tg-tile" placeholder="key visual"></image-slot>
+      <image-slot id="tg-mockup-2" class="tg-tile" placeholder="logo primário"></image-slot>
+      <image-slot id="tg-mockup-3" class="tg-tile" placeholder="papelaria"></image-slot>
+      <image-slot id="tg-mockup-4" class="tg-tile" placeholder="etiqueta"></image-slot>
+      <image-slot id="tg-mockup-5" class="tg-tile" placeholder="aplicação roupa"></image-slot>
+      <image-slot id="tg-mockup-6" class="tg-tile" placeholder="social feed"></image-slot>
+      <image-slot id="tg-mockup-7" class="tg-tile" placeholder="brindes"></image-slot>
+      <image-slot id="tg-mockup-8" class="tg-tile" placeholder="embalagem"></image-slot>
+      <image-slot id="tg-mockup-9" class="tg-tile" placeholder="mood"></image-slot>
+    </div>
+  </div>
+</section>
+
+<section class="deliverables">
+  <div class="container">
+    <div class="eyebrow" style="color: var(--tg-dark);">— entregáveis</div>
+    <h2 class="display" style="margin-top: 12px;">o que ficou pronto</h2>
+    <div class="deliv-list">
+      <div class="deliv-item"><span class="name">logotipo principal</span><span class="meta">vertical + horizontal</span></div>
+      <div class="deliv-item"><span class="name">paleta cromática</span><span class="meta">6 cores</span></div>
+      <div class="deliv-item"><span class="name">sistema de adesivos</span><span class="meta">4 elementos</span></div>
+      <div class="deliv-item"><span class="name">padrões + texturas</span><span class="meta">pattern · quadriculado</span></div>
+      <div class="deliv-item"><span class="name">papelaria + brindes</span><span class="meta">aplicações</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="cs-testi">
+  <div class="cs-testi-card">
+    <div class="q">"você soube expressar cada detalhe aos quais nem mesmo podíamos perceber. não temos palavras pra expressar toda <em>gratidão</em>."</div>
+    <div class="who">— equipe tangeritta · pós-entrega</div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="container">
+    <h2 class="display">curtiu? <em>bora criar</em><br>algo assim?</h2>
+    <p class="sub">se sua marca tá precisando de um respiro novo, me chama. primeira conversa é sempre por minha conta ☕</p>
+    <div class="cta-row">
+      <a href="Portfolio Site.html#contato" class="btn-big">entrar em contato →</a>
+      <a href="Portfolio Site.html#branding" class="btn-ghost-light">ver outros cases</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 bruna cristina · todos os direitos reservados</div>
+  <div>case study · tangeritta</div>
+</footer>
+
+</body>
+</html>
