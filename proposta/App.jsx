@@ -29,6 +29,7 @@ function App() {
   const [openServiceId, setOpenServiceId] = useState(null); // sub-route within "services" step
   const [clientName, setClientName] = useState("");
   const [cart, setCart] = useState([]); // {id, kind, name, price, qty}
+  const [validationError, setValidationError] = useState("");
 
   // Apply primary color tweak
   useEffect(() => {
@@ -73,14 +74,28 @@ function App() {
   // ---- Navigation ----
   const goNext = () => {
     if (openServiceId) {
-      // From a service detail, "next" advances to step 3 (configurador)
       setOpenServiceId(null);
       setStepIdx((i) => Math.max(i, 2));
       return;
     }
+    const current = STEPS[stepIdx];
+    if (current.id === "welcome") {
+      if (!clientName.trim()) {
+        setValidationError("coloca seu nome antes de continuar ;)");
+        return;
+      }
+    }
+    if (current.id === "services") {
+      if (cart.length === 0) {
+        setValidationError("escolhe pelo menos um serviço antes de continuar.");
+        return;
+      }
+    }
+    setValidationError("");
     setStepIdx((i) => Math.min(STEPS.length - 1, i + 1));
   };
   const goPrev = () => {
+    setValidationError("");
     if (openServiceId) {
       setOpenServiceId(null);
       return;
@@ -136,7 +151,7 @@ function App() {
         ) : (
           <>
             {current.id === "welcome" && (
-              <StepWelcome clientName={clientName} setClientName={setClientName} onNext={goNext} />
+              <StepWelcome clientName={clientName} setClientName={(v) => { setClientName(v); if (v.trim()) setValidationError(""); }} onNext={goNext} />
             )}
             {current.id === "services" && <StepServices openService={openService} cart={cart} />}
             {current.id === "config" && (
@@ -181,7 +196,19 @@ function App() {
             ))}
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            {validationError && (
+              <span style={{
+                fontFamily: "var(--font-ui)",
+                fontSize: 12,
+                color: "var(--bc-orange)",
+                maxWidth: 220,
+                textAlign: "right",
+                lineHeight: 1.3,
+              }}>
+                {validationError}
+              </span>
+            )}
             {cart.length > 0 && stepIdx < STEPS.length - 1 && (
               <span style={{
                 fontFamily: "var(--font-display)",
