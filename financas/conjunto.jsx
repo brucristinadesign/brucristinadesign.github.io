@@ -8,20 +8,20 @@ const { Icon: CI, Money: CM, Card: CardC, Field: CFld, Modal: CMdl,
   PathProgress: CPP, MiniBar: CMB, Donut: CDn, LineChart: CLC } = window.FinUI;
 
 const EMOJIS = ["🏠", "💧", "⚡", "🌐", "🛒", "💳", "🐾", "🛡️", "🚗", "🎉", "❤️", "📦", "🍽️", "📱", "🎓", "🎁", "✈️", "⛽", "🏥", "👕", "💄", "🧾", "🔧", "📚", "🎬", "☕", "🏋️", "💊"];
-const CORES = ["#1F4B44", "#2E655C", "#4C766D", "#C9A15A", "#B08840", "#E86A5C", "#A8586B", "#6E8B84", "#8BA888", "#D8B67A", "#5C6B67"];
+const CORES = ["#18211D", "#CDEA46", "#D9D3F7", "#F5CDA8", "#8FD3B3", "#DD7E9C", "#6B62C6", "#F6E488", "#9AD9C9", "#EC6A54", "#B6D62F"];
 const CAIXINHAS_SUGERIDAS = [
-  { nome: "Aluguel", emoji: "🏠", cor: "#1F4B44" },
-  { nome: "Água", emoji: "💧", cor: "#4C766D" },
-  { nome: "Energia", emoji: "⚡", cor: "#C9A15A" },
-  { nome: "Internet", emoji: "🌐", cor: "#2E655C" },
-  { nome: "Mercado", emoji: "🛒", cor: "#2E655C" },
-  { nome: "Cartão Noh", emoji: "💳", cor: "#A8586B" },
-  { nome: "Pets", emoji: "🐾", cor: "#D8B67A" },
-  { nome: "Segurança", emoji: "🛡️", cor: "#6E8B84" },
-  { nome: "Transporte", emoji: "🚗", cor: "#4C766D" },
-  { nome: "Lazer", emoji: "🎉", cor: "#C9A15A" },
-  { nome: "Saúde", emoji: "❤️", cor: "#E86A5C" },
-  { nome: "Outros", emoji: "📦", cor: "#5C6B67" },
+  { nome: "Aluguel", emoji: "🏠", cor: "#18211D" },
+  { nome: "Água", emoji: "💧", cor: "#9AD9C9" },
+  { nome: "Energia", emoji: "⚡", cor: "#F6E488" },
+  { nome: "Internet", emoji: "🌐", cor: "#6B62C6" },
+  { nome: "Mercado", emoji: "🛒", cor: "#CDEA46" },
+  { nome: "Cartão Noh", emoji: "💳", cor: "#DD7E9C" },
+  { nome: "Pets", emoji: "🐾", cor: "#F5CDA8" },
+  { nome: "Segurança", emoji: "🛡️", cor: "#8FD3B3" },
+  { nome: "Transporte", emoji: "🚗", cor: "#D9D3F7" },
+  { nome: "Lazer", emoji: "🎉", cor: "#F6E488" },
+  { nome: "Saúde", emoji: "❤️", cor: "#EC6A54" },
+  { nome: "Outros", emoji: "📦", cor: "#7A847F" },
 ];
 
 function CaixaBadge({ cx, size = 38 }) {
