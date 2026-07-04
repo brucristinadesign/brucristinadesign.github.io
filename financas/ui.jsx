@@ -31,6 +31,19 @@ const Icon = ({ name, size = 20, color = "currentColor", style }) => {
     close: <><path d="M6 6l12 12M18 6 6 18" /></>,
     gear: <><circle cx="12" cy="12" r="3" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.5 4.5l2 2M17.5 17.5l2 2M19.5 4.5l-2 2M6.5 17.5l-2 2" /></>,
     coin: <><ellipse cx="12" cy="7" rx="8" ry="3.5" /><path d="M4 7v6c0 1.9 3.6 3.5 8 3.5s8-1.6 8-3.5V7" /><path d="M4 13c0 1.9 3.6 3.5 8 3.5s8-1.6 8-3.5" /></>,
+    cart: <><circle cx="9" cy="20" r="1.3" /><circle cx="17" cy="20" r="1.3" /><path d="M2 3h2l2.3 12.1a1 1 0 0 0 1 .8h8.6a1 1 0 0 0 1-.8L20 7H6" /></>,
+    car: <><path d="M3 12l2-5.5A2 2 0 0 1 6.9 5h10.2a2 2 0 0 1 1.9 1.5L21 12" /><path d="M3 12h18v5H3z" /><circle cx="7.5" cy="17" r="1.4" /><circle cx="16.5" cy="17" r="1.4" /></>,
+    ticket: <><path d="M4 8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2H6a2 2 0 0 1-2-2 2 2 0 0 0 0-4z" /><path d="M14 6v10" strokeDasharray="1.5 2.5" /></>,
+    heart: <><path d="M12 20S3.5 14.5 3.5 8.8C3.5 6 5.7 4.5 7.8 4.5c1.7 0 3.3 1 4.2 2.3.9-1.3 2.5-2.3 4.2-2.3 2.1 0 4.3 1.5 4.3 4.3C20.5 14.5 12 20 12 20z" /></>,
+    tv: <><rect x="3" y="5" width="18" height="12" rx="2" /><path d="M8 21h8" /></>,
+    bolt: <><path d="M13 2 4 14h6l-1 8 9-12h-6z" /></>,
+    food: <><path d="M6 3v7a2 2 0 0 0 4 0V3" /><path d="M8 10v11" /><path d="M17.5 3c-1.4 0-2.5 2.2-2.5 5s1 4 2.5 4V21" /></>,
+    book: <><path d="M5 4a2 2 0 0 1 2-2h12v17H7a2 2 0 0 0-2 2z" /><path d="M7 19h12" /></>,
+    paw: <><circle cx="7" cy="9.5" r="1.5" /><circle cx="12" cy="7.5" r="1.5" /><circle cx="17" cy="9.5" r="1.5" /><path d="M12 12.5c-2.4 0-4 1.9-4 3.4S9.2 19 12 19s4-1.6 4-3.1-1.6-3.4-4-3.4z" /></>,
+    dots: <><circle cx="5" cy="12" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="19" cy="12" r="1.5" /></>,
+    tag: <><path d="M3 3h8l10 10-8 8L3 11z" /><circle cx="7.5" cy="7.5" r="1.2" /></>,
+    filter: <><path d="M3 5h18l-7 8.2V20l-4-2v-4.8z" /></>,
+    calendar: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 9.5h18M8 3v4M16 3v4" /></>,
   };
   return <svg {...p}>{paths[name] || null}</svg>;
 };
