@@ -54,6 +54,7 @@ function ConjuntoApp() {
 
   const abas = [
     { id: "inicio", label: "Início", icon: "home" },
+    { id: "chat", label: "Assistente", icon: "users" },
     { id: "lancamentos", label: "Lançamentos", icon: "list" },
     { id: "caixinhas", label: "Caixinhas", icon: "target" },
     { id: "metas", label: "Metas", icon: "plane" },
@@ -80,6 +81,7 @@ function ConjuntoApp() {
       )}
 
       {aba === "inicio" && <AbaInicio mes={mes} reload={reload} />}
+      {aba === "chat" && window.FinAssist && <window.FinAssist.ChatAssistente reload={reload} />}
       {aba === "lancamentos" && <AbaLancamentosConj mes={mes} reload={reload} />}
       {aba === "caixinhas" && <AbaCaixinhas reload={reload} />}
       {aba === "metas" && <AbaMetasConjunto reload={reload} />}
