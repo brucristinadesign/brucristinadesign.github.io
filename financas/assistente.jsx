@@ -1,8 +1,7 @@
 /* ══════════════════════════════════════════════════════════════════════
-   assistente.jsx — chat estilo Pierre (dentro do app, sincronizado)
-   Você manda "gastei 50 no mercado" e vira lançamento pronto.
-   Interpretador por regras (sem IA paga, roda no navegador).
-   Depende de CAIXINHAS_SUGERIDAS (definido em conjunto.jsx).
+   assistente.jsx — chat estilo Pierre (por escopo: Conjunto ou individual)
+   "gastei 50 no mercado" → vira lançamento. Interpretador por regras.
+   Recebe um ctx (F.scope(...)) — funciona igual pro casal e pra cada um.
    ══════════════════════════════════════════════════════════════════════ */
 
 const PALAVRAS_CAIXA = {
@@ -68,58 +67,63 @@ function parseTags(txt) {
   return tags;
 }
 
-// resolve/cria a caixinha pelo nome; retorna o id (ou null)
-function garantirCaixa(nome) {
+// resolve/cria a caixinha pelo nome no escopo; retorna o id (ou null)
+function garantirCaixa(nome, ctx) {
   if (!nome) return null;
-  let list = F.getCaixinhas();
+  let list = ctx.getCaixinhas();
   let cx = list.find((c) => _norm(c.nome) === _norm(nome));
   if (cx) return cx.id;
   const sug = (typeof CAIXINHAS_SUGERIDAS !== "undefined" ? CAIXINHAS_SUGERIDAS : []).find((s) => _norm(s.nome) === _norm(nome));
-  const nova = { id: F.uid(), nome, emoji: sug ? sug.emoji : "📦", cor: sug ? sug.cor : "#5C6B67", planejado: 0 };
-  F.saveCaixinhas([...list, nova]);
+  const nova = { id: F.uid(), nome, emoji: sug ? sug.emoji : "📦", cor: sug ? sug.cor : "#7A847F", planejado: 0 };
+  ctx.saveCaixinhas([...list, nova]);
   return nova.id;
 }
 
-// ── Interpreta e (se for o caso) executa ────────────────────────────────
-function interpretar(textoOriginal) {
+// ── Interpreta e (se for o caso) executa, dentro do escopo (ctx) ────────
+function interpretar(textoOriginal, ctx) {
   const txt = textoOriginal.trim();
   const t = _norm(txt);
   if (!txt) return { reply: "" };
+  const conj = !!ctx.conjunto;
 
   // ── perguntas ─────────────────────────────────────────────────────
   if (/\bsaldo\b/.test(t)) {
-    const g = F.saldoConjuntoGeral();
-    return { reply: `Saldo do casal: ${F.fmt(g.saldo)} (entrou ${F.fmt(g.entrou)}, saiu ${F.fmt(g.saiu)}).` };
+    const g = ctx.saldoGeral();
+    return { reply: `${conj ? "Saldo do casal" : "Seu saldo"}: ${F.fmt(g.saldo)} (entrou ${F.fmt(g.entrou)}, saiu ${F.fmt(g.saiu)}).` };
   }
-  if (/(quem envia|cada um envia|rateio|planejado do mes|quanto enviar)/.test(t)) {
-    const r = F.rateioMensal();
+  if (conj && /(quem envia|cada um envia|rateio|planejado do mes|quanto enviar)/.test(t)) {
+    const r = ctx.rateio();
     return { reply: `Planejado do mês: ${F.fmt(r.total)}. Bruna envia ${F.fmt(r.enviaBruna)} e Daniel envia ${F.fmt(r.enviaDaniel)}.` };
+  }
+  if (!conj && /(minha parte|parte da casa|quanto envio|quanto mandar|manda pra casa|casa)/.test(t) && ctx.parteCasa) {
+    const p = ctx.parteCasa(F.currentMonth());
+    return { reply: `Sua parte da casa este mês: ${F.fmt(p.valor)}${p.enviado ? " (já enviada ✓)" : ""}.` };
   }
   if (/quanto\s+(gastei|gastamos|saiu|gasto|gastando)/.test(t)) {
     const mk = F.currentMonth();
     const caixaNome = detectCaixa(txt);
-    let desp = F.getConjTx().filter((x) => x.tipo !== "receita" && F.monthKey(x.data) === mk && x.status !== "pendente");
+    let desp = ctx.getTx().filter((x) => x.tipo !== "receita" && F.monthKey(x.data) === mk && x.status !== "pendente" && x.status !== "fatura");
     if (caixaNome) {
-      const id = (F.getCaixinhas().find((c) => _norm(c.nome) === _norm(caixaNome)) || {}).id;
+      const id = (ctx.getCaixinhas().find((c) => _norm(c.nome) === _norm(caixaNome)) || {}).id;
       desp = desp.filter((x) => x.caixinha === id || _norm(x.categoria || "") === _norm(caixaNome));
     }
     const total = desp.reduce((s, x) => s + (Number(x.valor) || 0), 0);
-    return { reply: `Vocês gastaram ${F.fmt(total)}${caixaNome ? ` em ${caixaNome}` : ""} este mês.` };
+    return { reply: `${conj ? "Vocês gastaram" : "Você gastou"} ${F.fmt(total)}${caixaNome ? ` em ${caixaNome}` : ""} este mês.` };
   }
-  if (/quanto\s+(entrou|recebemos|recebi|ganhamos)/.test(t)) {
+  if (/quanto\s+(entrou|recebemos|recebi|ganhamos|ganhei)/.test(t)) {
     const mk = F.currentMonth();
-    const rec = F.getConjTx().filter((x) => x.tipo === "receita" && F.monthKey(x.data) === mk);
+    const rec = ctx.getTx().filter((x) => x.tipo === "receita" && F.monthKey(x.data) === mk);
     return { reply: `Entrou ${F.fmt(rec.reduce((s, x) => s + (Number(x.valor) || 0), 0))} este mês.` };
   }
   if (/quanto falta/.test(t)) {
-    const metas = F.getConjMetas();
+    const metas = ctx.getMetas();
     const meta = metas.find((m) => t.includes(_norm(m.nome))) || metas[0];
     if (meta) {
       const atual = meta.valorAtual != null ? Number(meta.valorAtual) || 0 : (Number(meta.contribuicaoDaniel) || 0) + (Number(meta.contribuicaoBruna) || 0);
       const p = F.planoMeta({ valorAlvo: meta.valorAlvo, valorAtual: atual, dataAlvo: meta.dataAlvo });
-      return { reply: `Faltam ${F.fmt(p.falta)} para "${meta.nome}"${p.porMes != null ? ` (guardem ${F.fmt(p.porMes)}/mês)` : ""}.` };
+      return { reply: `Faltam ${F.fmt(p.falta)} para "${meta.nome}"${p.porMes != null ? ` (guarde ${F.fmt(p.porMes)}/mês)` : ""}.` };
     }
-    return { reply: "Você ainda não tem metas conjuntas cadastradas." };
+    return { reply: "Não achei metas cadastradas." };
   }
 
   // ── lançamento ────────────────────────────────────────────────────
@@ -134,25 +138,23 @@ function interpretar(textoOriginal) {
   const tags = parseTags(txt);
 
   if (receita) {
-    const tx = { id: F.uid(), tipo: "receita", valor, categoria: "Entrada", data, status: "pago", tags };
-    F.saveConjTx([...F.getConjTx(), tx]);
+    const tx = { id: F.uid(), tipo: "receita", valor, categoria: "Entrada", metodo: "avista", data, status: "pago", tags };
+    ctx.saveTx([...ctx.getTx(), tx]);
     return { reply: `✅ Entrada de ${F.fmt(valor)} registrada${data !== F.todayISO() ? ` (${F.fmtDate(data)})` : ""}.`, acao: true };
   }
 
-  // forma de pagamento: cartão (cai na fatura) ou à vista
-  const cartoes = F.getCartoes();
+  // forma de pagamento: cartão (fatura) ou à vista
+  const cartoes = ctx.getCartoes();
   let cartao = null;
   if (/(cart[aã]o|cr[eé]dito|fatura|noh)/.test(t) && cartoes.length) {
     cartao = cartoes.find((c) => t.includes(_norm(c.nome))) || cartoes[0];
   }
-  // categoria/caixinha (ignora se coincidir com o nome do cartão)
   let caixaNome = detectCaixa(txt);
   if (cartao && caixaNome && _norm(caixaNome) === _norm(cartao.nome)) caixaNome = null;
-  const caixaId = caixaNome ? garantirCaixa(caixaNome) : null;
+  const caixaId = caixaNome ? garantirCaixa(caixaNome, ctx) : null;
   const nomeCat = caixaNome || "Outros";
-  if (tags.length) F.registrarTags(tags);
+  if (tags.length) ctx.registrarTags(tags);
 
-  // CARTÃO: entra na fatura certa (categoria/caixinha preservada)
   if (cartao) {
     const n = parc ? parc.n : 1;
     const centavos = Math.round(valor * 100), base = Math.floor(centavos / n), grupo = F.uid();
@@ -163,11 +165,10 @@ function interpretar(textoOriginal) {
       const venc = shiftMonthISO(f0.vencimento, i);
       novos.push({ id: F.uid(), tipo: "despesa", valor: val, caixinha: caixaId, categoria: nomeCat, metodo: cartao.id, status: "fatura", fatura: venc.slice(0, 7), vencimento: venc, data: venc, dataCompra: data, tags, ...(n > 1 ? { parcela: `${i + 1}/${n}`, grupoParcela: grupo } : {}) });
     }
-    F.saveConjTx([...F.getConjTx(), ...novos]);
+    ctx.saveTx([...ctx.getTx(), ...novos]);
     return { reply: `✅ ${F.fmt(valor)}${caixaNome ? ` em ${caixaNome}` : ""} no ${cartao.nome}${n > 1 ? ` em ${n}×` : ""} — ${n > 1 ? "cai nas próximas faturas" : `entra na fatura que vence ${F.fmtDate(f0.vencimento)}`}.`, acao: true };
   }
 
-  // À VISTA parcelado
   if (parc) {
     const n = parc.n, centavos = Math.round(valor * 100), base = Math.floor(centavos / n), grupo = F.uid();
     const novos = [];
@@ -175,24 +176,35 @@ function interpretar(textoOriginal) {
       const val = (i === n - 1 ? centavos - base * (n - 1) : base) / 100;
       novos.push({ id: F.uid(), tipo: "despesa", valor: val, caixinha: caixaId, categoria: nomeCat, metodo: "avista", data: shiftMonthISO(data, i), status: i === 0 ? status : "pendente", tags, parcela: `${i + 1}/${n}`, grupoParcela: grupo });
     }
-    F.saveConjTx([...F.getConjTx(), ...novos]);
+    ctx.saveTx([...ctx.getTx(), ...novos]);
     return { reply: `✅ ${caixaNome || "Compra"} parcelada: ${n}× de ${F.fmt(valor / n)}. A 1ª agora, as outras ${n - 1} como “a pagar”.`, acao: true };
   }
 
   const tx = { id: F.uid(), tipo: "despesa", valor, caixinha: caixaId, categoria: nomeCat, metodo: "avista", data, status, tags };
-  F.saveConjTx([...F.getConjTx(), tx]);
+  ctx.saveTx([...ctx.getTx(), tx]);
   return { reply: `✅ Anotei ${F.fmt(valor)}${caixaNome ? ` em ${caixaNome}` : ""}${status === "pendente" ? " (a pagar)" : ""}${data !== F.todayISO() ? ` · ${F.fmtDate(data)}` : ""}.`, acao: true };
 }
 
+// ── monta o ctx para um escopo ("conjunto" | "bruna" | "daniel") ────────
+function ctxFor(scopeId) {
+  const S = F.scope(scopeId);
+  S.perfil = scopeId;
+  if (scopeId === "conjunto") S.rateio = () => F.rateioMensal();
+  else S.parteCasa = (mk) => F.parteDaCasa(scopeId, mk);
+  return S;
+}
+
 // ── Componente de chat ──────────────────────────────────────────────────
-function ChatAssistente({ reload }) {
+function ChatAssistente({ ctx, reload, sub }) {
   const { Icon: AsI } = window.FinUI;
   const [, force] = useState(0);
   const [texto, setTexto] = useState("");
   const fimRef = useRef(null);
+  const conj = !!ctx.conjunto;
 
-  const msgs = F.store.get("conjunto:chat", []);
+  const msgs = ctx.getChat();
   const autor = (() => {
+    if (!conj) return ctx.perfil; // na área individual, é o dono
     const e = window.FinSync && window.FinSync.user && window.FinSync.user.email;
     if (e === "bruna.fred10@gmail.com") return "bruna";
     if (e === "daniel.vivaselias@gmail.com") return "daniel";
@@ -201,35 +213,26 @@ function ChatAssistente({ reload }) {
 
   useEffect(() => { if (fimRef.current) fimRef.current.scrollIntoView({ behavior: "smooth" }); });
 
-  const salvarMsgs = (lista) => F.store.set("conjunto:chat", lista.slice(-60));
-
   const enviar = (txtManual) => {
     const conteudo = (txtManual != null ? txtManual : texto).trim();
     if (!conteudo) return;
-    const agora = Date.now();
-    const userMsg = { id: F.uid(), autor, texto: conteudo, ts: agora };
-    let lista = [...F.store.get("conjunto:chat", []), userMsg];
-    salvarMsgs(lista);
+    let lista = [...ctx.getChat(), { id: F.uid(), autor, texto: conteudo, ts: Date.now() }];
+    ctx.saveChat(lista);
     setTexto("");
-    // interpreta
-    const res = interpretar(conteudo);
-    if (res.reply) {
-      lista = [...F.store.get("conjunto:chat", []), { id: F.uid(), autor: "assistente", texto: res.reply, ts: Date.now() }];
-      salvarMsgs(lista);
-    }
+    const res = interpretar(conteudo, ctx);
+    if (res.reply) ctx.saveChat([...ctx.getChat(), { id: F.uid(), autor: "assistente", texto: res.reply, ts: Date.now() }]);
     force((n) => n + 1);
     if (res.acao) reload && reload();
   };
 
   const corAutor = (a) => a === "bruna" ? "var(--bruna)" : a === "daniel" ? "var(--daniel)" : "var(--petroleo)";
   const nomeAutor = (a) => a === "bruna" ? "Bruna" : a === "daniel" ? "Daniel" : "Você";
-
   const exemplos = ["gastei 89,90 no mercado", "aluguel 1500 a pagar", "cartão 600 em 6x", "quanto gastei esse mês?"];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "calc(100dvh - 240px)", minHeight: 380 }}>
       <div style={{ fontSize: 12.5, color: "var(--tinta-suave)", textAlign: "center", marginBottom: 10, lineHeight: 1.5 }}>
-        Mande as contas em linguagem normal — vira lançamento na hora.<br />Os dois veem esse chat. 💬
+        {sub || (conj ? "Mande as contas em linguagem normal — vira lançamento na hora. Os dois veem esse chat. 💬" : "Organize suas contas: mande em linguagem normal e vira lançamento. 💬")}
       </div>
 
       <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8, padding: "4px 2px" }}>
@@ -245,12 +248,11 @@ function ChatAssistente({ reload }) {
           </div>
         )}
         {msgs.map((m) => {
-          const meu = m.autor !== "assistente";
           const assist = m.autor === "assistente";
           return (
             <div key={m.id} style={{ display: "flex", justifyContent: assist ? "flex-start" : "flex-end" }}>
               <div style={{ maxWidth: "82%", background: assist ? "#fff" : corAutor(m.autor), color: assist ? "var(--tinta)" : "#fff", borderRadius: assist ? "4px 14px 14px 14px" : "14px 4px 14px 14px", padding: "9px 13px", fontSize: 14, boxShadow: "var(--sombra)", lineHeight: 1.4 }}>
-                {!assist && <div style={{ fontSize: 10, opacity: 0.85, fontWeight: 700, marginBottom: 2 }}>{nomeAutor(m.autor)}</div>}
+                {!assist && conj && <div style={{ fontSize: 10, opacity: 0.85, fontWeight: 700, marginBottom: 2 }}>{nomeAutor(m.autor)}</div>}
                 {assist && <div style={{ fontSize: 10, color: "var(--dourado-2)", fontWeight: 700, marginBottom: 2 }}>Assistente</div>}
                 {m.texto}
               </div>
@@ -272,4 +274,4 @@ function ChatAssistente({ reload }) {
   );
 }
 
-window.FinAssist = { ChatAssistente, interpretar };
+window.FinAssist = { ChatAssistente, interpretar, ctxFor };
