@@ -209,6 +209,11 @@
   const getConjMetas = () => store.get(conjMetasKey(), []);
   const saveConjMetas = (list) => store.set(conjMetasKey(), list);
 
+  // caixinhas do casal (potes de organização — estilo Noh)
+  const caixinhasKey = () => `conjunto:caixinhas`;
+  const getCaixinhas = () => store.get(caixinhasKey(), []);
+  const saveCaixinhas = (list) => store.set(caixinhasKey(), list);
+
   // tags reutilizáveis da área Conjunto (estilo Mobills)
   const conjTagsKey = () => `conjunto:tags`;
   const getConjTags = () => store.get(conjTagsKey(), []);
@@ -397,6 +402,22 @@
     };
   }
 
+  // ── Rateio mensal (quanto cada um envia pro bolso comum) ────────────
+  // Soma o valor planejado das caixinhas e divide entre os dois.
+  function rateioMensal() {
+    const total = getCaixinhas().reduce((s, c) => s + (Number(c.planejado) || 0), 0);
+    const cfg = getConjConfig();
+    const pctD = cfg.modoDivisao === "proporcional" ? (Number(cfg.percentualDaniel) || 50) / 100 : 0.5;
+    return { total, enviaDaniel: total * pctD, enviaBruna: total * (1 - pctD), cfg, pctD };
+  }
+
+  // gasto real de uma caixinha num mês (despesas pagas ligadas a ela)
+  function gastoCaixinha(caixaId, mk) {
+    return getConjTx()
+      .filter((t) => t.tipo !== "receita" && t.caixinha === caixaId && monthKey(t.data) === mk && t.status !== "pendente")
+      .reduce((s, t) => s + (Number(t.valor) || 0), 0);
+  }
+
   // ── Saldo do casal (conta única — modelo Noh) ───────────────────────
   // Tudo é conjunto; o que importa é o que entrou vs. o que saiu.
   function saldoConjuntoGeral() {
@@ -509,6 +530,7 @@
     monthLabel, prevMonthKey, daysUntil, dateInMonths, MONTH_NAMES, CATEGORIAS,
     CATEGORIA_META, CATEGORIAS_CASA, catMeta,
     getConjTags, saveConjTags, registrarTags,
+    getCaixinhas, saveCaixinhas, rateioMensal, gastoCaixinha,
     // pin
     hasPin, setPin, checkPin,
     // transações
