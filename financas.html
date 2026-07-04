@@ -1,0 +1,42 @@
+<!doctype html>
+<!-- @dsCard group="Apps" name="Controle Financeiro" subtitle="App de finanças do casal — perfis com PIN, bola de neve, metas de viagem e patrimônio conjunto." -->
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1F4B44" />
+  <title>Controle Financeiro · Daniel & Bruna</title>
+  <link rel="stylesheet" href="financas/styles.css" />
+
+  <template id="__bundler_thumbnail">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <rect width="200" height="200" fill="#1F4B44"/>
+      <circle cx="100" cy="88" r="40" fill="none" stroke="#C9A15A" stroke-width="8"/>
+      <text x="100" y="104" text-anchor="middle" font-family="Georgia, serif" font-size="46" font-weight="600" fill="#C9A15A">$</text>
+      <text x="100" y="164" text-anchor="middle" font-family="Georgia, serif" font-size="22" fill="#F6F1E9">finanças</text>
+    </svg>
+  </template>
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- Firebase (sincronização em tempo real entre os aparelhos) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+  <script src="financas/firebase-config.js"></script>
+
+  <!-- React + Babel -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+
+  <!-- App -->
+  <script src="financas/data.js"></script>
+  <script src="financas/sync.js"></script>
+  <script type="text/babel" src="financas/ui.jsx"></script>
+  <script type="text/babel" src="financas/individual.jsx"></script>
+  <script type="text/babel" src="financas/conjunto.jsx"></script>
+  <script type="text/babel" src="financas/App.jsx"></script>
+</body>
+</html>
