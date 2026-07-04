@@ -111,7 +111,32 @@ function Header({ perfil, onSair }) {
           <div className="serif" style={{ fontSize: 17, lineHeight: 1 }}>{p.nome}</div>
           <div style={{ fontSize: 11.5, color: "var(--tinta-suave)" }}>{perfil === "conjunto" ? "Casal" : "Área individual"}</div>
         </div>
+        <SyncBadge />
       </div>
+    </div>
+  );
+}
+
+// selo de status da sincronização
+function SyncBadge() {
+  const [status, setStatus] = useState(() => (window.FinSync && window.FinSync.status) || "local");
+  useEffect(() => {
+    const h = () => setStatus((window.FinSync && window.FinSync.status) || "local");
+    window.addEventListener("fin-sync-status", h);
+    return () => window.removeEventListener("fin-sync-status", h);
+  }, []);
+  const map = {
+    sincronizado: { cor: "var(--petroleo-2)", txt: "sincronizado", dot: true },
+    conectando: { cor: "var(--dourado-2)", txt: "conectando…", dot: true },
+    local: { cor: "var(--tinta-suave)", txt: "só neste aparelho", dot: false },
+    "sem-sdk": { cor: "var(--tinta-suave)", txt: "offline", dot: false },
+    erro: { cor: "var(--coral)", txt: "erro de conexão", dot: false },
+  };
+  const s = map[status] || map.local;
+  return (
+    <div title={s.txt} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10.5, color: s.cor, fontWeight: 600, flexShrink: 0 }}>
+      <span style={{ width: 7, height: 7, borderRadius: "50%", background: s.cor, boxShadow: s.dot ? `0 0 0 3px ${s.cor}22` : "none" }} />
+      <span style={{ whiteSpace: "nowrap" }} className="sync-badge-txt">{s.txt}</span>
     </div>
   );
 }
@@ -139,6 +164,15 @@ function TabBar({ abas, aba, setAba, cor }) {
 function App() {
   const [ativo, setAtivo] = useState(null);       // perfil liberado
   const [pinFor, setPinFor] = useState(null);      // perfil aguardando PIN
+  const [, setDataV] = useState(0);                // bump para re-render em update remoto
+
+  // quando a nuvem envia mudanças, re-renderiza a árvore (sem perder a
+  // navegação atual: os componentes re-leem o cache local já atualizado)
+  useEffect(() => {
+    const h = () => setDataV((n) => n + 1);
+    window.addEventListener("fin-remote-update", h);
+    return () => window.removeEventListener("fin-remote-update", h);
+  }, []);
 
   const pick = (id) => {
     if (id === "conjunto") { setAtivo("conjunto"); return; }

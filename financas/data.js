@@ -35,13 +35,18 @@
 
   function rawSet(key, value) {
     try {
-      if (hasWinStorage) {
-        window.storage.set(key, value);
-        return;
-      }
-      localStorage.setItem(LS_PREFIX + key, JSON.stringify(value));
+      if (hasWinStorage) window.storage.set(key, value);
+      else localStorage.setItem(LS_PREFIX + key, JSON.stringify(value));
     } catch (e) {
       console.warn("storage set falhou:", key, e);
+    }
+    // espelha para a nuvem (tempo real) quando a sincronização está ligada
+    try {
+      if (window.FinSync && window.FinSync.enabled && window.FinSync.push) {
+        window.FinSync.push(key, value);
+      }
+    } catch (e) {
+      console.warn("sync push falhou:", key, e);
     }
   }
 
@@ -401,6 +406,9 @@
 
   // ── Seed opcional (dados de exemplo) ────────────────────────────────
   function seedDemo() {
+    // Em modo nuvem (Firebase configurado), não semeia exemplos: o casal
+    // usa os dados reais e a primeira carga vem do Firebase.
+    if (window.FinSync && window.FinSync.status !== "local") return;
     if (store.get("bc.financas.seeded", false)) return;
     const mk = currentMonth();
     const d = (dd) => `${mk}-${String(dd).padStart(2, "0")}`;
