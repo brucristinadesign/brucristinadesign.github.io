@@ -4,7 +4,7 @@
    Caixinhas = potes de organização (Aluguel, Água, Cartão Noh...), com
    valor planejado no mês → rateio de quanto cada um envia.
    ══════════════════════════════════════════════════════════════════════ */
-const { Icon: CI, Money: CM, Card: CardC, Field: CFld, Modal: CMdl,
+const { Icon: CI, Money: CM, MoneyInput: MInput, Card: CardC, Field: CFld, Modal: CMdl,
   PathProgress: CPP, MiniBar: CMB, Donut: CDn, LineChart: CLC } = window.FinUI;
 
 const EMOJIS = ["🏠", "💧", "⚡", "🌐", "🛒", "💳", "🐾", "🛡️", "🚗", "🎉", "❤️", "📦", "🍽️", "📱", "🎓", "🎁", "✈️", "⛽", "🏥", "👕", "💄", "🧾", "🔧", "📚", "🎬", "☕", "🏋️", "💊"];
@@ -15,7 +15,7 @@ const CAIXINHAS_SUGERIDAS = [
   { nome: "Energia", emoji: "⚡", cor: "#F6E488" },
   { nome: "Internet", emoji: "🌐", cor: "#6B62C6" },
   { nome: "Mercado", emoji: "🛒", cor: "#CDEA46" },
-  { nome: "Cartão Noh", emoji: "💳", cor: "#DD7E9C" },
+  { nome: "Restaurante", emoji: "🍽️", cor: "#EC6A54" },
   { nome: "Pets", emoji: "🐾", cor: "#F5CDA8" },
   { nome: "Segurança", emoji: "🛡️", cor: "#8FD3B3" },
   { nome: "Transporte", emoji: "🚗", cor: "#D9D3F7" },
@@ -99,9 +99,18 @@ function AbaInicio({ mes, reload }) {
 
   const doMes = F.getConjTx().filter((t) => F.monthKey(t.data) === mes);
   const recPagas = doMes.filter((t) => t.tipo === "receita" && t.status !== "pendente");
-  const despPagas = doMes.filter((t) => t.tipo !== "receita" && t.status !== "pendente");
+  const despPagas = doMes.filter((t) => t.tipo !== "receita" && t.status !== "pendente" && t.status !== "fatura");
   const pendentes = doMes.filter((t) => t.tipo !== "receita" && t.status === "pendente").sort((a, b) => (a.data < b.data ? -1 : 1));
   const entrouMes = somaV(recPagas), saiuMes = somaV(despPagas);
+
+  // contas mensais das caixinhas (valor planejado) ainda não pagas neste mês
+  const contasMensais = m.caixas
+    .filter((c) => c.fixa && (Number(c.planejado) || 0) > 0 && !F.pagamentoMensal(c.id, mes))
+    .map((c) => ({ caixa: c, valor: Number(c.planejado) || 0 }));
+  // faturas de cartão que vencem neste mês (ou vencidas)
+  const faturas = F.faturasAbertas().filter((f) => (f.faturaMes || "") <= mes);
+  const totalApagar = somaV(pendentes) + contasMensais.reduce((s, x) => s + x.valor, 0) + faturas.reduce((s, f) => s + f.total, 0);
+  const temApagar = pendentes.length + contasMensais.length + faturas.length > 0;
 
   // donut por caixinha
   const porCaixa = {};
@@ -114,6 +123,21 @@ function AbaInicio({ mes, reload }) {
   const catData = Object.entries(porCaixa).sort((a, b) => b[1].value - a[1].value).map(([label, o]) => ({ label, value: o.value, color: o.color, emoji: o.emoji }));
 
   const marcarPago = (id) => { F.saveConjTx(F.getConjTx().map((t) => (t.id === id ? { ...t, status: "pago" } : t))); rl(); };
+  const pagarMensal = (caixa) => { F.toggleMensal(caixa, mes); rl(); };
+  const pagarFat = (f) => { F.pagarFatura(f.cartaoId, f.faturaMes); rl(); };
+  const Row = ({ badge, titulo, sub, valor, onPagar }) => (
+    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      {badge}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13.5, fontWeight: 600 }}>{titulo}</div>
+        <div style={{ fontSize: 11, color: "var(--tinta-suave)" }}>{sub}</div>
+      </div>
+      <span className="num" style={{ color: "var(--coral)", fontSize: 14 }}>{F.fmt(valor)}</span>
+      <button className="btn btn-gold" style={{ padding: "6px 12px", fontSize: 12, display: "flex", alignItems: "center", gap: 4 }} onClick={onPagar}>
+        <CI name="check" size={13} color="#1c2410" /> paguei
+      </button>
+    </div>
+  );
 
   return (
     <div style={{ display: "grid", gap: 14 }}>
@@ -134,26 +158,22 @@ function AbaInicio({ mes, reload }) {
         </CardC>
       </div>
 
-      {pendentes.length > 0 && (
+      {temApagar && (
         <CardC style={{ padding: "14px 16px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13.5, fontWeight: 600, marginBottom: 10 }}>
-            <CI name="bell" size={16} color="var(--coral)" /> A pagar
-            <span style={{ marginLeft: "auto", color: "var(--coral)" }} className="num">{F.fmt(somaV(pendentes))}</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13.5, fontWeight: 700, marginBottom: 12 }}>
+            <CI name="bell" size={16} color="var(--coral)" /> A pagar este mês
+            <span style={{ marginLeft: "auto", color: "var(--coral)" }} className="num">{F.fmt(totalApagar)}</span>
           </div>
-          <div style={{ display: "grid", gap: 8 }}>
+          <div style={{ display: "grid", gap: 10 }}>
+            {contasMensais.map(({ caixa, valor }) => (
+              <Row key={"m" + caixa.id} badge={<CaixaBadge cx={caixa} size={32} />} titulo={caixa.nome} sub="conta do mês" valor={valor} onPagar={() => pagarMensal(caixa)} />
+            ))}
+            {faturas.map((f) => (
+              <Row key={"f" + f.cartaoId + f.faturaMes} badge={<div style={{ width: 32, height: 32, borderRadius: 10, background: (f.cor || "#5C6B67") + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>{f.emoji || "💳"}</div>} titulo={`Fatura ${f.nome}`} sub={`vence ${F.fmtDate(f.vencimento)}`} valor={f.total} onPagar={() => pagarFat(f)} />
+            ))}
             {pendentes.map((t) => {
               const cx = resolveCaixa(t, m);
-              return (
-                <div key={t.id} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <CaixaBadge cx={cx} size={32} />
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13.5, fontWeight: 500 }}>{cx ? cx.nome : t.categoria || "Despesa"}</div>
-                    <div style={{ fontSize: 11, color: "var(--tinta-suave)" }}>{F.fmtDate(t.data)}</div>
-                  </div>
-                  <span className="num" style={{ color: "var(--coral)", fontSize: 14 }}>{F.fmt(t.valor)}</span>
-                  <button className="btn btn-gold" style={{ padding: "5px 10px", fontSize: 12 }} onClick={() => marcarPago(t.id)}>paguei</button>
-                </div>
-              );
+              return <Row key={t.id} badge={<CaixaBadge cx={cx} size={32} />} titulo={cx ? cx.nome : t.categoria || "Despesa"} sub={F.fmtDate(t.data)} valor={t.valor} onPagar={() => marcarPago(t.id)} />;
             })}
           </div>
         </CardC>
@@ -243,6 +263,7 @@ function AbaLancamentosConj({ mes, reload }) {
                   {receita ? "Entrada" : (cx ? cx.nome : t.categoria || "Despesa")}
                   {t.parcela && <span style={{ fontSize: 9.5, background: "rgba(31,75,68,.1)", color: "var(--tinta-suave)", padding: "1px 6px", borderRadius: 6, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 3 }}><CI name="card" size={9} color="var(--tinta-suave)" />{t.parcela}</span>}
                   {pend && <span style={{ fontSize: 9.5, background: "rgba(232,106,92,.16)", color: "var(--coral)", padding: "1px 6px", borderRadius: 6, fontWeight: 700 }}>A PAGAR</span>}
+                  {t.status === "fatura" && <span style={{ fontSize: 9.5, background: "rgba(24,33,29,.08)", color: "var(--tinta-suave)", padding: "1px 6px", borderRadius: 6, fontWeight: 700 }}>fatura {F.monthLabel(t.fatura || F.monthKey(t.data))}</span>}
                 </div>
                 <div style={{ fontSize: 11.5, color: "var(--tinta-suave)", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginTop: 2 }}>
                   <span>{F.fmtDate(t.data)}</span>
@@ -290,6 +311,12 @@ function ConjTxForm({ initial, dataMes, onSave, onDelete }) {
   const [novaEmoji, setNovaEmoji] = useState("📦");
   const [parcelado, setParcelado] = useState(false);
   const [nParc, setNParc] = useState("2");
+  const [metodo, setMetodo] = useState(initial?.metodo || "avista"); // "avista" | cartaoId
+  const [novoCartao, setNovoCartao] = useState(false);
+
+  const cartoes = F.getCartoes();
+  const cartaoSelObj = cartoes.find((c) => c.id === metodo) || null;
+  const ehCartaoSel = !!cartaoSelObj;
 
   const existentes = F.getCaixinhas();
   const nomesEx = new Set(existentes.map((c) => c.nome));
@@ -309,7 +336,7 @@ function ConjTxForm({ initial, dataMes, onSave, onDelete }) {
   const save = () => {
     const v = parseFloat(String(valor).replace(",", "."));
     if (!v || v <= 0) return;
-    let caixinhaId = null, nomeCat = "Entrada";
+    let caixinhaId = null, nomeCat = "Entrada", caixaObj = null;
     if (tipo === "despesa") {
       let sel = caixaSel;
       // se for sugerida ainda não criada, cria agora
@@ -319,25 +346,40 @@ function ConjTxForm({ initial, dataMes, onSave, onDelete }) {
         F.saveCaixinhas([...F.getCaixinhas(), nova]);
         sel = nova.id;
       }
-      const cx = F.getCaixinhas().find((c) => c.id === sel);
-      caixinhaId = cx ? cx.id : null;
-      nomeCat = cx ? cx.nome : "Outros";
+      caixaObj = F.getCaixinhas().find((c) => c.id === sel) || null;
+      caixinhaId = caixaObj ? caixaObj.id : null;
+      nomeCat = caixaObj ? caixaObj.nome : "Outros";
     }
-    // compra parcelada: cria uma despesa por mês (as futuras como "a pagar")
-    if (tipo === "despesa" && parcelado && !initial) {
-      const n = Math.min(48, Math.max(2, parseInt(nParc, 10) || 2));
-      const centavos = Math.round(v * 100);
-      const base = Math.floor(centavos / n);
-      const grupo = F.uid();
+    const cartao = tipo === "despesa" ? F.getCartoes().find((c) => c.id === metodo) : null;
+    const n = parcelado ? Math.min(48, Math.max(2, parseInt(nParc, 10) || 2)) : 1;
+    const centavos = Math.round(v * 100), base = Math.floor(centavos / n), grupo = F.uid();
+    const metPix = cartao ? cartao.id : "avista";
+
+    // CARTÃO (forma de pagamento): compra cai na fatura; parcelas em faturas seguintes.
+    // A CAIXINHA (categoria) é preservada — ex: Mercado pago no Noh.
+    if (tipo === "despesa" && cartao && !initial) {
+      const f0 = F.faturaDoCartao(data, cartao.fechamento, cartao.vencimento);
       const items = [];
       for (let i = 0; i < n; i++) {
         const val = (i === n - 1 ? centavos - base * (n - 1) : base) / 100;
-        items.push({ tipo: "despesa", valor: val, caixinha: caixinhaId, categoria: nomeCat, data: shiftMonthISO(data, i), status: i === 0 ? status : "pendente", tags, parcela: `${i + 1}/${n}`, grupoParcela: grupo });
+        const venc = shiftMonthISO(f0.vencimento, i);
+        items.push({ tipo: "despesa", valor: val, caixinha: caixinhaId, categoria: nomeCat, metodo: cartao.id, status: "fatura", fatura: venc.slice(0, 7), vencimento: venc, data: venc, dataCompra: data, tags, ...(n > 1 ? { parcela: `${i + 1}/${n}`, grupoParcela: grupo } : {}) });
+      }
+      onSave(items.length === 1 ? items[0] : items);
+      return;
+    }
+
+    // à vista parcelado: uma despesa por mês, futuras como "a pagar"
+    if (tipo === "despesa" && parcelado && !initial) {
+      const items = [];
+      for (let i = 0; i < n; i++) {
+        const val = (i === n - 1 ? centavos - base * (n - 1) : base) / 100;
+        items.push({ tipo: "despesa", valor: val, caixinha: caixinhaId, categoria: nomeCat, metodo: "avista", data: shiftMonthISO(data, i), status: i === 0 ? status : "pendente", tags, parcela: `${i + 1}/${n}`, grupoParcela: grupo });
       }
       onSave(items);
       return;
     }
-    onSave({ tipo, valor: v, caixinha: caixinhaId, categoria: nomeCat, data, status: tipo === "receita" ? "pago" : status, tags });
+    onSave({ tipo, valor: v, caixinha: caixinhaId, categoria: nomeCat, metodo: metPix, data, status: tipo === "receita" ? "pago" : status, tags });
   };
 
   return (
@@ -349,7 +391,7 @@ function ConjTxForm({ initial, dataMes, onSave, onDelete }) {
       </div>
 
       <CFld label="Valor (R$)">
-        <input className="fin-input num" inputMode="decimal" placeholder="0,00" value={valor} onChange={(e) => setValor(e.target.value)} style={{ fontSize: 24 }} autoFocus />
+        <MInput value={valor} onChange={setValor} style={{ fontSize: 24 }} autoFocus />
       </CFld>
 
       {tipo === "despesa" && (
@@ -390,6 +432,25 @@ function ConjTxForm({ initial, dataMes, onSave, onDelete }) {
         </div>
       )}
 
+      {/* forma de pagamento */}
+      {tipo === "despesa" && (
+        <div>
+          <span className="fin-label" style={{ display: "block", marginBottom: 8 }}>Forma de pagamento</span>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            <button onClick={() => setMetodo("avista")} className={`chip ${metodo === "avista" ? "active" : ""}`} style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 14px" }}>
+              <CI name="coin" size={15} color={metodo === "avista" ? "#fff" : "var(--tinta-suave)"} /> À vista / Pix
+            </button>
+            {cartoes.map((c) => (
+              <button key={c.id} onClick={() => setMetodo(c.id)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 14px", borderRadius: 999, border: `1.5px solid ${metodo === c.id ? c.cor : "rgba(24,33,29,.12)"}`, background: metodo === c.id ? c.cor + "22" : "#fff", fontSize: 13.5, fontWeight: 600, cursor: "pointer" }}>
+                <span style={{ fontSize: 15 }}>{c.emoji || "💳"}</span> {c.nome}
+              </button>
+            ))}
+            <button onClick={() => setNovoCartao(!novoCartao)} className="chip" style={{ padding: "9px 14px", borderStyle: "dashed" }}>+ cartão</button>
+          </div>
+          {novoCartao && <NovoCartaoInline onCriar={(c) => { F.saveCartoes([...F.getCartoes(), c]); setMetodo(c.id); setNovoCartao(false); }} />}
+        </div>
+      )}
+
       {/* tags */}
       <div>
         <span className="fin-label" style={{ display: "block", marginBottom: 6 }}>Tags (opcional)</span>
@@ -414,8 +475,8 @@ function ConjTxForm({ initial, dataMes, onSave, onDelete }) {
       </div>
 
       <div style={{ display: "flex", gap: 12 }}>
-        <div style={{ flex: 1 }}><CFld label="Data"><input type="date" className="fin-input" value={data} onChange={(e) => setData(e.target.value)} /></CFld></div>
-        {tipo === "despesa" && (
+        <div style={{ flex: 1 }}><CFld label={ehCartaoSel ? "Data da compra" : "Data"}><input type="date" className="fin-input" value={data} onChange={(e) => setData(e.target.value)} /></CFld></div>
+        {tipo === "despesa" && !ehCartaoSel && (
           <div style={{ flex: 1 }}>
             <CFld label="Status">
               <div style={{ display: "flex", gap: 8 }}>
@@ -427,6 +488,12 @@ function ConjTxForm({ initial, dataMes, onSave, onDelete }) {
           </div>
         )}
       </div>
+      {tipo === "despesa" && ehCartaoSel && (
+        <div style={{ fontSize: 12.5, color: "var(--tinta)", background: "var(--areia)", borderRadius: 12, padding: "10px 12px", display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ fontSize: 15 }}>{cartaoSelObj.emoji || "💳"}</span>
+          Entra na <b>fatura do {cartaoSelObj.nome}</b> (fecha dia {cartaoSelObj.fechamento}, vence dia {cartaoSelObj.vencimento}).
+        </div>
+      )}
 
       {/* compra parcelada (cartão) */}
       {tipo === "despesa" && !initial && (
@@ -467,10 +534,13 @@ function AbaCaixinhas({ reload }) {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [cfgOpen, setCfgOpen] = useState(false);
+  const [cartaoOpen, setCartaoOpen] = useState(false);
+  const [editCartao, setEditCartao] = useState(null);
   const rl = () => { force((n) => n + 1); reload && reload(); };
   const mes = F.currentMonth();
 
   const caixas = F.getCaixinhas();
+  const cartoes = F.getCartoes();
   const rateio = F.rateioMensal();
 
   const addSugerida = (s) => {
@@ -524,23 +594,31 @@ function AbaCaixinhas({ reload }) {
           const plan = Number(c.planejado) || 0;
           const pct = plan > 0 ? Math.min(100, (gasto / plan) * 100) : 0;
           const estourou = plan > 0 && gasto > plan;
+          const pagoMes = c.fixa && !!F.pagamentoMensal(c.id, mes);
           return (
-            <CardC key={c.id} style={{ padding: 14, cursor: "pointer" }} onClick={() => { setEditing(c); setOpen(true); }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <CardC key={c.id} style={{ padding: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={() => { setEditing(c); setOpen(true); }}>
                 <CaixaBadge cx={c} size={34} />
-                <div style={{ minWidth: 0 }}>
+                <div style={{ minWidth: 0, flex: 1 }}>
                   <div style={{ fontSize: 13.5, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.nome}</div>
+                  {c.fixa && <div style={{ fontSize: 10, color: "var(--tinta-suave)", display: "flex", alignItems: "center", gap: 3 }}><CI name="calendar" size={10} color="var(--tinta-suave)" /> conta fixa</div>}
                 </div>
               </div>
-              <div style={{ marginTop: 10 }}>
-                <div style={{ fontSize: 10.5, color: "var(--tinta-suave)" }}>planejado</div>
+              <div style={{ marginTop: 10, cursor: "pointer" }} onClick={() => { setEditing(c); setOpen(true); }}>
+                <div style={{ fontSize: 10.5, color: "var(--tinta-suave)" }}>{c.fixa ? "por mês" : "planejado"}</div>
                 <div className="num" style={{ fontSize: 17, color: "var(--petroleo)" }}>{plan > 0 ? F.fmt(plan) : "—"}</div>
               </div>
-              {plan > 0 && (
+              {plan > 0 && !c.fixa && (
                 <div style={{ marginTop: 8 }}>
                   <CMB pct={pct} color={estourou ? "var(--coral)" : "var(--conjunto)"} height={6} />
                   <div style={{ fontSize: 10.5, color: estourou ? "var(--coral)" : "var(--tinta-suave)", marginTop: 4 }}>gasto {F.fmt(gasto)}</div>
                 </div>
+              )}
+              {c.fixa && plan > 0 && (
+                <button className="btn" style={{ width: "100%", marginTop: 10, padding: "7px", fontSize: 12, background: pagoMes ? "var(--petroleo-2)" : "var(--lima)", color: pagoMes ? "#fff" : "#1c2410", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}
+                  onClick={() => { F.toggleMensal(c, mes); rl(); }}>
+                  <CI name="check" size={14} color={pagoMes ? "#fff" : "#1c2410"} /> {pagoMes ? "pago este mês" : "marcar pago"}
+                </button>
               )}
             </CardC>
           );
@@ -561,9 +639,103 @@ function AbaCaixinhas({ reload }) {
           onDelete={editing ? () => { F.saveCaixinhas(F.getCaixinhas().filter((x) => x.id !== editing.id)); setOpen(false); rl(); } : null} />
       </CMdl>
 
+      {/* formas de pagamento (cartões) */}
+      <div style={{ marginTop: 6 }}>
+        <div style={{ fontSize: 13.5, fontWeight: 700, margin: "4px 2px 10px", display: "flex", alignItems: "center", gap: 6 }}>
+          <CI name="card" size={16} color="var(--tinta)" /> Formas de pagamento
+        </div>
+        <div style={{ display: "grid", gap: 8 }}>
+          {cartoes.map((c) => {
+            const aberto = F.faturasAbertas().filter((f) => f.cartaoId === c.id).reduce((s, f) => s + f.total, 0);
+            return (
+              <CardC key={c.id} style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => { setEditCartao(c); setCartaoOpen(true); }}>
+                <div style={{ width: 38, height: 38, borderRadius: 11, background: (c.cor || "#18211D") + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{c.emoji || "💳"}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>{c.nome}</div>
+                  <div style={{ fontSize: 11.5, color: "var(--tinta-suave)" }}>fecha dia {c.fechamento} · vence dia {c.vencimento}</div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ fontSize: 10, color: "var(--tinta-suave)" }}>fatura aberta</div>
+                  <div className="num" style={{ fontSize: 15, color: aberto ? "var(--coral)" : "var(--tinta-suave)" }}>{aberto ? F.fmt(aberto) : "—"}</div>
+                </div>
+              </CardC>
+            );
+          })}
+          <button className="btn btn-ghost" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }} onClick={() => { setEditCartao(null); setCartaoOpen(true); }}>
+            <CI name="plus" size={16} /> Adicionar cartão
+          </button>
+        </div>
+      </div>
+
       <CMdl open={cfgOpen} onClose={() => setCfgOpen(false)} title="Como dividir o que cada um envia" accent="var(--conjunto)">
         <ConfigForm cfg={rateio.cfg} onSave={(c) => { F.saveConjConfig(c); setCfgOpen(false); rl(); }} />
       </CMdl>
+
+      <CMdl open={cartaoOpen} onClose={() => setCartaoOpen(false)} title={editCartao ? "Editar cartão" : "Novo cartão"} accent="var(--conjunto)">
+        <CartaoForm initial={editCartao}
+          onSave={(d) => { let list = F.getCartoes(); if (editCartao) list = list.map((x) => x.id === editCartao.id ? { ...x, ...d } : x); else list.push({ id: F.uid(), ...d }); F.saveCartoes(list); setCartaoOpen(false); rl(); }}
+          onDelete={editCartao ? () => { F.saveCartoes(F.getCartoes().filter((x) => x.id !== editCartao.id)); setCartaoOpen(false); rl(); } : null} />
+      </CMdl>
+    </div>
+  );
+}
+
+// criação rápida de cartão dentro do lançamento
+function NovoCartaoInline({ onCriar }) {
+  const [nome, setNome] = useState("");
+  const [fech, setFech] = useState("");
+  const [venc, setVenc] = useState("");
+  const [emoji, setEmoji] = useState("💳");
+  const criar = () => { if (!nome.trim()) return; onCriar({ id: F.uid(), nome: nome.trim(), emoji, cor: "#18211D", fechamento: parseInt(fech, 10) || 28, vencimento: parseInt(venc, 10) || 10 }); };
+  return (
+    <div style={{ marginTop: 10, background: "var(--areia)", borderRadius: 12, padding: 12, display: "grid", gap: 10 }}>
+      <input className="fin-input" placeholder="Nome do cartão (ex: Cartão Noh)" value={nome} onChange={(e) => setNome(e.target.value)} />
+      <div style={{ display: "flex", gap: 10 }}>
+        <div style={{ flex: 1 }}><CFld label="Fecha dia"><input className="fin-input num" inputMode="numeric" placeholder="28" value={fech} onChange={(e) => setFech(e.target.value.replace(/\D/g, "").slice(0, 2))} /></CFld></div>
+        <div style={{ flex: 1 }}><CFld label="Vence dia"><input className="fin-input num" inputMode="numeric" placeholder="10" value={venc} onChange={(e) => setVenc(e.target.value.replace(/\D/g, "").slice(0, 2))} /></CFld></div>
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+        {["💳", "🏦", "💠", "🟣", "🟢", "🟡", "⚫", "🔵"].map((e) => (
+          <button key={e} onClick={() => setEmoji(e)} style={{ fontSize: 18, width: 34, height: 34, borderRadius: 10, border: emoji === e ? "2px solid var(--tinta)" : "1px solid rgba(24,33,29,.12)", background: "#fff", cursor: "pointer" }}>{e}</button>
+        ))}
+      </div>
+      <button className="btn btn-primary" onClick={criar}>Criar cartão</button>
+    </div>
+  );
+}
+
+function CartaoForm({ initial, onSave, onDelete }) {
+  const [nome, setNome] = useState(initial?.nome || "");
+  const [emoji, setEmoji] = useState(initial?.emoji || "💳");
+  const [cor, setCor] = useState(initial?.cor || "#18211D");
+  const [fech, setFech] = useState(initial?.fechamento ?? "");
+  const [venc, setVenc] = useState(initial?.vencimento ?? "");
+  const save = () => { if (!nome.trim()) return; onSave({ nome: nome.trim(), emoji, cor, fechamento: parseInt(fech, 10) || 28, vencimento: parseInt(venc, 10) || 10 }); };
+  return (
+    <div style={{ display: "grid", gap: 14 }}>
+      <CFld label="Nome do cartão"><input className="fin-input" placeholder="Ex: Cartão Noh" value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></CFld>
+      <div style={{ display: "flex", gap: 12 }}>
+        <div style={{ flex: 1 }}><CFld label="Fecha dia"><input className="fin-input num" inputMode="numeric" placeholder="28" value={fech} onChange={(e) => setFech(e.target.value.replace(/\D/g, "").slice(0, 2))} /></CFld></div>
+        <div style={{ flex: 1 }}><CFld label="Vence dia"><input className="fin-input num" inputMode="numeric" placeholder="10" value={venc} onChange={(e) => setVenc(e.target.value.replace(/\D/g, "").slice(0, 2))} /></CFld></div>
+      </div>
+      <div>
+        <span className="fin-label" style={{ display: "block", marginBottom: 6 }}>Ícone</span>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+          {["💳", "🏦", "💠", "🟣", "🟢", "🟡", "⚫", "🔵", "🟠", "🔴"].map((e) => (
+            <button key={e} onClick={() => setEmoji(e)} style={{ fontSize: 20, width: 38, height: 38, borderRadius: 10, border: emoji === e ? "2px solid var(--tinta)" : "1px solid rgba(24,33,29,.12)", background: "#fff", cursor: "pointer" }}>{e}</button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <span className="fin-label" style={{ display: "block", marginBottom: 6 }}>Cor</span>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+          {CORES.map((c) => (<button key={c} onClick={() => setCor(c)} style={{ width: 30, height: 30, borderRadius: "50%", background: c, border: cor === c ? "3px solid var(--tinta)" : "2px solid #fff", boxShadow: "0 0 0 1px rgba(0,0,0,.1)", cursor: "pointer" }} />))}
+        </div>
+      </div>
+      <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+        <button className="btn btn-primary" style={{ flex: 1 }} onClick={save}>Salvar</button>
+        {onDelete && <button className="btn btn-danger" onClick={onDelete}><CI name="trash" size={18} /></button>}
+      </div>
     </div>
   );
 }
@@ -573,11 +745,24 @@ function CaixinhaForm({ initial, onSave, onDelete }) {
   const [emoji, setEmoji] = useState(initial?.emoji || "📦");
   const [cor, setCor] = useState(initial?.cor || CORES[0]);
   const [planejado, setPlan] = useState(initial?.planejado ?? "");
-  const save = () => { if (!nome.trim()) return; onSave({ nome: nome.trim(), emoji, cor, planejado: parseFloat(String(planejado).replace(",", ".")) || 0 }); };
+  const [fixa, setFixa] = useState(initial?.fixa || false);
+  const save = () => {
+    if (!nome.trim()) return;
+    onSave({ nome: nome.trim(), emoji, cor, planejado: parseFloat(String(planejado).replace(",", ".")) || 0, fixa });
+  };
   return (
     <div style={{ display: "grid", gap: 14 }}>
       <CFld label="Nome"><input className="fin-input" placeholder="Ex: Aluguel" value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></CFld>
-      <CFld label="Valor planejado no mês (R$)"><input className="fin-input num" inputMode="decimal" placeholder="0,00" value={planejado} onChange={(e) => setPlan(e.target.value)} style={{ fontSize: 20 }} /></CFld>
+      <CFld label="Valor planejado no mês (R$)"><MInput value={planejado} onChange={setPlan} style={{ fontSize: 20 }} /></CFld>
+
+      <div style={{ background: "var(--areia)", borderRadius: 16, padding: "12px 14px" }}>
+        <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+          <input type="checkbox" checked={fixa} onChange={(e) => setFixa(e.target.checked)} style={{ width: 18, height: 18, accentColor: "var(--tinta)" }} />
+          <CI name="calendar" size={17} color="var(--tinta)" />
+          <span style={{ fontSize: 14, fontWeight: 600 }}>É conta fixa mensal</span>
+        </label>
+        <div style={{ fontSize: 11.5, color: "var(--tinta-suave)", marginTop: 8 }}>Contas fixas (aluguel, água, luz…) aparecem em "A pagar" todo mês com um botão de check.</div>
+      </div>
       <div>
         <span className="fin-label" style={{ display: "block", marginBottom: 6 }}>Ícone</span>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 6, maxHeight: 100, overflowY: "auto" }}>
@@ -689,7 +874,7 @@ function MetaConjForm({ initial, onSave, onDelete }) {
   return (
     <div style={{ display: "grid", gap: 14 }}>
       <CFld label="Nome da meta"><input className="fin-input" placeholder="Ex: Viagem Europa" value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></CFld>
-      <CFld label="Valor alvo (R$)"><input className="fin-input num" inputMode="decimal" value={valorAlvo} onChange={(e) => setAlvo(e.target.value)} style={{ fontSize: 20 }} /></CFld>
+      <CFld label="Valor alvo (R$)"><MInput value={valorAlvo} onChange={setAlvo} style={{ fontSize: 20 }} /></CFld>
       <CFld label="Data desejada (opcional)"><input type="date" className="fin-input" value={dataAlvo} onChange={(e) => setData(e.target.value)} /></CFld>
       <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
         <button className="btn btn-primary" style={{ flex: 1 }} onClick={save}>Salvar</button>
@@ -703,7 +888,7 @@ function AporteConjForm({ onSave }) {
   const [v, setV] = useState("");
   return (
     <div style={{ display: "grid", gap: 14 }}>
-      <CFld label="Quanto guardar agora (R$)"><input className="fin-input num" inputMode="decimal" placeholder="0,00" value={v} onChange={(e) => setV(e.target.value)} style={{ fontSize: 22 }} autoFocus /></CFld>
+      <CFld label="Quanto guardar agora (R$)"><MInput value={v} onChange={setV} style={{ fontSize: 22 }} autoFocus /></CFld>
       <button className="btn btn-gold" onClick={() => { const n = parseFloat(String(v).replace(",", ".")); if (n > 0) onSave(n); }}>Guardar</button>
     </div>
   );

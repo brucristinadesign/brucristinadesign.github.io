@@ -209,10 +209,15 @@
   const getConjMetas = () => store.get(conjMetasKey(), []);
   const saveConjMetas = (list) => store.set(conjMetasKey(), list);
 
-  // caixinhas do casal (potes de organização — estilo Noh)
+  // caixinhas do casal (categorias/potes — estilo Noh)
   const caixinhasKey = () => `conjunto:caixinhas`;
   const getCaixinhas = () => store.get(caixinhasKey(), []);
   const saveCaixinhas = (list) => store.set(caixinhasKey(), list);
+
+  // formas de pagamento tipo CARTÃO (Noh, etc.) — separadas das caixinhas
+  const cartoesKey = () => `conjunto:cartoes`;
+  const getCartoes = () => store.get(cartoesKey(), []);
+  const saveCartoes = (list) => store.set(cartoesKey(), list);
 
   // tags reutilizáveis da área Conjunto (estilo Mobills)
   const conjTagsKey = () => `conjunto:tags`;
@@ -371,7 +376,7 @@
     const cfg = getConjConfig();
     // só entra no acerto o que já foi pago (dinheiro realmente adiantado)
     const tx = getConjTx().filter(
-      (t) => monthKey(t.data) === mk && t.tipo !== "receita" && t.status !== "pendente"
+      (t) => monthKey(t.data) === mk && t.tipo !== "receita" && t.status !== "pendente" && t.status !== "fatura"
     );
     const totalGasto = tx.reduce((s, t) => s + (Number(t.valor) || 0), 0);
 
@@ -402,6 +407,48 @@
     };
   }
 
+  // ── Cartão de crédito: em qual fatura a compra cai ──────────────────
+  // Regra: acha o fechamento a partir da data da compra; a fatura vence no
+  // dia de vencimento (no mês seguinte ao fechamento se vencimento<=fechamento).
+  function faturaDoCartao(dataISO, fechamento, vencimento) {
+    const fe = Math.min(28, Math.max(1, parseInt(fechamento, 10) || 1));
+    const ve = Math.min(28, Math.max(1, parseInt(vencimento, 10) || 10));
+    const d = new Date((dataISO || todayISO()) + "T00:00:00");
+    let cm = d.getMonth();
+    if (d.getDate() > fe) cm += 1;          // passou do fechamento → próxima fatura
+    const dueOffset = ve <= fe ? 1 : 0;     // vence depois de fechar
+    const due = new Date(d.getFullYear(), cm + dueOffset, ve);
+    const iso = due.toISOString().slice(0, 10);
+    return { faturaMes: iso.slice(0, 7), vencimento: iso };
+  }
+
+  // faturas em aberto (compras com status 'fatura'), agrupadas por cartão+mês
+  function faturasAbertas() {
+    const byId = {}; getCartoes().forEach((c) => (byId[c.id] = c));
+    const map = {};
+    getConjTx().forEach((t) => {
+      if (t.status !== "fatura") return;
+      const c = byId[t.metodo]; if (!c) return;
+      const fm = t.fatura || monthKey(t.vencimento || t.data);
+      const key = t.metodo + "|" + fm;
+      if (!map[key]) map[key] = { cartaoId: c.id, nome: c.nome, emoji: c.emoji, cor: c.cor, faturaMes: fm, vencimento: t.vencimento, total: 0, itens: [] };
+      map[key].total += Number(t.valor) || 0;
+      map[key].itens.push(t);
+    });
+    return Object.values(map).sort((a, b) => ((a.vencimento || "") < (b.vencimento || "") ? -1 : 1));
+  }
+
+  // paga a fatura: compras viram 'pago' e passam a contar no mês do vencimento
+  function pagarFatura(cartaoId, faturaMes) {
+    const list = getConjTx().map((t) => {
+      if (t.status === "fatura" && t.metodo === cartaoId && (t.fatura || monthKey(t.vencimento || t.data)) === faturaMes) {
+        return { ...t, status: "pago", dataCompra: t.dataCompra || t.data, data: t.vencimento || t.data };
+      }
+      return t;
+    });
+    saveConjTx(list);
+  }
+
   // ── Rateio mensal (quanto cada um envia pro bolso comum) ────────────
   // Soma o valor planejado das caixinhas e divide entre os dois.
   function rateioMensal() {
@@ -411,10 +458,25 @@
     return { total, enviaDaniel: total * pctD, enviaBruna: total * (1 - pctD), cfg, pctD };
   }
 
+  // ── Conta mensal da caixinha (valor recorrente + check de pago) ─────
+  function pagamentoMensal(caixaId, mk) {
+    return getConjTx().find((t) => t.caixinha === caixaId && t.mensalRef === mk);
+  }
+  function toggleMensal(caixa, mk) {
+    const ex = pagamentoMensal(caixa.id, mk);
+    if (ex) { saveConjTx(getConjTx().filter((t) => t.id !== ex.id)); return false; }
+    const data = mk === currentMonth() ? todayISO() : mk + "-10";
+    saveConjTx([...getConjTx(), {
+      id: uid(), tipo: "despesa", valor: Number(caixa.planejado) || 0,
+      caixinha: caixa.id, categoria: caixa.nome, data, status: "pago", mensalRef: mk,
+    }]);
+    return true;
+  }
+
   // gasto real de uma caixinha num mês (despesas pagas ligadas a ela)
   function gastoCaixinha(caixaId, mk) {
     return getConjTx()
-      .filter((t) => t.tipo !== "receita" && t.caixinha === caixaId && monthKey(t.data) === mk && t.status !== "pendente")
+      .filter((t) => t.tipo !== "receita" && t.caixinha === caixaId && monthKey(t.data) === mk && t.status !== "pendente" && t.status !== "fatura")
       .reduce((s, t) => s + (Number(t.valor) || 0), 0);
   }
 
@@ -423,7 +485,7 @@
   function saldoConjuntoGeral() {
     let entrou = 0, saiu = 0;
     getConjTx().forEach((t) => {
-      if (t.status === "pendente") return;         // pendente não movimenta o saldo
+      if (t.status === "pendente" || t.status === "fatura") return; // pendente/fatura não movimentam o saldo
       const v = Number(t.valor) || 0;
       if (t.tipo === "receita") entrou += v; else saiu += v;
     });
@@ -530,7 +592,7 @@
     monthLabel, prevMonthKey, daysUntil, dateInMonths, MONTH_NAMES, CATEGORIAS,
     CATEGORIA_META, CATEGORIAS_CASA, catMeta,
     getConjTags, saveConjTags, registrarTags,
-    getCaixinhas, saveCaixinhas, rateioMensal, gastoCaixinha,
+    getCaixinhas, saveCaixinhas, getCartoes, saveCartoes, rateioMensal, gastoCaixinha,
     // pin
     hasPin, setPin, checkPin,
     // transações
@@ -549,6 +611,8 @@
     // regras
     resumoMes, snowball, planoMeta, acertoConjunto, seriePatrimonio,
     saldoConjuntoGeral, recorrentesProximas,
+    faturaDoCartao, faturasAbertas, pagarFatura,
+    pagamentoMensal, toggleMensal,
     // demo
     seedDemo,
   };

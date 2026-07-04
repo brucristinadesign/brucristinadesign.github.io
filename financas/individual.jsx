@@ -2,7 +2,7 @@
    individual.jsx — área individual (Daniel / Bruna)
    Abas: Mês · Lançamentos · Dívidas(Bruna)/Cartão(Daniel) · Metas
    ══════════════════════════════════════════════════════════════════════ */
-const { Icon: I, Money: M, Card: C, Field: Fld, Modal: Mdl, PathProgress: PP,
+const { Icon: I, Money: M, MoneyInput: MInput, Card: C, Field: Fld, Modal: Mdl, PathProgress: PP,
   MiniBar: MB, Donut: Dn, CompareBars: CB, LineChart: LC, Confetti: Cf,
   CAT_COLORS: CC, cap: capz } = window.FinUI;
 
@@ -32,7 +32,7 @@ function TxForm({ initial, onSave, onCancel, onDelete }) {
         ))}
       </div>
       <Fld label="Valor (R$)">
-        <input className="fin-input num" inputMode="decimal" placeholder="0,00" value={valor} onChange={(e) => setValor(e.target.value)} style={{ fontSize: 22 }} autoFocus />
+        <MInput value={valor} onChange={setValor} style={{ fontSize: 22 }} autoFocus />
       </Fld>
       <div style={{ display: "flex", gap: 12 }}>
         <div style={{ flex: 1 }}>
@@ -303,8 +303,7 @@ function AbaDividas({ cor }) {
           Pague o mínimo de todas e jogue o extra inteiro na <b>menor</b> dívida. Ao quitá-la, esse valor rola pra próxima.
         </p>
         <Fld label="Quanto sobra esse mês pra pagar extra (R$)">
-          <input className="fin-input num" inputMode="decimal" value={extra}
-            onChange={(e) => saveExtra(parseFloat(String(e.target.value).replace(",", ".")) || 0)} style={{ fontSize: 20 }} />
+          <MInput value={extra} onChange={(n) => saveExtra(n || 0)} style={{ fontSize: 20 }} />
         </Fld>
         {dividas.length > 0 && (
           <div style={{ marginTop: 14, background: "var(--areia)", borderRadius: 12, padding: "12px 14px", fontSize: 13.5 }}>
@@ -407,9 +406,9 @@ function DividaForm({ initial, onSave, onDelete }) {
   return (
     <div style={{ display: "grid", gap: 14 }}>
       <Fld label="Nome da dívida"><input className="fin-input" placeholder="Ex: Cartão Nubank" value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></Fld>
-      <Fld label="Saldo devedor (R$)"><input className="fin-input num" inputMode="decimal" placeholder="0,00" value={saldoDevedor} onChange={(e) => setSaldo(e.target.value)} style={{ fontSize: 20 }} /></Fld>
+      <Fld label="Saldo devedor (R$)"><MInput value={saldoDevedor} onChange={setSaldo} style={{ fontSize: 20 }} /></Fld>
       <div style={{ display: "flex", gap: 12 }}>
-        <div style={{ flex: 1 }}><Fld label="Parcela mínima (R$)"><input className="fin-input num" inputMode="decimal" value={parcelaMinima} onChange={(e) => setMin(e.target.value)} /></Fld></div>
+        <div style={{ flex: 1 }}><Fld label="Parcela mínima (R$)"><MInput value={parcelaMinima} onChange={setMin} /></Fld></div>
         <div style={{ flex: 1 }}><Fld label="Juros % ao mês"><input className="fin-input num" inputMode="decimal" placeholder="opcional" value={juros} onChange={(e) => setJuros(e.target.value)} /></Fld></div>
       </div>
       <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
@@ -493,7 +492,7 @@ function DebitoForm({ initial, onSave, onDelete }) {
     <div style={{ display: "grid", gap: 14 }}>
       <Fld label="Nome"><input className="fin-input" value={nome} onChange={(e) => setNome(e.target.value)} /></Fld>
       <div style={{ display: "flex", gap: 12 }}>
-        <div style={{ flex: 1 }}><Fld label="Valor da parcela (R$)"><input className="fin-input num" inputMode="decimal" value={valorParcela} onChange={(e) => setVal(e.target.value)} /></Fld></div>
+        <div style={{ flex: 1 }}><Fld label="Valor da parcela (R$)"><MInput value={valorParcela} onChange={setVal} /></Fld></div>
         <div style={{ flex: 1 }}><Fld label="Parcelas restantes"><input className="fin-input num" inputMode="numeric" value={parcelasRestantes} onChange={(e) => setParc(e.target.value)} /></Fld></div>
       </div>
       <Fld label="Data de quitação prevista (opcional)"><input type="date" className="fin-input" value={dataQuitacaoPrevista} onChange={(e) => setData(e.target.value)} /></Fld>
@@ -601,8 +600,8 @@ function MetaForm({ initial, onSave, onDelete }) {
     <div style={{ display: "grid", gap: 14 }}>
       <Fld label="Nome da meta"><input className="fin-input" placeholder="Ex: Viagem Chile" value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></Fld>
       <div style={{ display: "flex", gap: 12 }}>
-        <div style={{ flex: 1 }}><Fld label="Valor alvo (R$)"><input className="fin-input num" inputMode="decimal" value={valorAlvo} onChange={(e) => setAlvo(e.target.value)} /></Fld></div>
-        <div style={{ flex: 1 }}><Fld label="Já guardado (R$)"><input className="fin-input num" inputMode="decimal" value={valorAtual} onChange={(e) => setAtual(e.target.value)} /></Fld></div>
+        <div style={{ flex: 1 }}><Fld label="Valor alvo (R$)"><MInput value={valorAlvo} onChange={setAlvo} /></Fld></div>
+        <div style={{ flex: 1 }}><Fld label="Já guardado (R$)"><MInput value={valorAtual} onChange={setAtual} /></Fld></div>
       </div>
       <Fld label="Data desejada (opcional)"><input type="date" className="fin-input" value={dataAlvo} onChange={(e) => setData(e.target.value)} /></Fld>
       <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
@@ -617,7 +616,7 @@ function AporteForm({ onSave }) {
   const [v, setV] = useState("");
   return (
     <div style={{ display: "grid", gap: 14 }}>
-      <Fld label="Quanto guardar agora (R$)"><input className="fin-input num" inputMode="decimal" placeholder="0,00" value={v} onChange={(e) => setV(e.target.value)} style={{ fontSize: 22 }} autoFocus /></Fld>
+      <Fld label="Quanto guardar agora (R$)"><MInput value={v} onChange={setV} style={{ fontSize: 22 }} autoFocus /></Fld>
       <button className="btn btn-gold" onClick={() => { const n = parseFloat(String(v).replace(",", ".")); if (n > 0) onSave(n); }}>Guardar</button>
     </div>
   );
