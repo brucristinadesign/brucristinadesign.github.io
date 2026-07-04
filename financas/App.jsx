@@ -51,6 +51,13 @@ function SelecaoPerfil({ onPick }) {
       <p style={{ textAlign: "center", fontSize: 11.5, color: "var(--tinta-suave)", marginTop: 28, lineHeight: 1.6 }}>
         Daniel e Bruna têm PIN próprio — privacidade entre vocês dois.<br />O Conjunto é aberto para o casal.
       </p>
+
+      {window.FinSync && window.FinSync.user && (
+        <button className="btn btn-ghost" style={{ margin: "18px auto 0", fontSize: 12.5, opacity: 0.8 }}
+          onClick={() => { if (confirm("Sair da conta neste aparelho?")) window.FinSync.logout(); }}>
+          Sair da conta
+        </button>
+      )}
     </div>
   );
 }
@@ -160,11 +167,108 @@ function TabBar({ abas, aba, setAba, cor }) {
   );
 }
 
+// ── Tela de login (email + senha) — só no modo nuvem ────────────────────
+function LoginScreen() {
+  const [modo, setModo] = useState("entrar"); // "entrar" | "criar"
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState("");
+  const [carregando, setCarregando] = useState(false);
+
+  const traduzErro = (code) => ({
+    "auth/invalid-email": "Email inválido.",
+    "auth/user-not-found": "Email ou senha incorretos.",
+    "auth/wrong-password": "Email ou senha incorretos.",
+    "auth/invalid-credential": "Email ou senha incorretos.",
+    "auth/email-already-in-use": "Esse email já tem acesso — use “Entrar”.",
+    "auth/weak-password": "A senha precisa de pelo menos 6 caracteres.",
+    "auth/missing-password": "Digite a senha.",
+    "auth/network-request-failed": "Sem conexão com a internet.",
+    "auth/too-many-requests": "Muitas tentativas. Espere um pouco e tente de novo.",
+    "auth/operation-not-allowed": "Login por email/senha não está ativado no Firebase.",
+  }[code] || "Não foi possível entrar. Tente de novo.");
+
+  const enviar = () => {
+    setErro("");
+    if (!email.trim()) return setErro("Digite o email.");
+    if (senha.length < 6) return setErro("A senha precisa de pelo menos 6 caracteres.");
+    setCarregando(true);
+    const acao = modo === "criar" ? window.FinSync.signup : window.FinSync.login;
+    acao(email, senha)
+      .catch((e) => { setErro(traduzErro(e && e.code)); setCarregando(false); });
+    // sucesso: onAuthStateChanged troca a tela sozinho
+  };
+
+  return (
+    <div className="app-bg" style={{ minHeight: "100dvh", display: "flex", flexDirection: "column", justifyContent: "center", padding: "28px 22px", maxWidth: 440, margin: "0 auto" }}>
+      <div className="fade-up" style={{ textAlign: "center", marginBottom: 26 }}>
+        <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 60, height: 60, borderRadius: 18, background: "var(--petroleo)", marginBottom: 16 }}>
+          <AI name="lock" size={28} color="var(--dourado)" />
+        </div>
+        <h1 className="serif" style={{ margin: 0, fontSize: 27, fontWeight: 500, color: "var(--petroleo)" }}>Nossas Finanças</h1>
+        <p style={{ margin: "8px 0 0", color: "var(--tinta-suave)", fontSize: 14 }}>
+          {modo === "criar" ? "Crie o acesso do casal" : "Entre para acessar seus dados"}
+        </p>
+      </div>
+
+      <div className="card fade-up" style={{ padding: "22px 20px", display: "grid", gap: 14 }}>
+        <label style={{ display: "block" }}>
+          <span className="fin-label" style={{ display: "block", marginBottom: 5 }}>Email</span>
+          <input className="fin-input" type="email" inputMode="email" autoComplete="username"
+            placeholder="voces@email.com" value={email}
+            onChange={(e) => setEmail(e.target.value)} />
+        </label>
+        <label style={{ display: "block" }}>
+          <span className="fin-label" style={{ display: "block", marginBottom: 5 }}>Senha</span>
+          <input className="fin-input" type="password" autoComplete={modo === "criar" ? "new-password" : "current-password"}
+            placeholder="mínimo 6 caracteres" value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") enviar(); }} />
+        </label>
+
+        {erro && (
+          <div style={{ fontSize: 13, color: "var(--coral)", fontWeight: 600, background: "#FDEEEC", borderRadius: 10, padding: "9px 12px" }}>{erro}</div>
+        )}
+
+        <button className="btn btn-primary" style={{ opacity: carregando ? 0.7 : 1 }} disabled={carregando} onClick={enviar}>
+          {carregando ? "Aguarde…" : modo === "criar" ? "Criar acesso" : "Entrar"}
+        </button>
+
+        <button className="btn btn-ghost" style={{ fontSize: 13.5 }} onClick={() => { setErro(""); setModo(modo === "criar" ? "entrar" : "criar"); }}>
+          {modo === "criar" ? "Já temos acesso — entrar" : "Primeira vez? Criar acesso"}
+        </button>
+      </div>
+
+      <p style={{ textAlign: "center", fontSize: 11.5, color: "var(--tinta-suave)", marginTop: 22, lineHeight: 1.6 }}>
+        🔒 Só quem tem a senha acessa os dados na nuvem.<br />Dentro do app, o PIN separa a área de cada um.
+      </p>
+    </div>
+  );
+}
+
+function LoadingScreen() {
+  return (
+    <div className="app-bg" style={{ minHeight: "100dvh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
+      <div style={{ width: 46, height: 46, borderRadius: "50%", border: "4px solid rgba(31,75,68,.15)", borderTopColor: "var(--petroleo)", animation: "spin 0.9s linear infinite" }} />
+      <div style={{ color: "var(--tinta-suave)", fontSize: 14 }}>Carregando seus dados…</div>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    </div>
+  );
+}
+
 // ── App raiz ────────────────────────────────────────────────────────────
 function App() {
+  const [phase, setPhase] = useState(() => (window.FinSync && window.FinSync.phase) || "local");
   const [ativo, setAtivo] = useState(null);       // perfil liberado
   const [pinFor, setPinFor] = useState(null);      // perfil aguardando PIN
   const [, setDataV] = useState(0);                // bump para re-render em update remoto
+
+  // fases de autenticação/nuvem
+  useEffect(() => {
+    const h = () => setPhase((window.FinSync && window.FinSync.phase) || "local");
+    window.addEventListener("fin-auth-changed", h);
+    return () => window.removeEventListener("fin-auth-changed", h);
+  }, []);
 
   // quando a nuvem envia mudanças, re-renderiza a árvore (sem perder a
   // navegação atual: os componentes re-leem o cache local já atualizado)
@@ -173,6 +277,9 @@ function App() {
     window.addEventListener("fin-remote-update", h);
     return () => window.removeEventListener("fin-remote-update", h);
   }, []);
+
+  if (phase === "login") return <LoginScreen />;
+  if (phase === "loading" || phase === "conectando") return <LoadingScreen />;
 
   const pick = (id) => {
     if (id === "conjunto") { setAtivo("conjunto"); return; }
