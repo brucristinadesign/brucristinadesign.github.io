@@ -1,12 +1,17 @@
 /* ══════════════════════════════════════════════════════════════════════
-   sync.js — sincronização em tempo real via Firebase Realtime Database
+   sync.js — sincronização em tempo real + login (Firebase)
    ────────────────────────────────────────────────────────────────────
-   Estratégia: o localStorage continua sendo o cache local síncrono (tudo
-   que já existe lê dele sem mudar). Este módulo:
-     • espelha cada gravação (store.set) para a nuvem;
-     • ouve mudanças da nuvem e escreve no cache local, disparando o
-       evento "fin-remote-update" para o app re-renderizar na hora.
-   Se não houver config do Firebase, fica desligado e o app roda local.
+   • Sem config do Firebase → modo local (só neste aparelho).
+   • Com config → exige LOGIN com email e senha. Só depois de logado os
+     dados são lidos/escritos na nuvem, em tempo real.
+   • A nuvem é a fonte da verdade: ao logar, o cache local é substituído
+     pelo que está na nuvem (evita misturar dados de exemplo antigos).
+
+   Estados (window.FinSync.phase):
+     "local"   → sem nuvem, roda local
+     "login"   → precisa entrar (email/senha)
+     "loading" → logado, baixando os dados
+     "ready"   → tudo pronto e sincronizado
    ══════════════════════════════════════════════════════════════════════ */
 
 (function () {
@@ -17,31 +22,36 @@
   const temConfig = !!(cfg.apiKey && cfg.databaseURL);
   const temSDK = typeof window.firebase !== "undefined";
 
-  // API pública mínima (fica sempre disponível)
-  window.FinSync = {
+  const S = {
     enabled: false,
-    status: temConfig ? (temSDK ? "conectando" : "sem-sdk") : "local",
+    phase: !temConfig || !temSDK ? "local" : "login",
+    status: !temConfig ? "local" : !temSDK ? "sem-sdk" : "conectando",
+    requiresAuth: temConfig && temSDK,
+    user: null,
     push: function () {},
-    onReady: function () {},
+    login: function () { return Promise.reject(new Error("indisponível")); },
+    signup: function () { return Promise.reject(new Error("indisponível")); },
+    logout: function () {},
   };
+  window.FinSync = S;
+  const emit = (name) => window.dispatchEvent(new Event(name));
 
-  if (!temConfig) return;            // modo local puro
-  if (!temSDK) {                     // config existe mas SDK não carregou
-    console.warn("[sync] Config do Firebase presente, mas o SDK não carregou (offline?). Rodando local.");
+  if (!temConfig) return;                 // modo local puro
+  if (!temSDK) {                          // config existe mas SDK não carregou
+    console.warn("[sync] SDK do Firebase não carregou (offline?). Rodando local.");
     return;
   }
 
-  // ── codificação de chaves (Firebase não aceita '.', '#', '$', '[', ']', '/') ──
+  // Firebase não aceita '.', '#', '$', '[', ']', '/' nas chaves
   const enc = (k) => k.replace(/\./g, "~d~");
   const dec = (k) => k.replace(/~d~/g, ".");
-  // chaves puramente locais (flags de UI) não vão pra nuvem
   const soLocal = (k) => k.indexOf("bc.financas.") === 0;
 
   let root = null;
-  let aplicandoRemoto = false;
+  let listenersOn = false;
 
   function push(key, value) {
-    if (!root || soLocal(key)) return;
+    if (!root || !S.enabled || soLocal(key)) return;
     try {
       root.child(enc(key)).set(value === undefined ? null : value);
     } catch (e) {
@@ -49,85 +59,89 @@
     }
   }
 
-  function aplicarSnapshot(data) {
-    aplicandoRemoto = true;
-    try {
-      Object.keys(data || {}).forEach((k) => {
-        try {
-          localStorage.setItem(LS_PREFIX + dec(k), JSON.stringify(data[k]));
-        } catch (e) { /* ignora item inválido */ }
-      });
-    } finally {
-      aplicandoRemoto = false;
+  function wipeLocalData() {
+    const rm = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.indexOf(LS_PREFIX) === 0) rm.push(k);
     }
-    window.dispatchEvent(new Event("fin-remote-update"));
+    rm.forEach((k) => localStorage.removeItem(k));
   }
 
-  function iniciarListeners() {
+  function aplicarSnapshot(data) {
+    // a nuvem é a fonte da verdade: substitui o cache local inteiro
+    wipeLocalData();
+    Object.keys(data || {}).forEach((k) => {
+      try {
+        localStorage.setItem(LS_PREFIX + dec(k), JSON.stringify(data[k]));
+      } catch (e) { /* ignora item inválido */ }
+    });
+    emit("fin-remote-update");
+  }
+
+  function startListeners() {
+    if (listenersOn) return;
+    listenersOn = true;
     const db = window.firebase.database();
     root = db.ref("financas");
-
-    // 1ª carga + tempo real: qualquer mudança na nuvem reflete aqui
+    let first = true;
     root.on(
       "value",
       (snap) => {
         aplicarSnapshot(snap.val() || {});
-        window.FinSync.status = "sincronizado";
-        window.dispatchEvent(new Event("fin-sync-status"));
+        if (first) {
+          first = false;
+          S.enabled = true;
+          S.push = push;
+          S.phase = "ready";
+          S.status = "sincronizado";
+          emit("fin-auth-changed");
+        }
+        S.status = "sincronizado";
+        emit("fin-sync-status");
       },
       (err) => {
-        console.warn("[sync] erro ao ouvir:", err);
-        window.FinSync.status = "erro";
-        window.dispatchEvent(new Event("fin-sync-status"));
+        console.warn("[sync] erro ao ouvir:", err && err.code);
+        S.status = "erro";
+        emit("fin-sync-status");
       }
     );
-
-    // empurra o que já existe localmente para a nuvem na primeira vez
-    // (só chaves de dados; conflitos são resolvidos pelo snapshot acima)
-    empurrarCacheLocalUmaVez();
-
-    window.FinSync.enabled = true;
-    window.FinSync.push = push;
-    window.FinSync.status = "sincronizado";
-    window.dispatchEvent(new Event("fin-sync-status"));
   }
 
-  function empurrarCacheLocalUmaVez() {
-    // Só semeia a nuvem se ela ainda não tiver nada, para não sobrescrever
-    // dados já sincronizados do outro aparelho.
-    root.once("value").then((snap) => {
-      if (snap.exists()) return; // nuvem já tem dados → não empurra nada
-      for (let i = 0; i < localStorage.length; i++) {
-        const full = localStorage.key(i);
-        if (!full || full.indexOf(LS_PREFIX) !== 0) continue;
-        const key = full.slice(LS_PREFIX.length);
-        if (soLocal(key)) continue;
-        try {
-          root.child(enc(key)).set(JSON.parse(localStorage.getItem(full)));
-        } catch (e) { /* ignora */ }
-      }
-    }).catch(() => {});
+  function stopListeners() {
+    if (root) { try { root.off(); } catch (e) {} }
+    root = null;
+    listenersOn = false;
+    S.enabled = false;
+    S.push = function () {};
   }
 
-  try {
-    window.firebase.initializeApp(cfg);
-  } catch (e) {
-    // initializeApp pode reclamar se chamado 2x; segue mesmo assim
+  try { window.firebase.initializeApp(cfg); } catch (e) {
     console.warn("[sync] initializeApp:", e && e.message);
   }
 
-  // Autenticação anônima (se ativada no projeto) protege a leitura contra
-  // curiosos aleatórios na internet. Se não estiver ativa, segue sem auth.
-  const auth = window.firebase.auth ? window.firebase.auth() : null;
-  if (auth) {
-    auth
-      .signInAnonymously()
-      .then(iniciarListeners)
-      .catch((e) => {
-        console.warn("[sync] auth anônima indisponível, seguindo sem auth:", e && e.code);
-        iniciarListeners();
-      });
-  } else {
-    iniciarListeners();
-  }
+  const auth = window.firebase.auth();
+  try {
+    auth.setPersistence(window.firebase.auth.Auth.Persistence.LOCAL);
+  } catch (e) { /* mantém padrão */ }
+
+  S.login = (email, senha) => auth.signInWithEmailAndPassword(String(email).trim(), senha);
+  S.signup = (email, senha) => auth.createUserWithEmailAndPassword(String(email).trim(), senha);
+  S.logout = () => auth.signOut();
+
+  auth.onAuthStateChanged((user) => {
+    S.user = user;
+    if (user) {
+      S.phase = "loading";
+      S.status = "conectando";
+      emit("fin-auth-changed");
+      startListeners();
+    } else {
+      stopListeners();
+      S.phase = "login";
+      S.status = "login";
+      emit("fin-auth-changed");
+      emit("fin-sync-status");
+    }
+  });
 })();
