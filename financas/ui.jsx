@@ -73,6 +73,27 @@ const Card = ({ children, className = "", stripe, style, ...rest }) => (
   </div>
 );
 
+// Campo de dinheiro com máscara pt-BR: digita números, formata 4.225,56
+const MoneyInput = ({ value, onChange, style, autoFocus, placeholder = "0,00" }) => {
+  const [digits, setDigits] = useState(() => {
+    const n = Number(value);
+    return value !== "" && value != null && isFinite(n) && n > 0 ? String(Math.round(n * 100)) : "";
+  });
+  const fmt = (d) => {
+    if (!d) return "";
+    return (parseInt(d, 10) / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+  const handle = (e) => {
+    const d = e.target.value.replace(/\D/g, "").replace(/^0+/, "").slice(0, 12);
+    setDigits(d);
+    onChange(d ? parseInt(d, 10) / 100 : "");
+  };
+  return (
+    <input className="fin-input num" inputMode="numeric" placeholder={placeholder} value={fmt(digits)}
+      onChange={handle} style={style} autoFocus={autoFocus} />
+  );
+};
+
 const Field = ({ label, children }) => (
   <label style={{ display: "block" }}>
     <span className="fin-label" style={{ display: "block", marginBottom: 5 }}>{label}</span>
@@ -435,6 +456,6 @@ const Confetti = ({ show }) => {
 };
 
 window.FinUI = {
-  Icon, Money, Card, Field, Modal, PathProgress, MiniBar,
+  Icon, Money, MoneyInput, Card, Field, Modal, PathProgress, MiniBar,
   Donut, CompareBars, LineChart, PinPad, Confetti, Legend, CAT_COLORS, cap,
 };

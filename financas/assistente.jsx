@@ -12,7 +12,6 @@ const PALAVRAS_CAIXA = {
   "Internet": ["internet", "wifi", "claro", "vivo", "tim", "net", "fibra"],
   "Mercado": ["mercado", "supermercado", "compras", "feira", "hortifruti", "atacadão", "atacadao"],
   "Restaurante": ["restaurante", "ifood", "lanche", "comida", "almoço", "almoco", "janta", "jantar", "pizza", "delivery", "padaria", "café", "cafe"],
-  "Cartão Noh": ["cartao", "cartão", "noh", "fatura"],
   "Pets": ["pet", "pets", "ração", "racao", "cachorro", "gato", "veterinario", "veterinário", "petshop"],
   "Segurança": ["seguranca", "segurança", "alarme", "portaria"],
   "Transporte": ["transporte", "uber", "99", "gasolina", "combustivel", "combustível", "onibus", "ônibus", "metro", "metrô", "estacionamento", "pedagio", "pedágio"],
@@ -140,23 +139,47 @@ function interpretar(textoOriginal) {
     return { reply: `✅ Entrada de ${F.fmt(valor)} registrada${data !== F.todayISO() ? ` (${F.fmtDate(data)})` : ""}.`, acao: true };
   }
 
-  const caixaNome = detectCaixa(txt);
-  const caixaId = garantirCaixa(caixaNome);
+  // forma de pagamento: cartão (cai na fatura) ou à vista
+  const cartoes = F.getCartoes();
+  let cartao = null;
+  if (/(cart[aã]o|cr[eé]dito|fatura|noh)/.test(t) && cartoes.length) {
+    cartao = cartoes.find((c) => t.includes(_norm(c.nome))) || cartoes[0];
+  }
+  // categoria/caixinha (ignora se coincidir com o nome do cartão)
+  let caixaNome = detectCaixa(txt);
+  if (cartao && caixaNome && _norm(caixaNome) === _norm(cartao.nome)) caixaNome = null;
+  const caixaId = caixaNome ? garantirCaixa(caixaNome) : null;
   const nomeCat = caixaNome || "Outros";
   if (tags.length) F.registrarTags(tags);
 
+  // CARTÃO: entra na fatura certa (categoria/caixinha preservada)
+  if (cartao) {
+    const n = parc ? parc.n : 1;
+    const centavos = Math.round(valor * 100), base = Math.floor(centavos / n), grupo = F.uid();
+    const f0 = F.faturaDoCartao(data, cartao.fechamento, cartao.vencimento);
+    const novos = [];
+    for (let i = 0; i < n; i++) {
+      const val = (i === n - 1 ? centavos - base * (n - 1) : base) / 100;
+      const venc = shiftMonthISO(f0.vencimento, i);
+      novos.push({ id: F.uid(), tipo: "despesa", valor: val, caixinha: caixaId, categoria: nomeCat, metodo: cartao.id, status: "fatura", fatura: venc.slice(0, 7), vencimento: venc, data: venc, dataCompra: data, tags, ...(n > 1 ? { parcela: `${i + 1}/${n}`, grupoParcela: grupo } : {}) });
+    }
+    F.saveConjTx([...F.getConjTx(), ...novos]);
+    return { reply: `✅ ${F.fmt(valor)}${caixaNome ? ` em ${caixaNome}` : ""} no ${cartao.nome}${n > 1 ? ` em ${n}×` : ""} — ${n > 1 ? "cai nas próximas faturas" : `entra na fatura que vence ${F.fmtDate(f0.vencimento)}`}.`, acao: true };
+  }
+
+  // À VISTA parcelado
   if (parc) {
     const n = parc.n, centavos = Math.round(valor * 100), base = Math.floor(centavos / n), grupo = F.uid();
     const novos = [];
     for (let i = 0; i < n; i++) {
       const val = (i === n - 1 ? centavos - base * (n - 1) : base) / 100;
-      novos.push({ id: F.uid(), tipo: "despesa", valor: val, caixinha: caixaId, categoria: nomeCat, data: shiftMonthISO(data, i), status: i === 0 ? status : "pendente", tags, parcela: `${i + 1}/${n}`, grupoParcela: grupo });
+      novos.push({ id: F.uid(), tipo: "despesa", valor: val, caixinha: caixaId, categoria: nomeCat, metodo: "avista", data: shiftMonthISO(data, i), status: i === 0 ? status : "pendente", tags, parcela: `${i + 1}/${n}`, grupoParcela: grupo });
     }
     F.saveConjTx([...F.getConjTx(), ...novos]);
-    return { reply: `✅ ${caixaNome || "Compra"} parcelada: ${n}× de ${F.fmt(valor / n)}. A 1ª agora, as outras ${n - 1} entram como “a pagar” nos próximos meses.`, acao: true };
+    return { reply: `✅ ${caixaNome || "Compra"} parcelada: ${n}× de ${F.fmt(valor / n)}. A 1ª agora, as outras ${n - 1} como “a pagar”.`, acao: true };
   }
 
-  const tx = { id: F.uid(), tipo: "despesa", valor, caixinha: caixaId, categoria: nomeCat, data, status, tags };
+  const tx = { id: F.uid(), tipo: "despesa", valor, caixinha: caixaId, categoria: nomeCat, metodo: "avista", data, status, tags };
   F.saveConjTx([...F.getConjTx(), tx]);
   return { reply: `✅ Anotei ${F.fmt(valor)}${caixaNome ? ` em ${caixaNome}` : ""}${status === "pendente" ? " (a pagar)" : ""}${data !== F.todayISO() ? ` · ${F.fmtDate(data)}` : ""}.`, acao: true };
 }
