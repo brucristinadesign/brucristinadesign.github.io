@@ -535,6 +535,90 @@
       .sort((a, b) => a.faltamDias - b.faltamDias);
   }
 
+  // ══════════════════════════════════════════════════════════════════
+  //  ESCOPO: mesma lógica p/ Conjunto OU área individual (Daniel/Bruna)
+  //  scope("conjunto") usa conjunto:*  ·  scope("bruna") usa individual:bruna:*
+  // ══════════════════════════════════════════════════════════════════
+  function scope(id) {
+    const conj = id === "conjunto";
+    const K = (n) => (conj ? `conjunto:${n}` : `individual:${id}:${n}`);
+    const S = {
+      id,
+      conjunto: conj,
+      getTx: () => store.get(K("transacoes"), []),
+      saveTx: (l) => store.set(K("transacoes"), l),
+      getCaixinhas: () => store.get(K("caixinhas"), []),
+      saveCaixinhas: (l) => store.set(K("caixinhas"), l),
+      getCartoes: () => store.get(K("cartoes"), []),
+      saveCartoes: (l) => store.set(K("cartoes"), l),
+      getTags: () => store.get(K("tags"), []),
+      saveTags: (l) => store.set(K("tags"), l),
+      getChat: () => store.get(K("chat"), []),
+      saveChat: (l) => store.set(K("chat"), (l || []).slice(-60)),
+      getMetas: () => store.get(K("metas"), []),
+      saveMetas: (l) => store.set(K("metas"), l),
+    };
+    S.registrarTags = (tags) => {
+      if (!tags || !tags.length) return;
+      const set = new Set(S.getTags());
+      tags.forEach((t) => { const v = String(t).trim(); if (v) set.add(v); });
+      S.saveTags(Array.from(set));
+    };
+    S.saldoGeral = () => {
+      let e = 0, s = 0;
+      S.getTx().forEach((t) => {
+        if (t.status === "pendente" || t.status === "fatura") return;
+        const v = Number(t.valor) || 0;
+        if (t.tipo === "receita") e += v; else s += v;
+      });
+      return { entrou: e, saiu: s, saldo: e - s };
+    };
+    S.gastoCaixinha = (cid, mk) => S.getTx()
+      .filter((t) => t.tipo !== "receita" && t.caixinha === cid && monthKey(t.data) === mk && t.status !== "pendente" && t.status !== "fatura")
+      .reduce((a, t) => a + (Number(t.valor) || 0), 0);
+    S.pagamentoMensal = (cid, mk) => S.getTx().find((t) => t.caixinha === cid && t.mensalRef === mk);
+    S.toggleMensal = (caixa, mk) => {
+      const ex = S.pagamentoMensal(caixa.id, mk);
+      if (ex) { S.saveTx(S.getTx().filter((t) => t.id !== ex.id)); return false; }
+      const data = mk === currentMonth() ? todayISO() : mk + "-10";
+      S.saveTx([...S.getTx(), { id: uid(), tipo: "despesa", valor: Number(caixa.planejado) || 0, caixinha: caixa.id, categoria: caixa.nome, data, status: "pago", mensalRef: mk }]);
+      return true;
+    };
+    S.faturasAbertas = () => {
+      const byId = {}; S.getCartoes().forEach((c) => (byId[c.id] = c));
+      const map = {};
+      S.getTx().forEach((t) => {
+        if (t.status !== "fatura") return;
+        const c = byId[t.metodo]; if (!c) return;
+        const fm = t.fatura || monthKey(t.vencimento || t.data);
+        const key = t.metodo + "|" + fm;
+        if (!map[key]) map[key] = { cartaoId: c.id, nome: c.nome, emoji: c.emoji, cor: c.cor, faturaMes: fm, vencimento: t.vencimento, total: 0, itens: [] };
+        map[key].total += Number(t.valor) || 0; map[key].itens.push(t);
+      });
+      return Object.values(map).sort((a, b) => ((a.vencimento || "") < (b.vencimento || "") ? -1 : 1));
+    };
+    S.pagarFatura = (cartaoId, faturaMes) => {
+      S.saveTx(S.getTx().map((t) => (t.status === "fatura" && t.metodo === cartaoId && (t.fatura || monthKey(t.vencimento || t.data)) === faturaMes)
+        ? { ...t, status: "pago", dataCompra: t.dataCompra || t.data, data: t.vencimento || t.data } : t));
+    };
+    return S;
+  }
+
+  // parte de cada um nas despesas da casa (rateio do Conjunto) + marca "enviei"
+  function parteDaCasa(perfil, mk) {
+    const r = rateioMensal();
+    const valor = perfil === "daniel" ? r.enviaDaniel : r.enviaBruna;
+    const map = store.get(`individual:${perfil}:casaEnviada`, {});
+    return { valor, enviado: !!map[mk], total: r.total, cfg: r.cfg };
+  }
+  function toggleParteCasa(perfil, mk) {
+    const key = `individual:${perfil}:casaEnviada`;
+    const map = store.get(key, {});
+    map[mk] = !map[mk];
+    store.set(key, map);
+    return !!map[mk];
+  }
+
   // ── Seed opcional (dados de exemplo) ────────────────────────────────
   function seedDemo() {
     // Em modo nuvem (Firebase configurado), não semeia exemplos: o casal
@@ -613,6 +697,7 @@
     saldoConjuntoGeral, recorrentesProximas,
     faturaDoCartao, faturasAbertas, pagarFatura,
     pagamentoMensal, toggleMensal,
+    scope, parteDaCasa, toggleParteCasa,
     // demo
     seedDemo,
   };

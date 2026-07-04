@@ -107,6 +107,9 @@ function AbaMes({ perfil, cor, refresh }) {
         </div>
       </C>
 
+      {/* a pagar este mês (inclui sua parte da casa) */}
+      <APagarInd perfil={perfil} mes={mes} cor={cor} refresh={refresh} onChange={refresh} />
+
       {/* alertas de recorrente + estouro */}
       {recs.length > 0 && (
         <C style={{ padding: "14px 16px", background: "#FFF9EE", border: "1px solid rgba(201,161,90,.4)" }}>
@@ -634,4 +637,174 @@ function nextMonth(mk) {
   return `${y}-${String(m).padStart(2, "0")}`;
 }
 
-window.FinIndividual = { AbaMes, AbaLancamentos, AbaDividas, AbaCartaoDaniel, AbaMetas };
+// ── "A pagar este mês" na área individual (inclui a parte da casa) ──────
+function APagarInd({ perfil, mes, cor, onChange }) {
+  const [, f] = useState(0);
+  const rl = () => { f((n) => n + 1); onChange && onChange(); };
+  const S = F.scope(perfil);
+  const parte = F.parteDaCasa(perfil, mes);
+  const mesTx = S.getTx().filter((t) => F.monthKey(t.data) === mes);
+  const fixas = S.getCaixinhas().filter((c) => c.fixa && (Number(c.planejado) || 0) > 0 && !S.pagamentoMensal(c.id, mes));
+  const pend = mesTx.filter((t) => t.tipo !== "receita" && t.status === "pendente");
+  const faturas = S.faturasAbertas().filter((ff) => (ff.faturaMes || "") <= mes);
+  const parteAberta = parte.valor > 0 && !parte.enviado;
+  const total = (parteAberta ? parte.valor : 0) + fixas.reduce((s, c) => s + (Number(c.planejado) || 0), 0) + pend.reduce((s, t) => s + (+t.valor || 0), 0) + faturas.reduce((s, ff) => s + ff.total, 0);
+  if (!(parteAberta || fixas.length || pend.length || faturas.length)) return null;
+
+  const Badge = ({ emoji, bg }) => <div style={{ width: 32, height: 32, borderRadius: 10, background: bg || "rgba(24,33,29,.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, flexShrink: 0 }}>{emoji}</div>;
+  const Row = ({ badge, titulo, sub, valor, onPagar, txtBtn = "paguei" }) => (
+    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      {badge}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontSize: 13.5, fontWeight: 600 }}>{titulo}</div>
+        <div style={{ fontSize: 11, color: "var(--tinta-suave)" }}>{sub}</div>
+      </div>
+      <span className="num" style={{ color: "var(--coral)", fontSize: 14 }}>{F.fmt(valor)}</span>
+      <button className="btn btn-gold" style={{ padding: "6px 12px", fontSize: 12, display: "flex", alignItems: "center", gap: 4 }} onClick={onPagar}>
+        <I name="check" size={13} color="#1c2410" /> {txtBtn}
+      </button>
+    </div>
+  );
+
+  return (
+    <C style={{ padding: "14px 16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13.5, fontWeight: 700, marginBottom: 12 }}>
+        <I name="bell" size={16} color="var(--coral)" /> A pagar este mês
+        <span style={{ marginLeft: "auto", color: "var(--coral)" }} className="num">{F.fmt(total)}</span>
+      </div>
+      <div style={{ display: "grid", gap: 10 }}>
+        {parteAberta && (
+          <Row badge={<Badge emoji="🏠" bg="rgba(201,161,90,.18)" />} titulo="Sua parte da casa" sub="dividido no Conjunto" valor={parte.valor}
+            txtBtn="enviei" onPagar={() => { F.toggleParteCasa(perfil, mes); rl(); }} />
+        )}
+        {fixas.map((c) => (
+          <Row key={"m" + c.id} badge={<Badge emoji={c.emoji || "📦"} bg={(c.cor || "#5C6B67") + "22"} />} titulo={c.nome} sub="conta do mês" valor={Number(c.planejado) || 0} onPagar={() => { S.toggleMensal(c, mes); rl(); }} />
+        ))}
+        {faturas.map((ff) => (
+          <Row key={"f" + ff.cartaoId + ff.faturaMes} badge={<Badge emoji={ff.emoji || "💳"} bg={(ff.cor || "#5C6B67") + "22"} />} titulo={`Fatura ${ff.nome}`} sub={`vence ${F.fmtDate(ff.vencimento)}`} valor={ff.total} onPagar={() => { S.pagarFatura(ff.cartaoId, ff.faturaMes); rl(); }} />
+        ))}
+        {pend.map((t) => (
+          <Row key={t.id} badge={<Badge emoji="🧾" />} titulo={t.categoria || "Despesa"} sub={F.fmtDate(t.data)} valor={t.valor} onPagar={() => { S.saveTx(S.getTx().map((x) => x.id === t.id ? { ...x, status: "pago" } : x)); rl(); }} />
+        ))}
+      </div>
+    </C>
+  );
+}
+
+// ── Caixinhas da área individual ────────────────────────────────────────
+function AbaCaixinhasInd({ perfil, cor }) {
+  const [, f] = useState(0);
+  const rl = () => f((n) => n + 1);
+  const [open, setOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [cartaoOpen, setCartaoOpen] = useState(false);
+  const [editCartao, setEditCartao] = useState(null);
+  const S = F.scope(perfil);
+  const mes = F.currentMonth();
+  const caixas = S.getCaixinhas();
+  const cartoes = S.getCartoes();
+
+  return (
+    <div style={{ display: "grid", gap: 14 }}>
+      <C style={{ padding: 14, background: "linear-gradient(180deg,#fff,#FBF9F4)" }}>
+        <div style={{ fontSize: 13.5, fontWeight: 700 }}>Suas caixinhas</div>
+        <div style={{ fontSize: 12.5, color: "var(--tinta-suave)", marginTop: 4 }}>Organize seus gastos e contas fixas do mês, só suas.</div>
+      </C>
+
+      {caixas.length === 0 && (
+        <C style={{ padding: 16 }}>
+          <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 10 }}>Comece rápido:</div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {CAIXINHAS_SUGERIDAS.map((s) => (
+              <button key={s.nome} className="chip" style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 12px" }}
+                onClick={() => { S.saveCaixinhas([...S.getCaixinhas(), { id: F.uid(), nome: s.nome, emoji: s.emoji, cor: s.cor, planejado: 0 }]); rl(); }}>
+                <span style={{ fontSize: 16 }}>{s.emoji}</span> + {s.nome}
+              </button>
+            ))}
+          </div>
+        </C>
+      )}
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        {caixas.map((c) => {
+          const plan = Number(c.planejado) || 0;
+          const gasto = S.gastoCaixinha(c.id, mes);
+          const pct = plan > 0 ? Math.min(100, (gasto / plan) * 100) : 0;
+          const estourou = plan > 0 && gasto > plan;
+          const pagoMes = c.fixa && !!S.pagamentoMensal(c.id, mes);
+          return (
+            <C key={c.id} style={{ padding: 14 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }} onClick={() => { setEditing(c); setOpen(true); }}>
+                <div style={{ width: 34, height: 34, borderRadius: 10, background: (c.cor || "#5C6B67") + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{c.emoji || "📦"}</div>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontSize: 13.5, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.nome}</div>
+                  {c.fixa && <div style={{ fontSize: 10, color: "var(--tinta-suave)" }}>conta fixa</div>}
+                </div>
+              </div>
+              <div style={{ marginTop: 10, cursor: "pointer" }} onClick={() => { setEditing(c); setOpen(true); }}>
+                <div style={{ fontSize: 10.5, color: "var(--tinta-suave)" }}>{c.fixa ? "por mês" : "planejado"}</div>
+                <div className="num" style={{ fontSize: 17, color: "var(--petroleo)" }}>{plan > 0 ? F.fmt(plan) : "—"}</div>
+              </div>
+              {plan > 0 && !c.fixa && (
+                <div style={{ marginTop: 8 }}><MB pct={pct} color={estourou ? "var(--coral)" : cor} height={6} /><div style={{ fontSize: 10.5, color: estourou ? "var(--coral)" : "var(--tinta-suave)", marginTop: 4 }}>gasto {F.fmt(gasto)}</div></div>
+              )}
+              {c.fixa && plan > 0 && (
+                <button className="btn" style={{ width: "100%", marginTop: 10, padding: "7px", fontSize: 12, background: pagoMes ? "var(--petroleo-2)" : "var(--lima)", color: pagoMes ? "#fff" : "#1c2410", display: "flex", alignItems: "center", justifyContent: "center", gap: 5 }}
+                  onClick={() => { S.toggleMensal(c, mes); rl(); }}>
+                  <I name="check" size={14} color={pagoMes ? "#fff" : "#1c2410"} /> {pagoMes ? "pago este mês" : "marcar pago"}
+                </button>
+              )}
+            </C>
+          );
+        })}
+        <button onClick={() => { setEditing(null); setOpen(true); }} style={{ border: "1.5px dashed rgba(24,33,29,.22)", borderRadius: 20, background: "transparent", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6, minHeight: 110, color: "var(--tinta-suave)", cursor: "pointer" }}>
+          <I name="plus" size={22} /> <span style={{ fontSize: 12.5 }}>Nova caixinha</span>
+        </button>
+      </div>
+
+      {/* cartões pessoais */}
+      <div style={{ marginTop: 4 }}>
+        <div style={{ fontSize: 13.5, fontWeight: 700, margin: "4px 2px 10px", display: "flex", alignItems: "center", gap: 6 }}><I name="card" size={16} color="var(--tinta)" /> Seus cartões</div>
+        <div style={{ display: "grid", gap: 8 }}>
+          {cartoes.map((c) => {
+            const aberto = S.faturasAbertas().filter((ff) => ff.cartaoId === c.id).reduce((s, ff) => s + ff.total, 0);
+            return (
+              <C key={c.id} style={{ padding: "12px 14px", display: "flex", alignItems: "center", gap: 12, cursor: "pointer" }} onClick={() => { setEditCartao(c); setCartaoOpen(true); }}>
+                <div style={{ width: 38, height: 38, borderRadius: 11, background: (c.cor || "#18211D") + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{c.emoji || "💳"}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>{c.nome}</div>
+                  <div style={{ fontSize: 11.5, color: "var(--tinta-suave)" }}>fecha dia {c.fechamento} · vence dia {c.vencimento}</div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ fontSize: 10, color: "var(--tinta-suave)" }}>fatura aberta</div>
+                  <div className="num" style={{ fontSize: 15, color: aberto ? "var(--coral)" : "var(--tinta-suave)" }}>{aberto ? F.fmt(aberto) : "—"}</div>
+                </div>
+              </C>
+            );
+          })}
+          <button className="btn btn-ghost" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }} onClick={() => { setEditCartao(null); setCartaoOpen(true); }}>
+            <I name="plus" size={16} /> Adicionar cartão
+          </button>
+        </div>
+      </div>
+
+      <Mdl open={open} onClose={() => setOpen(false)} title={editing ? "Editar caixinha" : "Nova caixinha"} accent={cor}>
+        <CaixinhaForm initial={editing}
+          onSave={(d) => { let list = S.getCaixinhas(); if (editing) list = list.map((x) => x.id === editing.id ? { ...x, ...d } : x); else list.push({ id: F.uid(), ...d }); S.saveCaixinhas(list); setOpen(false); rl(); }}
+          onDelete={editing ? () => { S.saveCaixinhas(S.getCaixinhas().filter((x) => x.id !== editing.id)); setOpen(false); rl(); } : null} />
+      </Mdl>
+      <Mdl open={cartaoOpen} onClose={() => setCartaoOpen(false)} title={editCartao ? "Editar cartão" : "Novo cartão"} accent={cor}>
+        <CartaoForm initial={editCartao}
+          onSave={(d) => { let list = S.getCartoes(); if (editCartao) list = list.map((x) => x.id === editCartao.id ? { ...x, ...d } : x); else list.push({ id: F.uid(), ...d }); S.saveCartoes(list); setCartaoOpen(false); rl(); }}
+          onDelete={editCartao ? () => { S.saveCartoes(S.getCartoes().filter((x) => x.id !== editCartao.id)); setCartaoOpen(false); rl(); } : null} />
+      </Mdl>
+    </div>
+  );
+}
+
+// ── Chat individual ─────────────────────────────────────────────────────
+function AbaChatInd({ perfil }) {
+  return window.FinAssist ? <window.FinAssist.ChatAssistente ctx={window.FinAssist.ctxFor(perfil)} sub="Organize suas contas: mande em linguagem normal e vira lançamento. Só você vê. 💬" /> : null;
+}
+
+window.FinIndividual = { AbaMes, AbaLancamentos, AbaDividas, AbaCartaoDaniel, AbaMetas, AbaCaixinhasInd, AbaChatInd, APagarInd };

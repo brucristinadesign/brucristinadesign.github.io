@@ -81,7 +81,7 @@ function ConjuntoApp() {
       )}
 
       {aba === "inicio" && <AbaInicio mes={mes} reload={reload} />}
-      {aba === "chat" && window.FinAssist && <window.FinAssist.ChatAssistente reload={reload} />}
+      {aba === "chat" && window.FinAssist && <window.FinAssist.ChatAssistente ctx={window.FinAssist.ctxFor("conjunto")} reload={reload} />}
       {aba === "lancamentos" && <AbaLancamentosConj mes={mes} reload={reload} />}
       {aba === "caixinhas" && <AbaCaixinhas reload={reload} />}
       {aba === "metas" && <AbaMetasConjunto reload={reload} />}

@@ -2,7 +2,7 @@
    App.jsx — raiz: seleção de perfil, PIN, shell e navegação
    ══════════════════════════════════════════════════════════════════════ */
 const { Icon: AI, PinPad, cap } = window.FinUI;
-const { AbaMes, AbaLancamentos, AbaDividas, AbaCartaoDaniel, AbaMetas } = window.FinIndividual;
+const { AbaMes, AbaLancamentos, AbaDividas, AbaCartaoDaniel, AbaMetas, AbaCaixinhasInd, AbaChatInd } = window.FinIndividual;
 const { ConjuntoApp } = window.FinConjunto;
 
 const PERFIS = {
@@ -72,7 +72,9 @@ function AreaIndividual({ perfil, onSair }) {
   const isBruna = perfil === "bruna";
   const abas = [
     { id: "mes", label: "Mês", icon: "home" },
-    { id: "lanc", label: "Lançamentos", icon: "list" },
+    { id: "chat", label: "Assistente", icon: "users" },
+    { id: "lanc", label: "Lançar", icon: "list" },
+    { id: "caixinhas", label: "Caixinhas", icon: "target" },
     isBruna
       ? { id: "dividas", label: "Dívidas", icon: "snow" }
       : { id: "cartao", label: "Cartão", icon: "card" },
@@ -84,7 +86,9 @@ function AreaIndividual({ perfil, onSair }) {
       <Header perfil={perfil} onSair={onSair} />
       <div style={{ maxWidth: 480, margin: "0 auto", padding: "16px 16px 90px" }} key={tick}>
         {aba === "mes" && <AbaMes perfil={perfil} cor={p.cor} refresh={refresh} />}
+        {aba === "chat" && <AbaChatInd perfil={perfil} />}
         {aba === "lanc" && <AbaLancamentos perfil={perfil} cor={p.cor} refresh={refresh} />}
+        {aba === "caixinhas" && <AbaCaixinhasInd perfil={perfil} cor={p.cor} />}
         {aba === "dividas" && isBruna && <AbaDividas cor={p.cor} />}
         {aba === "cartao" && !isBruna && <AbaCartaoDaniel cor={p.cor} />}
         {aba === "metas" && <AbaMetas perfil={perfil} cor={p.cor} />}
@@ -151,14 +155,14 @@ function SyncBadge() {
 function TabBar({ abas, aba, setAba, cor }) {
   return (
     <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 30, background: "rgba(255,255,255,.92)", backdropFilter: "blur(12px)", borderTop: "1px solid rgba(31,75,68,.08)" }}>
-      <div style={{ maxWidth: 480, margin: "0 auto", display: "flex", padding: "8px 8px calc(8px + env(safe-area-inset-bottom))" }}>
+      <div style={{ maxWidth: 480, margin: "0 auto", display: "flex", padding: "8px 6px calc(8px + env(safe-area-inset-bottom))", overflowX: "auto" }}>
         {abas.map((a) => {
           const active = aba === a.id;
           return (
             <button key={a.id} onClick={() => setAba(a.id)}
-              style={{ flex: 1, background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "6px 4px", color: active ? cor : "var(--tinta-suave)" }}>
-              <AI name={a.icon} size={21} color={active ? cor : "var(--tinta-suave)"} />
-              <span style={{ fontSize: 11, fontWeight: active ? 600 : 500 }}>{a.label}</span>
+              style={{ flex: "1 0 auto", minWidth: 58, background: "none", border: "none", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, padding: "6px 4px", color: active ? cor : "var(--tinta-suave)" }}>
+              <AI name={a.icon} size={20} color={active ? cor : "var(--tinta-suave)"} />
+              <span style={{ fontSize: 10.5, fontWeight: active ? 700 : 500 }}>{a.label}</span>
             </button>
           );
         })}
