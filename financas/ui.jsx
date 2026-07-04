@@ -54,7 +54,7 @@ const Money = ({ value, size = 34, color = "var(--petroleo)", sign = false, clas
   const positive = v >= 0;
   const shown = F.fmtNum(Math.abs(v));
   return (
-    <span className={`num ${className}`} style={{ color, fontSize: size, lineHeight: 1, fontWeight: 500, whiteSpace: "nowrap" }}>
+    <span className={`num ${className}`} style={{ color, fontSize: size, lineHeight: 1, fontWeight: 700, whiteSpace: "nowrap" }}>
       <span style={{ fontSize: size * 0.52, opacity: 0.75, marginRight: 3 }}>
         {sign ? (positive ? "+R$" : "−R$") : "R$"}
       </span>
@@ -217,108 +217,120 @@ const MiniBar = ({ pct, color = "var(--petroleo)", height = 8 }) => {
 /* ══════════════════════════════════════════════════════════════════════
    GRÁFICOS
    ══════════════════════════════════════════════════════════════════════ */
-const CAT_COLORS = ["#1F4B44", "#2E655C", "#C9A15A", "#E86A5C", "#8BA888", "#6E8B84", "#B08840", "#A8586B", "#4C766D", "#D8B67A"];
+const CAT_COLORS = ["#18211D", "#CDEA46", "#D9D3F7", "#F5CDA8", "#8FD3B3", "#DD7E9C", "#6B62C6", "#F6E488", "#9AD9C9", "#B6D62F"];
 
-// Donut por categoria
-const Donut = ({ data, size = 168 }) => {
+// Donut interativo — anel de traço arredondado; toque numa fatia para focar
+const Donut = ({ data, size = 188, onSelect }) => {
+  const [sel, setSel] = useState(null);
   const total = data.reduce((s, d) => s + d.value, 0);
-  const r = size / 2, ir = r * 0.62, cx = r, cy = r;
   if (total <= 0)
     return (
       <div style={{ width: size, height: size, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--tinta-suave)", fontSize: 13 }}>
-        sem despesas
+        sem dados
       </div>
     );
-  let acc = 0;
-  const arc = (frac) => {
-    const a = 2 * Math.PI * frac - Math.PI / 2;
-    return [cx + r * Math.cos(a), cy + r * Math.sin(a), cx + ir * Math.cos(a), cy + ir * Math.sin(a)];
-  };
+  const sw = Math.round(size * 0.135);
+  const r = (size - sw) / 2 - 2, cx = size / 2, cy = size / 2;
+  const circ = Math.PI * 2, gap = data.length > 1 ? 0.05 : 0;
+  const pol = (ang, rad) => [cx + rad * Math.cos(ang), cy + rad * Math.sin(ang)];
+  const arcPath = (a0, a1) => { const large = (a1 - a0) > Math.PI ? 1 : 0; const [x0, y0] = pol(a0, r), [x1, y1] = pol(a1, r); return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${r} ${r} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`; };
+  let acc = -Math.PI / 2;
+  const segs = data.map((d, i) => { const frac = d.value / total; const a0 = acc + gap / 2, a1 = acc + frac * circ - gap / 2; acc += frac * circ; return { d, i, a0, a1: Math.max(a1, a0 + 0.001) }; });
+  const shown = sel != null ? data[sel] : null;
+  const pick = (i) => { const n = sel === i ? null : i; setSel(n); onSelect && onSelect(n == null ? null : data[n]); };
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-      {data.map((d, i) => {
-        const frac = d.value / total;
-        const [x1, y1, xi1, yi1] = arc(acc);
-        acc += frac;
-        const [x2, y2, xi2, yi2] = arc(acc);
-        const large = frac > 0.5 ? 1 : 0;
-        const path = `M${x1} ${y1} A${r} ${r} 0 ${large} 1 ${x2} ${y2} L${xi2} ${yi2} A${ir} ${ir} 0 ${large} 0 ${xi1} ${yi1} Z`;
-        return <path key={i} d={path} fill={d.color || CAT_COLORS[i % CAT_COLORS.length]} stroke="#fff" strokeWidth="1.5" />;
-      })}
-      <circle cx={cx} cy={cy} r={ir - 2} fill="#fff" />
-      <text x={cx} y={cy - 4} textAnchor="middle" fontFamily="Inter" fontSize="11" fill="var(--tinta-suave)">total</text>
-      <text x={cx} y={cy + 15} textAnchor="middle" fontFamily="Fraunces, serif" fontSize="17" fontWeight="600" fill="var(--petroleo)">
-        {F.fmt(total)}
-      </text>
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ overflow: "visible" }}>
+      {data.length === 1
+        ? <circle cx={cx} cy={cy} r={r} fill="none" stroke={data[0].color || CAT_COLORS[0]} strokeWidth={sw} />
+        : segs.map((s) => (
+          <path key={s.i} d={arcPath(s.a0, s.a1)} fill="none" stroke={s.d.color || CAT_COLORS[s.i % CAT_COLORS.length]}
+            strokeWidth={sel === s.i ? sw + 7 : sw} strokeLinecap="round"
+            opacity={sel == null || sel === s.i ? 1 : 0.3}
+            onClick={() => pick(s.i)} style={{ cursor: "pointer", transition: "stroke-width .18s ease, opacity .18s ease" }} />
+        ))}
+      <text x={cx} y={cy - 8} textAnchor="middle" fontSize="11.5" fontWeight="600" fill="var(--tinta-suave)">{shown ? shown.label : "total"}</text>
+      <text x={cx} y={cy + 15} textAnchor="middle" className="num" fontSize={shown && (shown.label || "").length > 8 ? "16" : "19"} fontWeight="700" fill="var(--tinta)">{F.fmt(shown ? shown.value : total)}</text>
+      {shown && <text x={cx} y={cy + 33} textAnchor="middle" fontSize="11" fill="var(--tinta-suave)">{Math.round((shown.value / total) * 100)}%</text>}
     </svg>
   );
 };
 
-// Comparação de 2 meses (barras)
+// Comparação de 2 meses — barras arredondadas, toque pra ver o valor
 const CompareBars = ({ atual, anterior, labelAtual, labelAnterior }) => {
+  const [sel, setSel] = useState(null); // {g,t,v}
   const max = Math.max(atual.receitas, atual.despesas, anterior.receitas, anterior.despesas, 1);
-  const Bar = ({ v, color, w = max }) => (
-    <div style={{ flex: 1 }}>
-      <div style={{ height: 90, display: "flex", alignItems: "flex-end" }}>
-        <div style={{ width: "100%", height: `${(v / w) * 100}%`, minHeight: 4, background: color, borderRadius: "8px 8px 0 0", transition: "height .5s ease" }} />
+  const Bar = ({ v, color, id }) => {
+    const on = sel && sel.id === id;
+    return (
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer" }} onClick={() => setSel(on ? null : { id, v })}>
+        <div style={{ fontSize: 10.5, fontWeight: 700, color: "var(--tinta)", height: 14, opacity: on ? 1 : 0, transition: "opacity .15s" }}>{F.fmt(v)}</div>
+        <div style={{ height: 96, width: "100%", display: "flex", alignItems: "flex-end" }}>
+          <div style={{ width: "100%", height: `${(v / max) * 100}%`, minHeight: 6, background: color, borderRadius: 999, transition: "height .5s ease", boxShadow: on ? "0 0 0 3px rgba(24,33,29,.08)" : "none" }} />
+        </div>
       </div>
-    </div>
-  );
-  const Group = ({ r, d, label, faded }) => (
-    <div style={{ textAlign: "center", flex: 1, opacity: faded ? 0.75 : 1 }}>
-      <div style={{ display: "flex", gap: 6, alignItems: "flex-end", padding: "0 6px" }}>
-        <Bar v={r.receitas} color="var(--petroleo-2)" />
-        <Bar v={r.despesas} color="var(--coral)" />
+    );
+  };
+  const Group = ({ r, label, faded, k }) => (
+    <div style={{ textAlign: "center", flex: 1, opacity: faded ? 0.55 : 1 }}>
+      <div style={{ display: "flex", gap: 8, alignItems: "flex-end", padding: "0 8px" }}>
+        <Bar v={r.receitas} color="var(--petroleo-2)" id={k + "r"} />
+        <Bar v={r.despesas} color="var(--coral)" id={k + "d"} />
       </div>
-      <div style={{ fontSize: 12, color: "var(--tinta-suave)", marginTop: 6 }}>{label}</div>
+      <div style={{ fontSize: 12, color: "var(--tinta-suave)", marginTop: 8, fontWeight: 600 }}>{label}</div>
     </div>
   );
   return (
     <div>
-      <div style={{ display: "flex", gap: 14 }}>
-        <Group r={anterior} label={labelAnterior} faded />
-        <div style={{ width: 1, background: "rgba(31,75,68,.1)" }} />
-        <Group r={atual} label={labelAtual} />
+      <div style={{ display: "flex", gap: 16 }}>
+        <Group r={anterior} label={labelAnterior} faded k="a" />
+        <Group r={atual} label={labelAtual} k="b" />
       </div>
-      <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 12, fontSize: 12.5 }}>
-        <Legend color="var(--petroleo-2)" text="receitas" />
-        <Legend color="var(--coral)" text="despesas" />
+      <div style={{ display: "flex", gap: 16, justifyContent: "center", marginTop: 14, fontSize: 12.5 }}>
+        <Legend color="var(--petroleo-2)" text="entrou" />
+        <Legend color="var(--coral)" text="saiu" />
       </div>
     </div>
   );
 };
 const Legend = ({ color, text }) => (
-  <span style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--tinta-suave)" }}>
-    <span style={{ width: 11, height: 11, borderRadius: 3, background: color }} /> {text}
+  <span style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--tinta-suave)", fontWeight: 600 }}>
+    <span style={{ width: 10, height: 10, borderRadius: 999, background: color }} /> {text}
   </span>
 );
 
-// Linha — patrimônio ao longo do tempo
-const LineChart = ({ serie, height = 180 }) => {
+// Linha — evolução; toque num ponto para ver o valor
+const LineChart = ({ serie, height = 190 }) => {
   const pts = serie.length ? serie : [{ mes: F.currentMonth(), patrimonio: 0 }];
-  const W = 640, H = height, padL = 8, padR = 8, padT = 16, padB = 26;
+  const [sel, setSel] = useState(pts.length - 1);
+  const W = 640, H = height, padL = 14, padR = 14, padT = 34, padB = 28;
   const vals = pts.map((p) => p.patrimonio);
   const min = Math.min(0, ...vals), max = Math.max(1, ...vals);
   const x = (i) => padL + (pts.length === 1 ? (W - padL - padR) / 2 : (i / (pts.length - 1)) * (W - padL - padR));
   const y = (v) => padT + (1 - (v - min) / (max - min || 1)) * (H - padT - padB);
+  // curva suave (catmull-rom simplificada)
   const line = pts.map((p, i) => `${i === 0 ? "M" : "L"}${x(i).toFixed(1)} ${y(p.patrimonio).toFixed(1)}`).join(" ");
   const area = `${line} L${x(pts.length - 1)} ${H - padB} L${x(0)} ${H - padB} Z`;
+  const si = Math.min(Math.max(sel, 0), pts.length - 1);
   return (
     <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ overflow: "visible" }}>
       <defs>
         <linearGradient id="patrimGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="var(--dourado)" stopOpacity="0.35" />
-          <stop offset="100%" stopColor="var(--dourado)" stopOpacity="0" />
+          <stop offset="0%" stopColor="var(--lima)" stopOpacity="0.55" />
+          <stop offset="100%" stopColor="var(--lima)" stopOpacity="0" />
         </linearGradient>
       </defs>
       <path d={area} fill="url(#patrimGrad)" />
-      <path d={line} fill="none" stroke="var(--dourado-2)" strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
+      <path d={line} fill="none" stroke="var(--tinta)" strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round" />
+      {/* valor do ponto selecionado */}
+      <g transform={`translate(${x(si)}, ${y(pts[si].patrimonio)})`}>
+        <line x1="0" y1="0" x2="0" y2={H - padB - y(pts[si].patrimonio)} stroke="rgba(24,33,29,.15)" strokeWidth="1.5" strokeDasharray="3 3" />
+        <text x="0" y="-16" textAnchor="middle" className="num" fontSize="16" fontWeight="700" fill="var(--tinta)">{F.fmt(pts[si].patrimonio)}</text>
+      </g>
       {pts.map((p, i) => (
-        <g key={i}>
-          <circle cx={x(i)} cy={y(p.patrimonio)} r="4.5" fill="#fff" stroke="var(--dourado-2)" strokeWidth="2.5" />
-          <text x={x(i)} y={H - 8} textAnchor="middle" fontFamily="Inter" fontSize="11" fill="var(--tinta-suave)">
-            {F.monthLabel(p.mes)}
-          </text>
+        <g key={i} onClick={() => setSel(i)} style={{ cursor: "pointer" }}>
+          <rect x={x(i) - 18} y={0} width="36" height={H} fill="transparent" />
+          <circle cx={x(i)} cy={y(p.patrimonio)} r={i === si ? 7 : 4.5} fill={i === si ? "var(--lima)" : "#fff"} stroke="var(--tinta)" strokeWidth="2.5" style={{ transition: "r .15s ease" }} />
+          <text x={x(i)} y={H - 8} textAnchor="middle" fontSize="11" fontWeight="600" fill={i === si ? "var(--tinta)" : "var(--tinta-suave)"}>{F.monthLabel(p.mes)}</text>
         </g>
       ))}
     </svg>

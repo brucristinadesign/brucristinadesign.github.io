@@ -1,35 +1,47 @@
 /* ══════════════════════════════════════════════════════════════════════
-   styles.css — identidade visual do app de finanças
-   Paleta: verde-petróleo (confiança) · areia (fundo) ·
-           coral (alerta) · dourado (conquista)
-   Tipografia: serifada com personalidade nos números grandes,
-               sans-serif neutra no resto.
+   styles.css — visual flat, minimalista e moderno (refs: Noh / fintech)
+   Fundo off-white · números grandes em sans bold · tiles pastéis
+   (lavanda, verde-limão, amarelo, pêssego) · botões pretos/limão · cantos
+   bem arredondados.
    ══════════════════════════════════════════════════════════════════════ */
 
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&display=swap");
 
 :root {
-  --petroleo: #1F4B44;
-  --petroleo-2: #2E655C;
-  --areia: #F6F1E9;
-  --areia-2: #EDE5D6;
-  --coral: #E86A5C;
-  --dourado: #C9A15A;
-  --dourado-2: #B08840;
-  --tinta: #23312E;
-  --tinta-suave: #5C6B67;
+  /* base */
+  --tinta: #18211D;          /* quase-preto (texto, números, botão primário) */
+  --tinta-suave: #7A847F;
+  --areia: #F1F0EB;          /* fundo off-white */
+  --areia-2: #E7E5DE;
 
-  /* cor de identidade por perfil (traço lateral) */
-  --daniel: #2F6E63;
-  --bruna: #A8586B;
-  --conjunto: #C9A15A;
+  /* "petroleo" reaproveitado como primário quase-preto (compat. c/ código) */
+  --petroleo: #18211D;
+  --petroleo-2: #2E9E67;     /* verde: entradas / positivo */
 
-  --serif: "Fraunces", "Georgia", serif;
-  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* acentos pastéis */
+  --lima: #CDEA46;
+  --lima-2: #B6D62F;
+  --lavanda: #D9D3F7;
+  --amarelo: #F6E488;
+  --pessego: #F5CDA8;
+  --coral: #EC6A54;          /* alerta / saiu */
 
-  --sombra: 0 1px 2px rgba(31, 75, 68, .06), 0 8px 24px rgba(31, 75, 68, .08);
-  --sombra-forte: 0 12px 40px rgba(31, 75, 68, .18);
-  --radius: 18px;
+  /* semânticos usados no código */
+  --dourado: #CDEA46;        /* conquista/meta => verde-limão */
+  --dourado-2: #7E9A1E;
+
+  /* identidade de perfil */
+  --daniel: #6B62C6;         /* lavanda-roxo */
+  --bruna: #DD7E9C;          /* rosa */
+  --conjunto: #171717;       /* preto (área do casal) */
+
+  --sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: var(--sans);      /* números agora em sans bold */
+
+  --sombra: 0 1px 2px rgba(24, 33, 29, .03), 0 6px 20px rgba(24, 33, 29, .05);
+  --sombra-forte: 0 14px 44px rgba(24, 33, 29, .16);
+  --radius: 26px;
+  --linha: 1px solid rgba(24, 33, 29, .07);
 }
 
 * { box-sizing: border-box; }
@@ -39,148 +51,92 @@ body {
   background: var(--areia);
   color: var(--tinta);
   -webkit-font-smoothing: antialiased;
-  font-weight: 400;
+  text-rendering: optimizeLegibility;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 button { font: inherit; cursor: pointer; }
 input, select, textarea { font: inherit; }
 
-.num {
-  font-family: var(--serif);
-  font-variant-numeric: tabular-nums lining-nums;
-  letter-spacing: -0.01em;
-}
-.serif { font-family: var(--serif); }
+/* números grandes: sans bold, bem apertados (estilo fintech) */
+.num { font-family: var(--sans); font-weight: 700; font-variant-numeric: tabular-nums lining-nums; letter-spacing: -0.035em; }
+.serif { font-family: var(--sans); font-weight: 700; letter-spacing: -0.02em; }
 
-/* ── Fundo com textura sutil de areia ──────────────────────────────── */
-.app-bg {
-  min-height: 100dvh;
-  background:
-    radial-gradient(1200px 600px at 90% -10%, rgba(201,161,90,.10), transparent 60%),
-    radial-gradient(900px 500px at -10% 110%, rgba(31,75,68,.06), transparent 55%),
-    var(--areia);
-}
+.app-bg { min-height: 100dvh; background: var(--areia); }
 
-/* ── Cartões ───────────────────────────────────────────────────────── */
+/* ── Cartões: brancos, bem arredondados, planos ─────────────────────── */
 .card {
   background: #fff;
   border-radius: var(--radius);
   box-shadow: var(--sombra);
-  border: 1px solid rgba(31,75,68,.06);
+  border: var(--linha);
 }
+/* traço de identidade: barra fina flush à esquerda (não cruza o conteúdo) */
 .card--stripe { position: relative; overflow: hidden; }
 .card--stripe::before {
-  content: "";
-  position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
-  background: var(--stripe, var(--petroleo));
+  content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+  background: var(--stripe, var(--petroleo)); opacity: .95;
 }
+.card--stripe > * { position: relative; }
 
-/* ── Barra "caminho com marcos" — elemento de assinatura ───────────── */
-.path {
-  position: relative;
-  width: 100%;
-}
+/* ── "Caminho com marcos" ───────────────────────────────────────────── */
+.path { position: relative; width: 100%; }
 .path svg { display: block; width: 100%; overflow: visible; }
-.path .milestone-flag {
-  transform-box: fill-box;
-  transform-origin: center bottom;
-  animation: flag-wave 2.4s ease-in-out infinite;
-}
-@keyframes flag-wave {
-  0%, 100% { transform: rotate(-2deg); }
-  50%      { transform: rotate(3deg); }
-}
-.path .traveler {
-  filter: drop-shadow(0 3px 5px rgba(31,75,68,.35));
-}
+.path .milestone-flag { transform-box: fill-box; transform-origin: center bottom; animation: flag-wave 2.6s ease-in-out infinite; }
+@keyframes flag-wave { 0%,100%{transform:rotate(-2deg);} 50%{transform:rotate(3deg);} }
+.path .traveler { filter: drop-shadow(0 2px 4px rgba(24,33,29,.22)); }
 
-/* ── Celebração ao quitar ──────────────────────────────────────────── */
-@keyframes pop-celebrate {
-  0%   { transform: scale(.6) rotate(-8deg); opacity: 0; }
-  60%  { transform: scale(1.12) rotate(3deg); opacity: 1; }
-  100% { transform: scale(1) rotate(0); opacity: 1; }
-}
+/* ── Celebração ─────────────────────────────────────────────────────── */
+@keyframes pop-celebrate { 0%{transform:scale(.6) rotate(-8deg);opacity:0;} 60%{transform:scale(1.12) rotate(3deg);opacity:1;} 100%{transform:scale(1) rotate(0);opacity:1;} }
 .celebrate { animation: pop-celebrate .5s cubic-bezier(.2,.9,.3,1.3) both; }
-
-@keyframes confetti-fall {
-  0%   { transform: translateY(-20px) rotate(0); opacity: 1; }
-  100% { transform: translateY(120px) rotate(320deg); opacity: 0; }
-}
+@keyframes confetti-fall { 0%{transform:translateY(-20px) rotate(0);opacity:1;} 100%{transform:translateY(120px) rotate(320deg);opacity:0;} }
 .confetti-piece { animation: confetti-fall 1.1s ease-in forwards; }
+@keyframes fade-up { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
+.fade-up { animation: fade-up .32s ease both; }
 
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.fade-up { animation: fade-up .35s ease both; }
-
-/* ── PIN pad ───────────────────────────────────────────────────────── */
-.pin-dot {
-  width: 15px; height: 15px; border-radius: 50%;
-  border: 2px solid var(--petroleo);
-  transition: transform .15s ease, background .15s ease;
-}
-.pin-dot.filled { background: var(--petroleo); transform: scale(1.1); }
+/* ── PIN pad ────────────────────────────────────────────────────────── */
+.pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--tinta); transition: transform .15s ease, background .15s ease; }
+.pin-dot.filled { background: var(--tinta); transform: scale(1.08); }
 .pin-key {
-  width: 68px; height: 68px; border-radius: 50%;
-  background: #fff; border: 1px solid rgba(31,75,68,.12);
-  font-family: var(--serif); font-size: 24px; color: var(--tinta);
+  width: 66px; height: 66px; border-radius: 20px;
+  background: #fff; border: var(--linha);
+  font-family: var(--sans); font-weight: 600; font-size: 23px; color: var(--tinta);
   box-shadow: var(--sombra);
   transition: transform .08s ease, background .12s ease;
 }
 .pin-key:active { transform: scale(.94); background: var(--areia-2); }
-@keyframes shake {
-  10%, 90% { transform: translateX(-2px); }
-  30%, 70% { transform: translateX(5px); }
-  50% { transform: translateX(-7px); }
-}
+@keyframes shake { 10%,90%{transform:translateX(-2px);} 30%,70%{transform:translateX(5px);} 50%{transform:translateX(-7px);} }
 .shake { animation: shake .4s both; }
 
-/* ── Inputs ────────────────────────────────────────────────────────── */
+/* ── Inputs ─────────────────────────────────────────────────────────── */
 .fin-input, .fin-select {
-  width: 100%;
-  background: var(--areia);
-  border: 1px solid rgba(31,75,68,.14);
-  border-radius: 12px;
-  padding: 11px 13px;
-  color: var(--tinta);
-  outline: none;
+  width: 100%; background: #fff;
+  border: 1px solid rgba(24, 33, 29, .12); border-radius: 16px;
+  padding: 13px 15px; color: var(--tinta); outline: none;
   transition: border-color .15s ease, box-shadow .15s ease;
 }
-.fin-input:focus, .fin-select:focus {
-  border-color: var(--petroleo);
-  box-shadow: 0 0 0 3px rgba(31,75,68,.12);
-  background: #fff;
-}
-.fin-label { font-size: 12.5px; font-weight: 600; color: var(--tinta-suave); }
+.fin-input::placeholder { color: #AAB2AE; }
+.fin-input:focus, .fin-select:focus { border-color: var(--tinta); box-shadow: 0 0 0 3px rgba(24, 33, 29, .08); }
+.fin-label { font-size: 12px; font-weight: 600; color: var(--tinta-suave); letter-spacing: .01em; }
 
-.btn {
-  border: none; border-radius: 12px; padding: 11px 18px;
-  font-weight: 600; transition: transform .08s ease, filter .15s ease;
-}
+/* ── Botões: pretos / limão, bem arredondados ───────────────────────── */
+.btn { border: none; border-radius: 999px; padding: 13px 22px; font-weight: 700; letter-spacing: -0.01em; transition: transform .08s ease, filter .15s ease, background .15s ease; }
 .btn:active { transform: translateY(1px); }
-.btn-primary { background: var(--petroleo); color: #fff; }
-.btn-primary:hover { filter: brightness(1.08); }
-.btn-gold { background: var(--dourado); color: #2b230f; }
-.btn-ghost { background: transparent; color: var(--petroleo); border: 1px solid rgba(31,75,68,.2); }
+.btn-primary { background: var(--tinta); color: #fff; }
+.btn-primary:hover { filter: brightness(1.15); }
+.btn-gold { background: var(--lima); color: #1c2410; }        /* CTA verde-limão */
+.btn-gold:hover { filter: brightness(1.03); }
+.btn-ghost { background: transparent; color: var(--tinta); border: 1px solid rgba(24,33,29,.14); }
+.btn-ghost:hover { background: rgba(24,33,29,.04); }
 .btn-danger { background: transparent; color: var(--coral); }
 
-/* ── Chips / tabs ──────────────────────────────────────────────────── */
-.chip {
-  padding: 7px 14px; border-radius: 999px; font-size: 13.5px; font-weight: 500;
-  background: #fff; color: var(--tinta-suave);
-  border: 1px solid rgba(31,75,68,.12); white-space: nowrap;
-  transition: all .15s ease;
-}
-.chip.active { background: var(--petroleo); color: #fff; border-color: var(--petroleo); }
+/* ── Chips / tabs ───────────────────────────────────────────────────── */
+.chip { padding: 9px 16px; border-radius: 999px; font-size: 13.5px; font-weight: 600; background: #fff; color: var(--tinta-suave); border: 1px solid rgba(24,33,29,.09); white-space: nowrap; transition: all .15s ease; }
+.chip.active { background: var(--tinta); color: #fff; border-color: var(--tinta); }
 
 .tab-underline { position: relative; }
-.tab-underline.active::after {
-  content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 3px;
-  border-radius: 3px; background: var(--accent, var(--petroleo));
-}
+.tab-underline.active::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 3px; border-radius: 3px; background: var(--accent, var(--tinta)); }
 
-/* ── Scrollbar discreta ────────────────────────────────────────────── */
-::-webkit-scrollbar { height: 8px; width: 8px; }
-::-webkit-scrollbar-thumb { background: rgba(31,75,68,.18); border-radius: 8px; }
-
+::-webkit-scrollbar { height: 7px; width: 7px; }
+::-webkit-scrollbar-thumb { background: rgba(24,33,29,.14); border-radius: 8px; }
 .tabnums { font-variant-numeric: tabular-nums; }
