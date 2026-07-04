@@ -136,6 +136,29 @@
     "Assinaturas", "Saúde", "Salário", "Extra", "Outros",
   ];
 
+  // Catálogo rico (ícone + cor) — estilo Mobills, para lançamento rápido
+  const CATEGORIA_META = {
+    "Moradia":     { icon: "home",  cor: "#1F4B44" },
+    "Mercado":     { icon: "cart",  cor: "#2E655C" },
+    "Contas":      { icon: "bolt",  cor: "#B08840" },
+    "Transporte":  { icon: "car",   cor: "#4C766D" },
+    "Restaurante": { icon: "food",  cor: "#E86A5C" },
+    "Lazer":       { icon: "ticket",cor: "#C9A15A" },
+    "Saúde":       { icon: "heart", cor: "#A8586B" },
+    "Assinaturas": { icon: "tv",    cor: "#6E8B84" },
+    "Educação":    { icon: "book",  cor: "#8BA888" },
+    "Pets":        { icon: "paw",   cor: "#D8B67A" },
+    "Salário":     { icon: "coin",  cor: "#2E655C" },
+    "Extra":       { icon: "coin",  cor: "#C9A15A" },
+    "Outros":      { icon: "dots",  cor: "#5C6B67" },
+  };
+  // categorias oferecidas na área Conjunto (despesas da casa)
+  const CATEGORIAS_CASA = [
+    "Moradia", "Mercado", "Contas", "Transporte", "Restaurante",
+    "Lazer", "Saúde", "Assinaturas", "Educação", "Pets", "Outros",
+  ];
+  const catMeta = (nome) => CATEGORIA_META[nome] || { icon: "dots", cor: "#5C6B67" };
+
   // ── Transações (individual) ─────────────────────────────────────────
   const txKey = (perfil) => `individual:${perfil}:transacoes`;
   const getTx = (perfil) => store.get(txKey(perfil), []);
@@ -185,6 +208,18 @@
   const conjMetasKey = () => `conjunto:metas`;
   const getConjMetas = () => store.get(conjMetasKey(), []);
   const saveConjMetas = (list) => store.set(conjMetasKey(), list);
+
+  // tags reutilizáveis da área Conjunto (estilo Mobills)
+  const conjTagsKey = () => `conjunto:tags`;
+  const getConjTags = () => store.get(conjTagsKey(), []);
+  const saveConjTags = (list) => store.set(conjTagsKey(), list);
+  const registrarTags = (tags) => {
+    if (!tags || !tags.length) return;
+    const atuais = getConjTags();
+    const set = new Set(atuais);
+    tags.forEach((t) => { const v = String(t).trim(); if (v) set.add(v); });
+    saveConjTags(Array.from(set));
+  };
 
   const conjConfigKey = () => `conjunto:config`;
   const getConjConfig = () =>
@@ -329,8 +364,9 @@
   // ── Conjunto: quem deve quem no mês ─────────────────────────────────
   function acertoConjunto(mk) {
     const cfg = getConjConfig();
+    // só entra no acerto o que já foi pago (dinheiro realmente adiantado)
     const tx = getConjTx().filter(
-      (t) => monthKey(t.data) === mk && t.tipo !== "receita"
+      (t) => monthKey(t.data) === mk && t.tipo !== "receita" && t.status !== "pendente"
     );
     const totalGasto = tx.reduce((s, t) => s + (Number(t.valor) || 0), 0);
 
@@ -359,6 +395,18 @@
       deviaDaniel, deviaBruna, pctD, pctB,
       acerto, quemPaga, quemRecebe, itens: tx,
     };
+  }
+
+  // ── Saldo do casal (conta única — modelo Noh) ───────────────────────
+  // Tudo é conjunto; o que importa é o que entrou vs. o que saiu.
+  function saldoConjuntoGeral() {
+    let entrou = 0, saiu = 0;
+    getConjTx().forEach((t) => {
+      if (t.status === "pendente") return;         // pendente não movimenta o saldo
+      const v = Number(t.valor) || 0;
+      if (t.tipo === "receita") entrou += v; else saiu += v;
+    });
+    return { entrou, saiu, saldo: entrou - saiu };
   }
 
   // ── Patrimônio conjunto ao longo do tempo ───────────────────────────
@@ -459,6 +507,8 @@
   window.FinData = {
     store, uid, fmt, fmtNum, fmtDate, todayISO, monthKey, currentMonth,
     monthLabel, prevMonthKey, daysUntil, dateInMonths, MONTH_NAMES, CATEGORIAS,
+    CATEGORIA_META, CATEGORIAS_CASA, catMeta,
+    getConjTags, saveConjTags, registrarTags,
     // pin
     hasPin, setPin, checkPin,
     // transações
@@ -476,7 +526,7 @@
     getConjConfig, saveConjConfig, getPatrim, savePatrim,
     // regras
     resumoMes, snowball, planoMeta, acertoConjunto, seriePatrimonio,
-    recorrentesProximas,
+    saldoConjuntoGeral, recorrentesProximas,
     // demo
     seedDemo,
   };
