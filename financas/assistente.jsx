@@ -13,7 +13,7 @@ const PALAVRAS_CAIXA = {
   "Restaurante": ["restaurante", "ifood", "lanche", "comida", "almoço", "almoco", "janta", "jantar", "pizza", "delivery", "padaria", "café", "cafe"],
   "Pets": ["pet", "pets", "ração", "racao", "cachorro", "gato", "veterinario", "veterinário", "petshop"],
   "Segurança": ["seguranca", "segurança", "alarme", "portaria"],
-  "Transporte": ["transporte", "uber", "99", "gasolina", "combustivel", "combustível", "onibus", "ônibus", "metro", "metrô", "estacionamento", "pedagio", "pedágio"],
+  "Transporte": ["transporte", "uber", "gasolina", "combustivel", "combustível", "onibus", "ônibus", "metro", "metrô", "estacionamento", "pedagio", "pedágio", "99app"],
   "Lazer": ["lazer", "cinema", "netflix", "spotify", "bar", "festa", "viagem", "passeio", "show", "rolê", "role"],
   "Saúde": ["saude", "saúde", "farmacia", "farmácia", "remedio", "remédio", "medico", "médico", "consulta", "academia", "dentista", "exame"],
 };
@@ -75,9 +75,11 @@ function parseData(txt) {
 }
 
 function detectCaixa(txt) {
-  const t = _norm(txt);
+  let t = " " + _norm(txt) + " ";
+  t = t.replace(/\d+(?:[.,]\d+)?/g, " ");   // remove valores/números (não confundir com categoria)
+  const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   for (const [nome, palavras] of Object.entries(PALAVRAS_CAIXA)) {
-    if (palavras.some((p) => t.includes(_norm(p)))) return nome;
+    if (palavras.some((p) => new RegExp("\\b" + esc(_norm(p)) + "\\b").test(t))) return nome;
   }
   return null;
 }
@@ -175,9 +177,16 @@ function interpretar(textoOriginal, ctx) {
     cartao = cartoes.find((c) => t.includes(_norm(c.nome))) || cartoes[0];
   }
   let caixaNome = detectCaixa(txt);
+  // prioriza uma caixinha que o usuário já criou (casa pelo nome dela)
+  const _semNum = " " + _norm(txt).replace(/\d+(?:[.,]\d+)?/g, " ") + " ";
+  const cxMatch = ctx.getCaixinhas().find((c) => new RegExp("\\b" + _norm(c.nome).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\b").test(_semNum));
+  if (cxMatch) caixaNome = cxMatch.nome;
   if (cartao && caixaNome && _norm(caixaNome) === _norm(cartao.nome)) caixaNome = null;
   const caixaId = caixaNome ? garantirCaixa(caixaNome, ctx) : null;
   const nomeCat = caixaNome || "Outros";
+  // caixinha vinculada a uma pessoa → herda a tag (organiza o valor de cada um)
+  const caixaObj = caixaId ? ctx.getCaixinhas().find((c) => c.id === caixaId) : null;
+  if (caixaObj && caixaObj.dono) { const T = caixaObj.dono[0].toUpperCase() + caixaObj.dono.slice(1); if (!tags.includes(T)) tags.push(T); }
   if (tags.length) ctx.registrarTags(tags);
 
   if (cartao) {

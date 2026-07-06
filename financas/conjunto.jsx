@@ -354,6 +354,9 @@ function ConjTxForm({ initial, dataMes, onSave, onDelete }) {
     const n = parcelado ? Math.min(48, Math.max(2, parseInt(nParc, 10) || 2)) : 1;
     const centavos = Math.round(v * 100), base = Math.floor(centavos / n), grupo = F.uid();
     const metPix = cartao ? cartao.id : "avista";
+    // caixinha vinculada a uma pessoa → herda a tag (organiza o valor de cada um)
+    const tagsF = [...tags];
+    if (caixaObj && caixaObj.dono) { const T = caixaObj.dono[0].toUpperCase() + caixaObj.dono.slice(1); if (!tagsF.includes(T)) tagsF.push(T); }
 
     // CARTÃO (forma de pagamento): compra cai na fatura; parcelas em faturas seguintes.
     // A CAIXINHA (categoria) é preservada — ex: Mercado pago no Noh.
@@ -363,7 +366,7 @@ function ConjTxForm({ initial, dataMes, onSave, onDelete }) {
       for (let i = 0; i < n; i++) {
         const val = (i === n - 1 ? centavos - base * (n - 1) : base) / 100;
         const venc = shiftMonthISO(f0.vencimento, i);
-        items.push({ tipo: "despesa", valor: val, caixinha: caixinhaId, categoria: nomeCat, metodo: cartao.id, status: "fatura", fatura: venc.slice(0, 7), vencimento: venc, data: venc, dataCompra: data, tags, ...(n > 1 ? { parcela: `${i + 1}/${n}`, grupoParcela: grupo } : {}) });
+        items.push({ tipo: "despesa", valor: val, caixinha: caixinhaId, categoria: nomeCat, metodo: cartao.id, status: "fatura", fatura: venc.slice(0, 7), vencimento: venc, data: venc, dataCompra: data, tags: tagsF, ...(n > 1 ? { parcela: `${i + 1}/${n}`, grupoParcela: grupo } : {}) });
       }
       onSave(items.length === 1 ? items[0] : items);
       return;
@@ -374,12 +377,12 @@ function ConjTxForm({ initial, dataMes, onSave, onDelete }) {
       const items = [];
       for (let i = 0; i < n; i++) {
         const val = (i === n - 1 ? centavos - base * (n - 1) : base) / 100;
-        items.push({ tipo: "despesa", valor: val, caixinha: caixinhaId, categoria: nomeCat, metodo: "avista", data: shiftMonthISO(data, i), status: i === 0 ? status : "pendente", tags, parcela: `${i + 1}/${n}`, grupoParcela: grupo });
+        items.push({ tipo: "despesa", valor: val, caixinha: caixinhaId, categoria: nomeCat, metodo: "avista", data: shiftMonthISO(data, i), status: i === 0 ? status : "pendente", tags: tagsF, parcela: `${i + 1}/${n}`, grupoParcela: grupo });
       }
       onSave(items);
       return;
     }
-    onSave({ tipo, valor: v, caixinha: caixinhaId, categoria: nomeCat, metodo: metPix, data, status: tipo === "receita" ? "pago" : status, tags });
+    onSave({ tipo, valor: v, caixinha: caixinhaId, categoria: nomeCat, metodo: metPix, data, status: tipo === "receita" ? "pago" : status, tags: tagsF });
   };
 
   return (
@@ -629,7 +632,7 @@ function AbaCaixinhas({ reload }) {
       </div>
 
       <CMdl open={open} onClose={() => setOpen(false)} title={editing ? "Editar caixinha" : "Nova caixinha"} accent="var(--conjunto)">
-        <CaixinhaForm initial={editing}
+        <CaixinhaForm initial={editing} comDono
           onSave={(d) => {
             let list = F.getCaixinhas();
             if (editing) list = list.map((x) => x.id === editing.id ? { ...x, ...d } : x);
@@ -740,20 +743,35 @@ function CartaoForm({ initial, onSave, onDelete }) {
   );
 }
 
-function CaixinhaForm({ initial, onSave, onDelete }) {
+function CaixinhaForm({ initial, onSave, onDelete, comDono }) {
   const [nome, setNome] = useState(initial?.nome || "");
   const [emoji, setEmoji] = useState(initial?.emoji || "📦");
   const [cor, setCor] = useState(initial?.cor || CORES[0]);
   const [planejado, setPlan] = useState(initial?.planejado ?? "");
   const [fixa, setFixa] = useState(initial?.fixa || false);
+  const [dono, setDono] = useState(initial?.dono || "ambos");
+  const [semRateio, setSemRateio] = useState(initial?.semRateio || false);
   const save = () => {
     if (!nome.trim()) return;
-    onSave({ nome: nome.trim(), emoji, cor, planejado: parseFloat(String(planejado).replace(",", ".")) || 0, fixa });
+    const base = { nome: nome.trim(), emoji, cor, planejado: parseFloat(String(planejado).replace(",", ".")) || 0, fixa };
+    if (comDono) { base.dono = dono === "ambos" ? null : dono; base.semRateio = semRateio; }
+    onSave(base);
   };
   return (
     <div style={{ display: "grid", gap: 14 }}>
       <CFld label="Nome"><input className="fin-input" placeholder="Ex: Aluguel" value={nome} onChange={(e) => setNome(e.target.value)} autoFocus /></CFld>
       <CFld label="Valor planejado no mês (R$)"><MInput value={planejado} onChange={setPlan} style={{ fontSize: 20 }} /></CFld>
+
+      {comDono && (
+        <CFld label="De quem é essa caixinha?">
+          <div style={{ display: "flex", gap: 8 }}>
+            {[["ambos", "Ambos", "var(--conjunto)"], ["bruna", "Bruna", "var(--bruna)"], ["daniel", "Daniel", "var(--daniel)"]].map(([id, lbl, c]) => (
+              <button key={id} className="chip" style={{ flex: 1, padding: 10, background: dono === id ? c : "#fff", color: dono === id ? "#fff" : "var(--tinta-suave)", borderColor: dono === id ? c : undefined }} onClick={() => setDono(id)}>{lbl}</button>
+            ))}
+          </div>
+          <div style={{ fontSize: 11, color: "var(--tinta-suave)", marginTop: 6 }}>Todo gasto nessa caixinha já entra com a tag da pessoa — pra somar o valor de cada um.</div>
+        </CFld>
+      )}
 
       <div style={{ background: "var(--areia)", borderRadius: 16, padding: "12px 14px" }}>
         <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
@@ -762,6 +780,13 @@ function CaixinhaForm({ initial, onSave, onDelete }) {
           <span style={{ fontSize: 14, fontWeight: 600 }}>É conta fixa mensal</span>
         </label>
         <div style={{ fontSize: 11.5, color: "var(--tinta-suave)", marginTop: 8 }}>Contas fixas (aluguel, água, luz…) aparecem em "A pagar" todo mês com um botão de check.</div>
+        {comDono && (
+          <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", marginTop: 12, borderTop: "1px solid rgba(24,33,29,.08)", paddingTop: 12 }}>
+            <input type="checkbox" checked={semRateio} onChange={(e) => setSemRateio(e.target.checked)} style={{ width: 18, height: 18, accentColor: "var(--tinta)" }} />
+            <span style={{ fontSize: 14, fontWeight: 600 }}>Não incluir na divisão do casal</span>
+          </label>
+        )}
+        {comDono && semRateio && <div style={{ fontSize: 11.5, color: "var(--tinta-suave)", marginTop: 6 }}>Fica de fora do total que cada um envia (rateio).</div>}
       </div>
       <div>
         <span className="fin-label" style={{ display: "block", marginBottom: 6 }}>Ícone</span>
