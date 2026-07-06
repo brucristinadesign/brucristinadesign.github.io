@@ -803,8 +803,8 @@ function AbaCaixinhasInd({ perfil, cor }) {
 }
 
 // ── Chat individual ─────────────────────────────────────────────────────
-function AbaChatInd({ perfil }) {
-  return window.FinAssist ? <window.FinAssist.ChatAssistente ctx={window.FinAssist.ctxFor(perfil)} sub="Organize suas contas: mande em linguagem normal e vira lançamento. Só você vê. 💬" /> : null;
+function AbaChatInd({ perfil, refresh }) {
+  return window.FinAssist ? <window.FinAssist.ChatAssistente ctx={window.FinAssist.ctxFor(perfil)} reload={refresh} sub="Organize suas contas: mande em linguagem normal e vira lançamento. Só você vê. 💬" /> : null;
 }
 
 window.FinIndividual = { AbaMes, AbaLancamentos, AbaDividas, AbaCartaoDaniel, AbaMetas, AbaCaixinhasInd, AbaChatInd, APagarInd };
