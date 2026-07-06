@@ -20,15 +20,36 @@ const PALAVRAS_CAIXA = {
 
 function _norm(s) { return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
 
-function parseValor(txt) {
-  const limpo = txt.replace(/r\$\s*/gi, " ");
-  const m = limpo.match(/(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+,\d{1,2}|\d+(?:\.\d{1,2})?)/);
-  if (!m) return null;
-  let s = m[1];
+// converte "1.234,56" / "1234.56" / "50" → número
+function _toNum(s) {
+  s = String(s).trim();
+  if (!s) return null;
   if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
   else if ((s.match(/\./g) || []).length === 1) { const [a, b] = s.split("."); if (b.length === 3) s = a + b; }
   const v = parseFloat(s);
   return isFinite(v) ? v : null;
+}
+
+const _NUM = "\\d{1,3}(?:\\.\\d{3})+(?:,\\d{1,2})?|\\d+,\\d{1,2}|\\d+(?:\\.\\d{1,2})?|\\d+";
+
+// valor do lançamento; aceita soma "50 + 30 + 20" (ou "50 mais 30")
+function parseValor(txt) {
+  let s = " " + txt.toLowerCase() + " ";
+  s = s.replace(/r\$/g, " ");
+  s = s.replace(/\b\d{1,2}\s*x\b/g, " ");                          // tira parcelas "6x"
+  s = s.replace(/\bem\s*\d{1,2}\s*(?:vezes|parcelas)\b/g, " ");    // "em 6 vezes"
+  s = s.replace(/\b\d{1,2}\/\d{1,2}(?:\/\d{2,4})?\b/g, " ");       // tira datas
+  s = s.replace(/\bmais\b/g, "+");                                  // "mais" vira +
+
+  // expressão de soma: número (+ número)+
+  const somaRe = new RegExp("(?:" + _NUM + ")(?:\\s*\\+\\s*(?:" + _NUM + "))+");
+  const mSoma = s.match(somaRe);
+  if (mSoma) {
+    const parts = mSoma[0].split("+").map((x) => _toNum(x)).filter((x) => x != null);
+    if (parts.length >= 2) return parts.reduce((a, b) => a + b, 0);
+  }
+  const m1 = s.match(new RegExp(_NUM));
+  return m1 ? _toNum(m1[0]) : null;
 }
 
 function parseParcelas(txt) {
@@ -136,6 +157,10 @@ function interpretar(textoOriginal, ctx) {
   const data = parseData(txt);
   const status = /(a pagar|vou pagar|pendente|boleto|depois|vence)/.test(t) ? "pendente" : "pago";
   const tags = parseTags(txt);
+  // tag automática de quem é (organiza o que cada um paga)
+  ["bruna", "daniel"].forEach((nm) => {
+    if (new RegExp("\\b" + nm + "\\b").test(t)) { const T = nm[0].toUpperCase() + nm.slice(1); if (!tags.includes(T)) tags.push(T); }
+  });
 
   if (receita) {
     const tx = { id: F.uid(), tipo: "receita", valor, categoria: "Entrada", metodo: "avista", data, status: "pago", tags };

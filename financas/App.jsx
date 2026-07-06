@@ -86,7 +86,7 @@ function AreaIndividual({ perfil, onSair }) {
       <Header perfil={perfil} onSair={onSair} />
       <div style={{ maxWidth: 480, margin: "0 auto", padding: "16px 16px 90px" }} key={tick}>
         {aba === "mes" && <AbaMes perfil={perfil} cor={p.cor} refresh={refresh} />}
-        {aba === "chat" && <AbaChatInd perfil={perfil} />}
+        {aba === "chat" && <AbaChatInd perfil={perfil} refresh={refresh} />}
         {aba === "lanc" && <AbaLancamentos perfil={perfil} cor={p.cor} refresh={refresh} />}
         {aba === "caixinhas" && <AbaCaixinhasInd perfil={perfil} cor={p.cor} />}
         {aba === "dividas" && isBruna && <AbaDividas cor={p.cor} />}

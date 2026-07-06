@@ -322,7 +322,7 @@ function ConjTxForm({ initial, dataMes, onSave, onDelete }) {
   const nomesEx = new Set(existentes.map((c) => c.nome));
   const sugeridas = CAIXINHAS_SUGERIDAS.filter((s) => !nomesEx.has(s.nome));
 
-  const sugestoesTag = F.getConjTags().filter((t) => !tags.includes(t)).slice(0, 8);
+  const sugestoesTag = ["Bruna", "Daniel", ...F.getConjTags().filter((x) => !["Bruna", "Daniel"].includes(x))].filter((t) => !tags.includes(t)).slice(0, 10);
   const addTag = (raw) => { const v = String(raw).trim().replace(/,$/, ""); if (v && !tags.includes(v)) setTags([...tags, v]); setTagInput(""); };
 
   const criarNova = () => {
