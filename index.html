@@ -484,7 +484,7 @@
       <h2>vamos trabalhar<br><em>juntos?</em></h2>
       <p class="sub">Se você chegou até aqui, já é um bom sinal. Me chama e a gente descobre o que dá pra criar juntos.</p>
       <div class="cta-row">
-        <a href="https://wa.me/5571992912706?text=Oi%20Bruna!%20Vi%20seu%20portif%C3%B3lio%20e%20queria%20conversar%20sobre%20um%20projeto." target="_blank" rel="noopener" class="btn-big">entrar em contato →</a>
+        <a href="https://wa.me/5571981491865?text=Oi%20Bruna!%20Vi%20seu%20portif%C3%B3lio%20e%20queria%20conversar%20sobre%20um%20projeto." target="_blank" rel="noopener" class="btn-big">entrar em contato →</a>
         <a href="mailto:brunacristina.design@gmail.com?subject=Projeto%20%E2%80%94%20vamos%20conversar%3F&body=Oi%20Bruna!%20Vi%20seu%20portif%C3%B3lio%20e%20queria%20conversar%20sobre%20um%20projeto." class="btn-ghost-light">enviar e-mail</a>
       </div>
       <div class="socials">
@@ -603,6 +603,64 @@
     });
     p.addEventListener('mouseleave', () => p.querySelectorAll('[data-parallax]').forEach(el => el.style.transform = ''));
   }
+</script>
+
+<!-- Floating WhatsApp CTA -->
+<a id="float-wa"
+   href="https://wa.me/5571981491865?text=Oi%20Bruna!%20Vi%20seu%20portif%C3%B3lio%20e%20queria%20fechar%20um%20projeto."
+   target="_blank" rel="noopener" aria-label="Fechar projeto pelo WhatsApp">
+  <svg viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="28" height="28">
+    <path d="M16 2C8.268 2 2 8.268 2 16c0 2.434.655 4.716 1.8 6.682L2 30l7.52-1.77A13.94 13.94 0 0 0 16 30c7.732 0 14-6.268 14-14S23.732 2 16 2Zm7.29 19.71c-.31.87-1.53 1.59-2.51 1.8-.67.14-1.54.25-4.48-.96-3.76-1.54-6.18-5.35-6.37-5.6-.19-.25-1.54-2.05-1.54-3.91 0-1.86.97-2.77 1.31-3.15.34-.38.74-.48 1-.48.24 0 .48.01.69.01.22.01.52-.08.81.62.31.72 1.05 2.58 1.14 2.77.09.19.15.41.03.65-.12.24-.18.39-.36.6-.18.21-.38.47-.54.63-.18.18-.37.37-.16.73.21.36.94 1.55 2.02 2.51 1.39 1.24 2.56 1.62 2.92 1.8.36.18.57.15.78-.09.21-.24.9-1.05 1.14-1.41.24-.36.48-.3.81-.18.33.12 2.1 .99 2.46 1.17.36.18.6.27.69.42.09.15.09.87-.22 1.74Z"/>
+  </svg>
+  <span>fechar projeto</span>
+</a>
+
+<style>
+#float-wa {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 200;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: #25D366;
+  color: #fff;
+  border-radius: 999px;
+  padding: 14px 22px 14px 18px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgba(37,211,102,.35);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity .3s ease, transform .3s ease, box-shadow .2s ease;
+  pointer-events: none;
+}
+#float-wa.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+#float-wa:hover {
+  box-shadow: 0 6px 28px rgba(37,211,102,.55);
+  transform: translateY(-2px);
+}
+@media (max-width: 540px) {
+  #float-wa span { display: none; }
+  #float-wa { padding: 14px; }
+}
+</style>
+<script>
+(function(){
+  var wa = document.getElementById('float-wa');
+  window.addEventListener('scroll', function(){
+    wa.classList.toggle('visible', window.scrollY > 300);
+  }, { passive: true });
+})();
 </script>
 </body>
 </html>
