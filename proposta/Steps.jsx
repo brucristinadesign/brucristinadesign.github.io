@@ -124,7 +124,14 @@ function StepServices({ openService, cart }) {
 // ----------------------------------------------------------
 // 03 — CONFIGURADOR (cart review)
 // ----------------------------------------------------------
-function StepConfig({ cart, removeItem, total, clearAll, goToServices }) {
+function StepConfig({ cart, removeItem, total, discountedTotal, discount, baseDiscount, progressiveDiscount, distinctServiceCount, clearAll, goToServices }) {
+  const hasDiscount = discount > 0;
+  const finalTotal = hasDiscount ? discountedTotal : total;
+
+  // Next progressive tier hint
+  const nextTiers = [{ min: 2, extra: 5 }, { min: 3, extra: 10 }];
+  const nextTier = baseDiscount > 0 ? nextTiers.find((t) => distinctServiceCount < t.min) : null;
+
   return (
     <>
       <Eyebrow index={3} total={5}>seu pacote</Eyebrow>
@@ -133,6 +140,25 @@ function StepConfig({ cart, removeItem, total, clearAll, goToServices }) {
         confira o que você montou. dá pra voltar nos serviços pra adicionar mais
         ou remover qualquer item daqui. o total atualiza em tempo real.
       </p>
+
+      {/* Progressive discount tracker */}
+      {baseDiscount > 0 && (
+        <div className="progressive-tracker">
+          <div className="progressive-tracker__info">
+            <span className="progressive-tracker__pct">{discount}% OFF</span>
+            {progressiveDiscount > 0 && (
+              <span className="progressive-tracker__breakdown">
+                {baseDiscount}% base + {progressiveDiscount}% bônus
+              </span>
+            )}
+          </div>
+          {nextTier && (
+            <div className="progressive-tracker__hint">
+              adicione mais {nextTier.min - distinctServiceCount} serviço{nextTier.min - distinctServiceCount > 1 ? "s" : ""} e ganhe +{nextTier.extra}% de desconto extra
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="review">
         <div className="review__lines-wrap">
@@ -144,16 +170,39 @@ function StepConfig({ cart, removeItem, total, clearAll, goToServices }) {
           ) : (
             <>
               <div className="review__lines">
-                {cart.map((line, idx) => (
-                  <div className="review__line" key={idx + "-" + line.id}>
-                    <div className="review__line-name">
-                      <span className="name">{line.name}</span>
-                      {line.qty > 1 && <span className="qty">× {line.qty}</span>}
+                {cart.map((line, idx) => {
+                  const scope = window.CATALOG.scopeById(line.id);
+                  const includes = scope ? [
+                    ...(scope.deliverables || []),
+                    ...(scope.highlights || []),
+                  ] : [];
+                  const lineTotal = line.price * line.qty;
+                  const lineDiscounted = hasDiscount ? Math.round(lineTotal * (1 - discount / 100)) : null;
+                  return (
+                    <div className="review__line" key={idx + "-" + line.id}>
+                      <div className="review__line-name">
+                        <span className="name">{line.name}</span>
+                        {line.qty > 1 && <span className="qty">× {line.qty}</span>}
+                        {includes.length > 0 && (
+                          <ul className="review__line-includes">
+                            {includes.map((inc, i) => (
+                              <li key={i}><span className="tick">✓</span>{inc}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                      <div className="review__line-price">
+                        {hasDiscount ? (
+                          <>
+                            <s className="price--original">{formatBRL(lineTotal)}</s>
+                            <span className="price--discounted">{formatBRL(lineDiscounted)}</span>
+                          </>
+                        ) : formatBRL(lineTotal)}
+                      </div>
+                      <button className="review__line-remove" onClick={() => removeItem(line.id, true)} aria-label="remover">×</button>
                     </div>
-                    <div className="review__line-price">{formatBRL(line.price * line.qty)}</div>
-                    <button className="review__line-remove" onClick={() => removeItem(line.id, true)} aria-label="remover">×</button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               <div className="review__actions">
@@ -170,15 +219,28 @@ function StepConfig({ cart, removeItem, total, clearAll, goToServices }) {
             <span>itens</span>
             <span>{cart.reduce((s, l) => s + l.qty, 0)}</span>
           </div>
+          {hasDiscount && (
+            <div className="review__sum-row">
+              <span>subtotal</span>
+              <span><s className="price--original">{formatBRL(total)}</s></span>
+            </div>
+          )}
+          {hasDiscount && (
+            <div className="review__sum-row" style={{ color: "var(--bc-green)" }}>
+              <span>desconto ({discount}%)</span>
+              <span>− {formatBRL(total - discountedTotal)}</span>
+            </div>
+          )}
           <div className="review__sum-row total">
             <span>total</span>
-            <span>{formatBRL(total)}</span>
+            <span style={hasDiscount ? { color: "var(--bc-green)" } : {}}>{formatBRL(finalTotal)}</span>
           </div>
-          {total > 0 && (
+          {finalTotal > 0 && (
             <div className="review__split">
               <strong>condições:</strong><br/>
-              100% adiantado <em>ou</em> 50% antes ({formatBRL(total / 2)}) +
-              50% na entrega ({formatBRL(total / 2)})
+              100% adiantado <em>ou</em> 50% antes ({formatBRL(finalTotal / 2)}) +
+              50% na entrega ({formatBRL(finalTotal / 2)})
+              <br/><strong>pagamento:</strong> pix, transferência <em>ou</em> cartão de crédito (parcelado)
             </div>
           )}
         </aside>
@@ -206,9 +268,9 @@ function StepConditions() {
     },
     {
       label: "03 · pagamento",
-      title: "pix ou",
+      title: "pix, cartão ou",
       titleEm: "transferência",
-      body: "100% adiantado, ou 50% antes da entrega + 50% no final. trabalho sempre com o valor adiantado pra alinhar compromisso de ambos os lados.",
+      body: "100% adiantado, ou 50% antes da entrega + 50% no final. aceito pix, transferência ou cartão de crédito (parcelado). trabalho sempre com o valor adiantado pra alinhar compromisso de ambos os lados.",
     },
     {
       label: "04 · prazos",
@@ -243,8 +305,10 @@ function StepConditions() {
 // ----------------------------------------------------------
 // 05 — ACEITAR / PRÓXIMOS PASSOS
 // ----------------------------------------------------------
-function StepAccept({ cart, total, clientName }) {
+function StepAccept({ cart, total, discountedTotal, discount, clientName }) {
   const [copied, setCopied] = useState(false);
+  const hasDiscount = discount > 0;
+  const finalTotal = hasDiscount ? discountedTotal : total;
 
   // Build WhatsApp closing message (ready to send)
   const lines = [];
@@ -256,11 +320,17 @@ function StepAccept({ cart, total, clientName }) {
     lines.push("vi sua proposta e quero fechar o seguinte pacote:");
     lines.push("");
     cart.forEach((line) => {
-      lines.push(`• ${line.name}${line.qty > 1 ? ` (×${line.qty})` : ""} — ${formatBRL(line.price * line.qty)}`);
+      const lineVal = hasDiscount ? Math.round(line.price * line.qty * (1 - discount / 100)) : line.price * line.qty;
+      lines.push(`• ${line.name}${line.qty > 1 ? ` (×${line.qty})` : ""} — ${formatBRL(lineVal)}`);
     });
     lines.push("");
-    lines.push(`*total: ${formatBRL(total)}*`);
-    lines.push(`condições: 100% adiantado ou 50% (${formatBRL(total / 2)}) + 50% na entrega`);
+    if (hasDiscount) {
+      lines.push(`subtotal sem desconto: ${formatBRL(total)}`);
+      lines.push(`*desconto aplicado (${discount}%): − ${formatBRL(total - finalTotal)}*`);
+    }
+    lines.push(`*total: ${formatBRL(finalTotal)}*`);
+    lines.push(`condições: 100% adiantado ou 50% (${formatBRL(finalTotal / 2)}) + 50% na entrega`);
+    lines.push("pagamento: pix, transferência ou cartão de crédito (parcelado)");
     lines.push("");
     lines.push("pode me confirmar o prazo e os próximos passos? fico no aguardo ;)");
   }
@@ -317,12 +387,18 @@ function StepAccept({ cart, total, clientName }) {
                   </div>
                 ))}
               </div>
+              {hasDiscount && (
+                <div className="review__sum-row" style={{ color: "var(--bc-green)", fontSize: 13 }}>
+                  <span>desconto ({discount}%)</span>
+                  <span>− {formatBRL(total - finalTotal)}</span>
+                </div>
+              )}
               <div className="review__sum-row total" style={{ borderTop: "1px solid var(--bc-ink)", paddingTop: 14, marginTop: 6 }}>
                 <span>total</span>
-                <span>{formatBRL(total)}</span>
+                <span style={hasDiscount ? { color: "var(--bc-green)" } : {}}>{formatBRL(finalTotal)}</span>
               </div>
               <div className="review__split">
-                pagamento: 100% adiantado <em>ou</em> 50% / 50%. pix ou transferência.
+                pagamento: 100% adiantado <em>ou</em> 50% / 50%. pix, transferência ou cartão de crédito.
               </div>
             </>
           )}
