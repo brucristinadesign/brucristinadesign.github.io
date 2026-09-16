@@ -2,9 +2,28 @@
 
 const { useState: useStateDetail, useMemo: useMemoDetail } = React;
 
-function ServiceDetail({ serviceId, onBack, onNext, cart, addItem, removeItem, qtyOf, total }) {
+function ServiceDetail({ serviceId, onBack, onNext, cart, addItem, removeItem, qtyOf, total, discount = 0 }) {
   const svc = CATALOG.services.find((s) => s.id === serviceId);
+  const [addonsView, setAddonsView] = useStateDetail(false);
   if (!svc) return null;
+
+  const openAddons = () => { setAddonsView(true); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const closeAddons = () => { setAddonsView(false); window.scrollTo({ top: 0, behavior: "smooth" }); };
+
+  if (addonsView && svc.addons) {
+    return (
+      <AddonsView
+        svc={svc}
+        addItem={addItem}
+        removeItem={removeItem}
+        qtyOf={qtyOf}
+        cart={cart}
+        total={total}
+        onBack={closeAddons}
+        onNext={onNext}
+      />
+    );
+  }
 
   return (
     <>
@@ -37,13 +56,13 @@ function ServiceDetail({ serviceId, onBack, onNext, cart, addItem, removeItem, q
 
         <section className="detail-body__config">
           {svc.configKind === "tiers" && (
-            <TiersConfig svc={svc} addItem={addItem} removeItem={removeItem} qtyOf={qtyOf} />
+            <TiersConfig svc={svc} addItem={addItem} removeItem={removeItem} qtyOf={qtyOf} onOpenAddons={openAddons} discount={discount} />
           )}
           {svc.configKind === "pieces-or-package" && (
-            <CriativosConfig svc={svc} addItem={addItem} removeItem={removeItem} qtyOf={qtyOf} />
+            <CriativosConfig svc={svc} addItem={addItem} removeItem={removeItem} qtyOf={qtyOf} discount={discount} />
           )}
           {svc.configKind === "quantity" && (
-            <QuantityConfig svc={svc} addItem={addItem} removeItem={removeItem} qtyOf={qtyOf} />
+            <QuantityConfig svc={svc} addItem={addItem} removeItem={removeItem} qtyOf={qtyOf} discount={discount} />
           )}
         </section>
       </div>
@@ -56,8 +75,14 @@ function ServiceDetail({ serviceId, onBack, onNext, cart, addItem, removeItem, q
 // ============================================================
 // CONFIG 1 — Tiers (Branding, Visual Shooting)
 // ============================================================
-function TiersConfig({ svc, addItem, removeItem, qtyOf }) {
+function TiersConfig({ svc, addItem, removeItem, qtyOf, onOpenAddons, discount = 0 }) {
   const selected = svc.tiers.find((t) => qtyOf(t.id) > 0);
+
+  // add-ons total (branding only) — selected on a separate page
+  const addonItems = (svc.addons || []).flatMap((c) => c.items);
+  const addonsTotal = addonItems.reduce((sum, it) => sum + (qtyOf(it.id) > 0 ? it.price : 0), 0);
+  const addonCount = addonItems.filter((it) => qtyOf(it.id) > 0).length;
+  const serviceTotal = (selected ? selected.price : 0) + addonsTotal;
 
   return (
     <div className="cfg">
@@ -85,7 +110,14 @@ function TiersConfig({ svc, addItem, removeItem, qtyOf }) {
                 <span className="tier__name">{tier.name}</span>
                 {tier.featured && <span className="tier__badge">recomendado</span>}
               </div>
-              <div className="tier__price">{formatBRL(tier.price)}</div>
+              <div className="tier__price">
+                {discount > 0 ? (
+                  <>
+                    <s className="price--original">{formatBRL(tier.price)}</s>
+                    <span className="price--discounted">{formatBRL(Math.round(tier.price * (1 - discount / 100)))}</span>
+                  </>
+                ) : formatBRL(tier.price)}
+              </div>
               <p className="tier__desc">{tier.desc}</p>
               {(tier.deliverables || tier.highlights) ? (
                 <ul className="tier__deliverables">
@@ -103,9 +135,30 @@ function TiersConfig({ svc, addItem, removeItem, qtyOf }) {
         })}
       </div>
 
+      {svc.addons && (
+        <button type="button" className="addons-cta" onClick={onOpenAddons}>
+          <span className="addons-cta__text">
+            <span className="addons-cta__eyebrow">adicionais &amp; extras</span>
+            <span className="addons-cta__title">papelaria, redes, animações & fotos IA</span>
+            <span className="addons-cta__sub">
+              {addonCount > 0
+                ? `${addonCount} ${addonCount === 1 ? "item adicionado" : "itens adicionados"} · ${formatBRL(addonsTotal)}`
+                : "complemente seu pacote com itens avulsos"}
+            </span>
+          </span>
+          <span className="addons-cta__arrow">→</span>
+        </button>
+      )}
+
       <div className="cfg-summary">
         <span className="cfg-summary__label">total deste serviço</span>
-        <span className="cfg-summary__value">{selected ? formatBRL(selected.price) : "—"}</span>
+        <span className="cfg-summary__value">
+          {serviceTotal > 0
+            ? (discount > 0
+                ? <><s className="price--original">{formatBRL(serviceTotal)}</s> <span className="price--discounted">{formatBRL(Math.round(serviceTotal * (1 - discount / 100)))}</span></>
+                : formatBRL(serviceTotal))
+            : "—"}
+        </span>
       </div>
     </div>
   );
@@ -114,7 +167,7 @@ function TiersConfig({ svc, addItem, removeItem, qtyOf }) {
 // ============================================================
 // CONFIG 2 — Pieces or Package (Criativos Estáticos)
 // ============================================================
-function CriativosConfig({ svc, addItem, removeItem, qtyOf }) {
+function CriativosConfig({ svc, addItem, removeItem, qtyOf, discount = 0 }) {
   const [mode, setMode] = useStateDetail(() => {
     const anyPkg = svc.packages.find((p) => qtyOf(p.id) > 0);
     return anyPkg ? "package" : "pieces";
@@ -218,7 +271,13 @@ function CriativosConfig({ svc, addItem, removeItem, qtyOf }) {
 
       <div className="cfg-summary">
         <span className="cfg-summary__label">total deste serviço</span>
-        <span className="cfg-summary__value">{liveTotal > 0 ? formatBRL(liveTotal) : "—"}</span>
+        <span className="cfg-summary__value">
+          {liveTotal > 0
+            ? (discount > 0
+                ? <><s className="price--original">{formatBRL(liveTotal)}</s> <span className="price--discounted">{formatBRL(Math.round(liveTotal * (1 - discount / 100)))}</span></>
+                : formatBRL(liveTotal))
+            : "—"}
+        </span>
       </div>
     </div>
   );
@@ -227,7 +286,7 @@ function CriativosConfig({ svc, addItem, removeItem, qtyOf }) {
 // ============================================================
 // CONFIG 3 — Quantity (E-mail Marketing)
 // ============================================================
-function QuantityConfig({ svc, addItem, removeItem, qtyOf }) {
+function QuantityConfig({ svc, addItem, removeItem, qtyOf, discount = 0 }) {
   const id = `${svc.id}-unit`;
   const q = qtyOf(id);
 
@@ -278,12 +337,22 @@ function QuantityConfig({ svc, addItem, removeItem, qtyOf }) {
 
       <div className="qty-breakdown">
         <span>{q} × {formatBRL(svc.pricePerUnit)}/e-mail</span>
-        <strong>{formatBRL(liveTotal)}</strong>
+        <strong>
+          {discount > 0
+            ? <><s className="price--original">{formatBRL(liveTotal)}</s> <span className="price--discounted">{formatBRL(Math.round(liveTotal * (1 - discount / 100)))}</span></>
+            : formatBRL(liveTotal)}
+        </strong>
       </div>
 
       <div className="cfg-summary">
         <span className="cfg-summary__label">total deste serviço</span>
-        <span className="cfg-summary__value">{liveTotal > 0 ? formatBRL(liveTotal) : "—"}</span>
+        <span className="cfg-summary__value">
+          {liveTotal > 0
+            ? (discount > 0
+                ? <><s className="price--original">{formatBRL(liveTotal)}</s> <span className="price--discounted">{formatBRL(Math.round(liveTotal * (1 - discount / 100)))}</span></>
+                : formatBRL(liveTotal))
+            : "—"}
+        </span>
       </div>
     </div>
   );
@@ -305,6 +374,90 @@ function DetailFooter({ total, cart, onNext, onBack }) {
         <button className="btn" onClick={onNext}>ver pacote →</button>
       </div>
     </div>
+  );
+}
+
+// ============================================================
+// Adicionais & Extras — página dedicada (acessada via botão)
+// ============================================================
+function AddonsView({ svc, addItem, removeItem, qtyOf, cart, total, onBack, onNext }) {
+  const addonItems = svc.addons.flatMap((c) => c.items);
+  const addonsTotal = addonItems.reduce((sum, it) => sum + (qtyOf(it.id) > 0 ? it.price : 0), 0);
+  const addonCount = addonItems.filter((it) => qtyOf(it.id) > 0).length;
+
+  const toggleAddon = (it) => {
+    if (qtyOf(it.id) > 0) removeItem(it.id, true);
+    else addItem({ id: it.id, kind: "addon", name: "Adicional · " + it.name, price: it.price });
+  };
+
+  return (
+    <>
+      <div className="detail-back">
+        <button className="btn btn--ghost btn--sm" onClick={onBack}>← voltar ao escopo</button>
+        <span className="detail-back__crumb">
+          branding &amp; identidade <span style={{ color: "var(--fg-3)" }}> / </span>
+          <em style={{ fontFamily: "var(--font-display)", fontStyle: "italic" }}>adicionais &amp; extras</em>
+        </span>
+      </div>
+
+      <header className="detail-head">
+        <span className="detail-head__num">+</span>
+        <h1 className="detail-head__title">Adicionais &amp;<br/><em>Extras</em></h1>
+        <p className="detail-head__lead">{svc.addonsLead}</p>
+      </header>
+
+      <div className="addons addons--page">
+        {svc.addons.map((cat) => (
+          <div className="addon-cat" key={cat.num}>
+            <div className="addon-cat__head">
+              <span className="addon-cat__num">{cat.num}</span>
+              <span className="addon-cat__name">{cat.name}</span>
+              {cat.hint && <span className="addon-cat__hint">{cat.hint}</span>}
+            </div>
+            <div className="addon-items">
+              {cat.items.map((it) => {
+                const on = qtyOf(it.id) > 0;
+                return (
+                  <div
+                    key={it.id}
+                    className={`addon-item ${on ? "is-selected" : ""}`}
+                    role="checkbox"
+                    aria-checked={on}
+                    tabIndex={0}
+                    onClick={() => toggleAddon(it)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleAddon(it); } }}
+                  >
+                    <span className="addon-item__check">
+                      <svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6" /></svg>
+                    </span>
+                    <div className="addon-item__body">
+                      <div className="addon-item__top">
+                        <span className="addon-item__name">{it.name}</span>
+                        <span className={`addon-badge addon-badge--${cat.cls}`}>{cat.badge}</span>
+                      </div>
+                      {it.desc && <p className="addon-item__desc">{it.desc}</p>}
+                    </div>
+                    <span className="addon-item__price">{formatBRL(it.price)}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="detail-footer">
+        <div className="detail-footer__cart">
+          <span className="label">adicionais selecionados</span>
+          <span className="value">{formatBRL(addonsTotal)}</span>
+          <span className="count">{addonCount} {addonCount === 1 ? "item" : "itens"}</span>
+        </div>
+        <div className="detail-footer__actions">
+          <button className="btn btn--ghost" onClick={onBack}>← voltar ao escopo</button>
+          <button className="btn" onClick={onNext}>ver pacote →</button>
+        </div>
+      </div>
+    </>
   );
 }
 

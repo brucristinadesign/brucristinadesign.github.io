@@ -55,7 +55,7 @@ function StepWelcome({ clientName, setClientName, onNext }) {
 // ----------------------------------------------------------
 // 02 — SERVICES (proposal cards grid)
 // ----------------------------------------------------------
-function StepServices({ openService, cart }) {
+function StepServices({ openService, cart, discount }) {
   const inCartIds = new Set(cart.map((l) => l.id));
 
   return (
@@ -104,7 +104,14 @@ function StepServices({ openService, cart }) {
               <footer className="proposal__foot">
                 <div className="proposal__price">
                   <span className="from">a partir de</span>
-                  <span className="amount">{formatBRL(s.startsAt)}</span>
+                  {discount > 0 ? (
+                    <>
+                      <s className="price--original" style={{ fontSize: 13 }}>{formatBRL(s.startsAt)}</s>
+                      <span className="amount price--discounted">{formatBRL(Math.round(s.startsAt * (1 - discount / 100)))}</span>
+                    </>
+                  ) : (
+                    <span className="amount">{formatBRL(s.startsAt)}</span>
+                  )}
                 </div>
                 <button
                   className="btn"

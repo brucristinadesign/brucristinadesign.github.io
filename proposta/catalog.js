@@ -66,6 +66,59 @@ window.CATALOG = {
           ],
         },
       ],
+      // Adicionais & Extras — complementam qualquer tier do Branding
+      addonsLead: "cada projeto é diferente. estes itens complementam o pacote escolhido e você adiciona só o que faz sentido.",
+      addons: [
+        {
+          num: "01", name: "Papelaria Individual", badge: "papelaria", cls: "papelaria",
+          items: [
+            { id: "addon-cartao",   name: "Cartão de Visita",      price: 380, desc: "frente e verso, arquivo finalizado para gráfica." },
+            { id: "addon-timbrado", name: "Papel Timbrado",        price: 280, desc: "template A4 editável (Word ou Google Docs)." },
+            { id: "addon-envelope", name: "Envelope",              price: 240, desc: "modelo saco ou americano com logotipo aplicado." },
+            { id: "addon-assin",    name: "Assinatura de E-mail",  price: 260, desc: "HTML responsivo compatível com Gmail e Outlook." },
+            { id: "addon-pasta",    name: "Pasta de Apresentação", price: 400, desc: "frente, verso e bolso interno, pronto para gráfica." },
+            { id: "addon-etiqueta", name: "Etiqueta / Tag",        price: 200, desc: "frente e verso para produto, sacola ou embrulho." },
+          ],
+        },
+        {
+          num: "02", name: "Redes Sociais · Extras", badge: "social", cls: "social",
+          hint: "além dos templates já inclusos nos pacotes",
+          items: [
+            { id: "addon-tpl-extra", name: "Pack de Templates Extras (+5 layouts)", price: 420 },
+            { id: "addon-capas",     name: "Capas para Redes (até 2 redes)",       price: 220 },
+            { id: "addon-highlight", name: "Capas de Highlight (pack 10 ícones)",  price: 280 },
+            { id: "addon-gif",       name: "GIF / Animação para Stories",          price: 380 },
+          ],
+        },
+        {
+          num: "03", name: "Apresentações & Documentos", badge: "apresentação", cls: "apres",
+          items: [
+            { id: "addon-tpl-apres", name: "Template de Apresentação (até 20 slides)", price: 850 },
+            { id: "addon-pitch",     name: "Pitch Deck Completo",                     price: 1400 },
+            { id: "addon-tpl-prop",  name: "Template de Proposta Comercial",          price: 650 },
+          ],
+        },
+        {
+          num: "04", name: "Full Branding · Adicionais", badge: "full branding", cls: "full",
+          items: [
+            { id: "addon-anim-logo", name: "Animação do Logo (MP4 + GIF)",         price: 850 },
+            { id: "addon-voice",     name: "Brand Voice / Tom de Voz",             price: 550 },
+            { id: "addon-embalagem", name: "Embalagem / Rótulo",                   price: 1100 },
+            { id: "addon-site",      name: "Identidade para Site / Landing Page",  price: 1100 },
+            { id: "addon-sinal",     name: "Sinalização / Fachada",                price: 750 },
+            { id: "addon-uniforme",  name: "Uniformes / Vestuário",                price: 650 },
+            { id: "addon-flyers",    name: "Flyers / Banners (2 layouts)",         price: 400 },
+          ],
+        },
+        {
+          num: "05", name: "Fotos Geradas por IA · Extras", badge: "foto ia", cls: "foto",
+          hint: "Branding Completo já inclui 5 fotos",
+          items: [
+            { id: "addon-ia5",  name: "Pack 5 imagens",  price: 320 },
+            { id: "addon-ia10", name: "Pack 10 imagens", price: 580 },
+          ],
+        },
+      ],
       startsAt: 1200,
     },
     {
@@ -145,4 +198,13 @@ window.CATALOG = {
   phoneDisplay: "(71) 99291-2706",
   email: "brucristina.design@gmail.com",
   instagram: "@brucristina.design",
+};
+
+// Look up a tier/package scope by cart-line id (for showing what's included)
+window.CATALOG.scopeById = function (id) {
+  for (const s of window.CATALOG.services) {
+    for (const t of (s.tiers || [])) if (t.id === id) return t;
+    for (const p of (s.packages || [])) if (p.id === id) return p;
+  }
+  return null;
 };
