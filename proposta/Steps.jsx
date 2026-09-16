@@ -233,14 +233,14 @@ function StepConfig({ cart, removeItem, total, discountedTotal, discount, baseDi
             </div>
           )}
           {hasDiscount && (
-            <div className="review__sum-row" style={{ color: "var(--bc-green)" }}>
+            <div className="review__sum-row" style={{ color: "var(--bc-ink)" }}>
               <span>desconto ({discount}%)</span>
               <span>− {formatBRL(total - discountedTotal)}</span>
             </div>
           )}
           <div className="review__sum-row total">
             <span>total</span>
-            <span style={hasDiscount ? { color: "var(--bc-green)" } : {}}>{formatBRL(finalTotal)}</span>
+            <span style={hasDiscount ? { color: "var(--bc-ink)" } : {}}>{formatBRL(finalTotal)}</span>
           </div>
           {finalTotal > 0 && (
             <div className="review__split">
@@ -395,14 +395,14 @@ function StepAccept({ cart, total, discountedTotal, discount, clientName }) {
                 ))}
               </div>
               {hasDiscount && (
-                <div className="review__sum-row" style={{ color: "var(--bc-green)", fontSize: 13 }}>
+                <div className="review__sum-row" style={{ color: "var(--bc-ink)", fontSize: 13 }}>
                   <span>desconto ({discount}%)</span>
                   <span>− {formatBRL(total - finalTotal)}</span>
                 </div>
               )}
               <div className="review__sum-row total" style={{ borderTop: "1px solid var(--bc-ink)", paddingTop: 14, marginTop: 6 }}>
                 <span>total</span>
-                <span style={hasDiscount ? { color: "var(--bc-green)" } : {}}>{formatBRL(finalTotal)}</span>
+                <span style={hasDiscount ? { color: "var(--bc-ink)" } : {}}>{formatBRL(finalTotal)}</span>
               </div>
               <div className="review__split">
                 pagamento: 100% adiantado <em>ou</em> 50% / 50%. pix, transferência ou cartão de crédito.

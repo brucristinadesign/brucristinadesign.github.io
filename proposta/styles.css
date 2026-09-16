@@ -2028,7 +2028,7 @@ html, body {
 .discount-banner strong { color: var(--primary); }
 .discount-banner .star { filter: invert(1); }
 .discount-banner__prog {
-  background: var(--bc-green);
+  background: var(--primary);
   color: var(--bc-ink);
   border-radius: 99px;
   padding: 2px 10px;
@@ -2051,8 +2051,8 @@ html, body {
   margin-right: 4px;
 }
 .price--discounted {
-  color: var(--bc-green);
-  font-weight: 600;
+  color: var(--bc-ink);
+  font-weight: 700;
 }
 
 /* Progressive discount tracker in StepConfig */
@@ -2076,7 +2076,7 @@ html, body {
   font-style: italic;
   font-size: 28px;
   font-weight: 300;
-  color: var(--bc-green);
+  color: var(--bc-ink);
   letter-spacing: -0.04em;
 }
 .progressive-tracker__breakdown {
