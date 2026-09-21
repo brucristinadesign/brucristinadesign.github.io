@@ -239,8 +239,10 @@
   }
   @media (max-width: 540px) {
     .ads-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-    .nav-tabs { flex-wrap: wrap; gap: 2px; }
-    .tab { padding: 7px 10px; font-size: 10px; letter-spacing: .1em; border-radius: 14px 14px 0 0; }
+    .nav-wrap { padding: 8px 0 0; }
+    .nav { padding: 0 8px; }
+    .nav-tabs { flex-wrap: nowrap; gap: 2px; justify-content: stretch; }
+    .tab { padding: 6px 8px 8px; font-size: 9px; letter-spacing: .04em; border-radius: 10px 10px 0 0; white-space: nowrap; flex: 1; text-align: center; }
   }
 </style>
 <script async type='text/javascript' src='https://static.klaviyo.com/onsite/js/YxFfpH/klaviyo.js?company_id=YxFfpH'></script>
@@ -258,6 +260,7 @@
       <a href="#servicos" class="tab" data-c="pink">serviços</a>
       <a href="#ads" class="tab" data-c="yellow">ads</a>
       <a href="#branding" class="tab" data-c="mint">branding</a>
+      <a href="ai.html" class="tab" data-c="pink">ia studio ✦</a>
       <a href="#contato" class="tab" data-c="sky">contato</a>
     </div>
     <span class="nav-signature">Bruna Cristina</span>
@@ -316,13 +319,13 @@
 <section class="services" id="servicos">
   <div class="services-head">
     <div class="eyebrow-sm">— o que eu faço</div>
-    <h2 class="display" style="margin-top: 16px;">My Service <em>Offerings</em></h2>
+    <h2 class="display" style="margin-top: 16px;">meus <em>serviços</em></h2>
   </div>
   <div class="service-list">
-    <a href="#ads" class="service-row"><span class="service-num">001</span><span class="service-pill">Criativos Estáticos</span><span class="service-desc">posts, carrosséis, ads e banners</span><span class="service-arrow">→</span></a>
-    <a href="#email" class="service-row"><span class="service-num">002</span><span class="service-pill">E-mail Marketing</span><span class="service-desc">e-mails estratégicos e automações</span><span class="service-arrow">→</span></a>
-    <a href="#ai-visual" class="service-row"><span class="service-num">003</span><span class="service-pill">AI Visual</span><span class="service-desc">imagens geradas com direção criativa</span><span class="service-arrow">→</span></a>
-    <a href="#branding" class="service-row"><span class="service-num">004</span><span class="service-pill">Branding &amp; Identidade Visual</span><span class="service-desc">do conceito à aplicação</span><span class="service-arrow">→</span></a>
+    <a href="#ads" class="service-row"><span class="service-num">001</span><span class="service-pill">criativos estáticos</span><span class="service-desc">posts, carrosséis, ads e banners</span><span class="service-arrow">→</span></a>
+    <a href="#email" class="service-row"><span class="service-num">002</span><span class="service-pill">e-mail marketing</span><span class="service-desc">e-mails estratégicos e automações</span><span class="service-arrow">→</span></a>
+    <a href="#branding" class="service-row"><span class="service-num">003</span><span class="service-pill">branding &amp; identidade visual</span><span class="service-desc">do conceito à aplicação</span><span class="service-arrow">→</span></a>
+    <a href="ai.html" class="service-row"><span class="service-num">004</span><span class="service-pill">ia studio ✦</span><span class="service-desc">imagens geradas com direção criativa</span><span class="service-arrow">→</span></a>
   </div>
 </section>
 
@@ -377,59 +380,6 @@
   </div>
 </section>
 
-<!-- AI VISUAL -->
-<section class="case-section ai-visual" id="ai-visual">
-  <div class="container">
-    <div class="case-head">
-      <div>
-        <span class="eyebrow-sm">— de briefing a imagem</span>
-        <h2 class="display" style="margin-top: 10px;">AI <em>Visual</em></h2>
-        <span class="bestseller bestseller--mint">★ mais vendido</span>
-      </div>
-      <div class="case-sub">
-        <span class="chip-pill" style="background: var(--navy); color: var(--mint); border-color: var(--navy);">de briefing a imagem</span>
-      </div>
-    </div>
-    <p class="ai-intro">Criação de imagens por inteligência artificial com direção criativa do início ao fim. Não é só apertar um botão — é briefing, conceito, curadoria e entrega de imagens com intenção e identidade.</p>
-    <div class="ai-formats">
-      <div class="ai-format"><h4>Serviço puro</h4><p>briefing → direção criativa → curadoria → imagens finais entregues prontas pra uso.</p></div>
-      <div class="ai-format"><h4>Add-on de Branding</h4><p>complemento ao seu projeto de identidade visual: book de personagem, cenários, mockups e key visuals.</p></div>
-    </div>
-    <div class="ai-stage">
-      <div class="ai-hero" id="ai-hero">
-        <image-slot id="ai-hero-slot" src="assets/ai-visual/dot-trabalho.jpg" placeholder="selecione uma imagem abaixo"></image-slot>
-        <span class="zoom-pill">clique pra ampliar ⧉</span>
-      </div>
-      <div class="ai-thumbs" id="ai-thumbs">
-        <div class="ai-thumb is-active" data-src="assets/ai-visual/dot-trabalho.jpg"><image-slot id="ai-1" src="assets/ai-visual/dot-trabalho.jpg" placeholder=""></image-slot></div>
-        <div class="ai-thumb" data-src="assets/ai-visual/guday-macadoamor.jpg"><image-slot id="ai-2" src="assets/ai-visual/guday-macadoamor.jpg" placeholder=""></image-slot></div>
-        <div class="ai-thumb" data-src="assets/ai-visual/guday-diva.jpg"><image-slot id="ai-3" src="assets/ai-visual/guday-diva.jpg" placeholder=""></image-slot></div>
-        <div class="ai-thumb"><image-slot id="ai-4" placeholder=""></image-slot></div>
-        <div class="ai-thumb"><image-slot id="ai-5" placeholder=""></image-slot></div>
-        <div class="ai-thumb"><image-slot id="ai-6" placeholder=""></image-slot></div>
-        <div class="ai-thumb"><image-slot id="ai-7" placeholder=""></image-slot></div>
-        <div class="ai-thumb"><image-slot id="ai-8" placeholder=""></image-slot></div>
-        <div class="ai-thumb"><image-slot id="ai-9" placeholder=""></image-slot></div>
-        <div class="ai-thumb"><image-slot id="ai-10" placeholder=""></image-slot></div>
-        <div class="ai-thumb"><image-slot id="ai-11" placeholder=""></image-slot></div>
-        <div class="ai-thumb"><image-slot id="ai-12" placeholder=""></image-slot></div>
-        <div class="ai-thumb"><image-slot id="ai-13" placeholder=""></image-slot></div>
-        <div class="ai-thumb"><image-slot id="ai-14" placeholder=""></image-slot></div>
-        <div class="ai-thumb"><image-slot id="ai-15" placeholder=""></image-slot></div>
-        <div class="ai-thumb"><image-slot id="ai-16" placeholder=""></image-slot></div>
-      </div>
-      <div class="ai-counter"><strong id="ai-counter-num">01</strong> / 16</div>
-    </div>
-
-    <div class="lightbox" id="lightbox">
-      <button class="lightbox-close" id="lb-close" aria-label="fechar">✕</button>
-      <button class="lightbox-nav prev" id="lb-prev" aria-label="anterior">←</button>
-      <img class="lightbox-img" id="lb-img" alt="" />
-      <button class="lightbox-nav next" id="lb-next" aria-label="próximo">→</button>
-      <div class="lightbox-counter" id="lb-counter">01 / 16</div>
-    </div>
-  </div>
-</section>
 
 <!-- BRANDING -->
 <section class="case-section branding" id="branding">
@@ -441,7 +391,7 @@
       </div>
       <div class="case-sub"><span class="chip-pill">do conceito à aplicação</span></div>
     </div>
-    <p class="brand-intro">Desenvolvimento de identidades visuais que traduzem quem a marca é de forma clara, consistente e atual. Do conceito até os elementos visuais — cores, tipografia, aplicações — criando marcas com personalidade e facilidade de uso no dia a dia.</p>
+    <p class="brand-intro">desenvolvimento de identidades visuais que traduzem quem a marca é de forma clara, consistente e atual. do conceito até os elementos visuais — cores, tipografia, aplicações — criando marcas com personalidade e facilidade de uso no dia a dia.</p>
     <div class="brand-included"><span>naming visual</span><span>conceito estratégico</span><span>paleta + tipografia</span><span>logo + variações</span><span>manual de uso</span><span>aplicações</span></div>
     <div class="brand-grid">
       <div class="brand-card-v2"><image-slot id="brand-tangeritta" class="bc-preview" src="assets/cases/tangeritta/pattern.png" placeholder="capa Tangeritta"></image-slot><div class="bc-info"><div class="meta-block"><h3>Tangeritta</h3><span class="meta">moda fitness · case principal</span></div><a class="ver-btn" href="Case Tangeritta.html">ver case →</a></div></div>
@@ -482,7 +432,7 @@
     <div style="text-align: center;">
       <div class="eyebrow-sm" style="color: var(--yellow); opacity: 1; letter-spacing: .22em;">— vamos trabalhar juntos?</div>
       <h2>vamos trabalhar<br><em>juntos?</em></h2>
-      <p class="sub">Se você chegou até aqui, já é um bom sinal. Me chama e a gente descobre o que dá pra criar juntos.</p>
+      <p class="sub">se você chegou até aqui, já é um bom sinal. me chama e a gente descobre o que dá pra criar juntos.</p>
       <div class="cta-row">
         <a href="https://wa.me/5571981491865?text=Oi%20Bruna!%20Vi%20seu%20portif%C3%B3lio%20e%20queria%20conversar%20sobre%20um%20projeto." target="_blank" rel="noopener" class="btn-big">entrar em contato →</a>
         <a href="mailto:brunacristina.design@gmail.com?subject=Projeto%20%E2%80%94%20vamos%20conversar%3F&body=Oi%20Bruna!%20Vi%20seu%20portif%C3%B3lio%20e%20queria%20conversar%20sobre%20um%20projeto." class="btn-ghost-light">enviar e-mail</a>
