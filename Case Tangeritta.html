@@ -49,9 +49,9 @@
   .ca-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   .ca-card { border: 1.5px solid var(--bc-ink); border-radius: 28px; padding: 36px 32px; }
   .ca-card.challenge { background: var(--tg-creme); transform: rotate(-1deg); color: var(--tg-dark); }
-  .ca-card.approach { background: var(--tg-tang); color: var(--tg-creme); transform: rotate(1deg); border-color: var(--tg-tang); }
+  .ca-card.approach { background: var(--tg-creme); color: var(--tg-dark); transform: rotate(1deg); border-color: var(--tg-dark); }
   .ca-card .num { font-family: var(--font-display); font-weight: 300; font-size: 56px; letter-spacing: -.04em; }
-  .ca-card.approach .num { color: var(--tg-creme); }
+  .ca-card.approach .num { color: var(--tg-tang); }
   .ca-card.challenge .num { color: var(--tg-tang); }
   .ca-card h3 { font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: 36px; margin: 0 0 14px; }
   .ca-card p { font-size: 16px; line-height: 1.6; margin: 0 0 14px; }
@@ -97,7 +97,7 @@
   .cta { background: var(--tg-tang); color: var(--tg-creme); position: relative; overflow: hidden; }
   .cta h2 { font-size: clamp(56px,10vw,168px); text-align: center; line-height: .9; letter-spacing: -.05em; margin: 0; }
   .cta h2 em { font-style: italic; }
-  .cta .sub { text-align: center; margin: 24px auto 32px; max-width: 540px; font-size: 17px; line-height: 1.5; }
+  .cta .sub { text-align: center; margin: 24px auto 32px; max-width: 540px; font-size: 17px; line-height: 1.5; color: var(--tg-creme); }
   .cta-row { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
   .btn-big { background: var(--tg-creme); color: var(--tg-tang); border: 2px solid var(--tg-creme); border-radius: 999px; padding: 20px 40px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-size: 15px; transition: all .2s var(--ease-soft); }
   .btn-big:hover { transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--tg-dark); }
@@ -130,13 +130,11 @@
     <div class="meta-row">
       <span class="chip chip--solid">branding · case principal</span>
       <span class="chip">moda fitness</span>
-      <span class="chip">2024</span>
+      <span class="chip">2025</span>
     </div>
     <h1 class="display">tangeritta — performance com <em>doçura</em>.</h1>
-    <div class="cs-cover">
-      <img src="assets/cases/tangeritta/adesivo-2.png" class="deco d1" alt="" />
-      <span class="wordmark">tangeritta.</span>
-      <img src="assets/cases/tangeritta/adesivo-3.png" class="deco d2" alt="" />
+    <div class="cs-cover" style="position:relative; background:var(--tg-dark);">
+      <img src="assets/cases/tangeritta/cover.png" alt="Tangeritta brand cover" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
     </div>
   </div>
 </section>
@@ -145,8 +143,8 @@
   <div class="container">
     <div class="info-cell"><div class="label">cliente</div><div class="val">tangeritta</div></div>
     <div class="info-cell"><div class="label">setor</div><div class="val">moda fitness · feminina</div></div>
-    <div class="info-cell"><div class="label">entregas</div><div class="val">brand · elementos · papelaria</div></div>
-    <div class="info-cell"><div class="label">ano</div><div class="val">2024</div></div>
+    <div class="info-cell"><div class="label">entregas</div><div class="val">branding</div></div>
+    <div class="info-cell"><div class="label">ano</div><div class="val">2025</div></div>
   </div>
 </div>
 
@@ -195,23 +193,11 @@
   </div>
 </section>
 
-<section class="elements">
-  <div class="container">
-    <div class="eyebrow" style="color: var(--tg-creme); opacity: .8;">— sistema de elementos</div>
-    <h2 class="display" style="margin-top: 12px;">adesivos &amp; padrões</h2>
-    <div class="el-grid">
-      <div class="el-tile"><img src="assets/cases/tangeritta/adesivo-2.png" alt="" /><span class="lbl">adesivo 01</span></div>
-      <div class="el-tile"><img src="assets/cases/tangeritta/adesivo-3.png" alt="" /><span class="lbl">adesivo 02</span></div>
-      <div class="el-tile"><img src="assets/cases/tangeritta/pattern.png" alt="" /><span class="lbl">pattern</span></div>
-      <div class="el-tile"><img src="assets/cases/tangeritta/quadriculado.png" alt="" /><span class="lbl">quadriculado</span></div>
-    </div>
-  </div>
-</section>
 
 <section class="gallery">
   <div class="container">
     <div class="eyebrow">— peças do projeto</div>
-    <h2 class="display" style="margin-top: 12px;">o sistema visual</h2>
+    <h2 class="display" style="margin-top: 12px;">aplicações visuais</h2>
     <div class="tg-mockup-grid">
       <image-slot id="tg-mockup-1" class="tg-tile" src="assets/cases/tangeritta/mockup-1.jpg" placeholder="key visual"></image-slot>
       <image-slot id="tg-mockup-2" class="tg-tile" src="assets/cases/tangeritta/mockup-2.jpg" placeholder="logo primário"></image-slot>
@@ -226,19 +212,6 @@
   </div>
 </section>
 
-<section class="deliverables">
-  <div class="container">
-    <div class="eyebrow" style="color: var(--tg-dark);">— entregáveis</div>
-    <h2 class="display" style="margin-top: 12px;">o que ficou pronto</h2>
-    <div class="deliv-list">
-      <div class="deliv-item"><span class="name">logotipo principal</span><span class="meta">vertical + horizontal</span></div>
-      <div class="deliv-item"><span class="name">paleta cromática</span><span class="meta">6 cores</span></div>
-      <div class="deliv-item"><span class="name">sistema de adesivos</span><span class="meta">4 elementos</span></div>
-      <div class="deliv-item"><span class="name">padrões + texturas</span><span class="meta">pattern · quadriculado</span></div>
-      <div class="deliv-item"><span class="name">papelaria + brindes</span><span class="meta">aplicações</span></div>
-    </div>
-  </div>
-</section>
 
 <section class="cs-testi">
   <div class="cs-testi-card">

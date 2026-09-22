@@ -47,9 +47,9 @@
   .ca-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   .ca-card { border: 1.5px solid var(--bc-ink); border-radius: 28px; padding: 36px 32px; }
   .ca-card.challenge { background: var(--c27-yellow); transform: rotate(-1deg); color: var(--c27-deep); }
-  .ca-card.approach { background: var(--c27-green); color: #fff; transform: rotate(1deg); border-color: var(--c27-green); }
+  .ca-card.approach { background: var(--c27-yellow); color: var(--c27-deep); transform: rotate(1deg); border-color: var(--c27-deep); }
   .ca-card .num { font-family: var(--font-display); font-weight: 300; font-size: 56px; letter-spacing: -.04em; }
-  .ca-card.approach .num { color: var(--c27-yellow); }
+  .ca-card.approach .num { color: var(--c27-deep); }
   .ca-card h3 { font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: 36px; margin: 0 0 14px; }
   .ca-card p { font-size: 16px; line-height: 1.6; margin: 0 0 14px; }
 
@@ -64,8 +64,10 @@
 
   .mockup { background: var(--c27-mint); color: var(--c27-deep); }
   .mockup h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 32px; }
-  .mockup-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-  .mockup-slot { aspect-ratio: 9/16; border-radius: 28px; overflow: hidden; border: 1.5px solid var(--c27-deep); }
+  .c27-mockup-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .c27-tile { aspect-ratio: 1; border-radius: 22px; overflow: hidden; border: 1.5px solid var(--c27-deep); display: block; background: var(--c27-deep); }
+  .c27-tile::part(frame) { border-radius: 0; }
+  .c27-tile::part(ring) { display: none; }
 
   .deliverables { background: var(--bc-cream); }
   .deliverables h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 32px; }
@@ -78,7 +80,7 @@
   .cta { background: var(--c27-yellow); color: var(--c27-deep); position: relative; overflow: hidden; }
   .cta h2 { font-size: clamp(56px,10vw,168px); text-align: center; line-height: .9; letter-spacing: -.05em; margin: 0; }
   .cta h2 em { font-style: italic; }
-  .cta .sub { text-align: center; margin: 24px auto 32px; max-width: 540px; font-size: 17px; line-height: 1.5; }
+  .cta .sub { text-align: center; margin: 24px auto 32px; max-width: 540px; font-size: 17px; line-height: 1.5; color: var(--c27-deep); }
   .cta-row { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
   .btn-big { background: var(--c27-deep); color: var(--c27-yellow); border: 2px solid var(--c27-deep); border-radius: 999px; padding: 20px 40px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-size: 15px; transition: all .2s var(--ease-soft); }
   .btn-big:hover { transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--c27-green); }
@@ -111,15 +113,13 @@
 <section class="cs-hero">
   <div class="container">
     <div class="meta-row">
-      <span class="chip chip--solid">branding · app</span>
+      <span class="chip chip--solid">rebranding + brandbook</span>
       <span class="chip">mobilidade urbana</span>
-      <span class="chip">2024</span>
+      <span class="chip">2025</span>
     </div>
     <h1 class="display">chama 27 — <em>mobilidade</em> sem ruído.</h1>
-    <div class="cs-cover">
-      <img src="assets/star-8point.svg" class="star" style="top: 10%; left: 8%; filter: brightness(0) invert(1);" alt="" />
-      <img src="assets/cases/chama27/icone-app.png" alt="ícone chama 27" />
-      <img src="assets/star-8point.svg" class="star" style="bottom: 12%; right: 10%; width: 50px; filter: brightness(0) invert(1);" alt="" />
+    <div class="cs-cover" style="position:relative; background:var(--c27-deep);">
+      <img src="assets/cases/chama27/cover.png" alt="Chama 27 brand cover" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
     </div>
   </div>
 </section>
@@ -128,8 +128,8 @@
   <div class="container">
     <div class="info-cell"><div class="label">cliente</div><div class="val">chama 27</div></div>
     <div class="info-cell"><div class="label">setor</div><div class="val">mobilidade · app</div></div>
-    <div class="info-cell"><div class="label">entregas</div><div class="val">brand · app icons · ui</div></div>
-    <div class="info-cell"><div class="label">ano</div><div class="val">2024</div></div>
+    <div class="info-cell"><div class="label">entregas</div><div class="val">rebranding + brandbook</div></div>
+    <div class="info-cell"><div class="label">ano</div><div class="val">2025</div></div>
   </div>
 </div>
 
@@ -178,7 +178,7 @@
 <section class="mockup">
   <div class="container">
     <div class="eyebrow">— aplicações</div>
-    <h2 class="display" style="margin-top: 12px;">mockups in situ</h2>
+    <h2 class="display" style="margin-top: 12px;">aplicações visuais</h2>
     <div class="c27-mockup-grid">
       <image-slot id="c27-mockup-1" class="c27-tile c27-1" src="assets/cases/chama27/mockups/logo-app.png" placeholder="logo app"></image-slot>
       <image-slot id="c27-mockup-2" class="c27-tile c27-2" src="assets/cases/chama27/mockups/icone-celular.jpg" placeholder="celular"></image-slot>
@@ -192,18 +192,6 @@
   </div>
 </section>
 
-<section class="deliverables">
-  <div class="container">
-    <div class="eyebrow">— entregáveis</div>
-    <h2 class="display" style="margin-top: 12px;">o que ficou pronto</h2>
-    <div class="deliv-list">
-      <div class="deliv-item"><span class="name">logotipo principal</span><span class="meta">vertical + horizontal</span></div>
-      <div class="deliv-item"><span class="name">3 ícones de app</span><span class="meta">passageiro · motorista · marca</span></div>
-      <div class="deliv-item"><span class="name">paleta cromática</span><span class="meta">verde · amarelo · base</span></div>
-      <div class="deliv-item"><span class="name">tipografia oficial</span><span class="meta">display + ui</span></div>
-    </div>
-  </div>
-</section>
 
 <section class="cta">
   <div class="container">

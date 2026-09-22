@@ -45,7 +45,7 @@
   .ca-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   .ca-card { border: 1.5px solid var(--bc-ink); border-radius: 28px; padding: 36px 32px; }
   .ca-card.challenge { background: var(--pmoc-light); transform: rotate(-1deg); }
-  .ca-card.approach { background: var(--pmoc-blue); color: #fff; transform: rotate(1deg); border-color: var(--pmoc-blue); }
+  .ca-card.approach { background: var(--pmoc-light); color: var(--pmoc-deep); transform: rotate(1deg); border-color: var(--pmoc-deep); }
   .ca-card .num { font-family: var(--font-display); font-weight: 300; font-size: 56px; letter-spacing: -.04em; }
   .ca-card.challenge .num { color: var(--pmoc-blue); }
   .ca-card h3 { font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: 36px; margin: 0 0 14px; }
@@ -86,7 +86,7 @@
   .cta { background: var(--pmoc-blue); color: #fff; position: relative; overflow: hidden; }
   .cta h2 { font-size: clamp(56px,10vw,168px); text-align: center; line-height: .9; letter-spacing: -.05em; margin: 0; }
   .cta h2 em { font-style: italic; }
-  .cta .sub { text-align: center; margin: 24px auto 32px; max-width: 540px; font-size: 17px; line-height: 1.5; }
+  .cta .sub { text-align: center; margin: 24px auto 32px; max-width: 540px; font-size: 17px; line-height: 1.5; color: #fff; }
   .cta-row { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
   .btn-big { background: #fff; color: var(--pmoc-blue); border: 2px solid #fff; border-radius: 999px; padding: 20px 40px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; font-size: 15px; transition: all .2s var(--ease-soft); }
   .btn-big:hover { transform: translate(-3px,-3px); box-shadow: 6px 6px 0 var(--pmoc-deep); }
@@ -115,21 +115,23 @@
 <section class="cs-hero">
   <div class="container">
     <div class="meta-row">
-      <span class="chip chip--solid">branding</span>
-      <span class="chip">serviços · B2B</span>
-      <span class="chip">2024</span>
+      <span class="chip chip--solid">rebranding + brandbook</span>
+      <span class="chip">app · climatização</span>
+      <span class="chip">2025</span>
     </div>
-    <h1 class="display">meu pmoc — gestão que <em>respira</em>.</h1>
-    <div class="cs-cover"></div>
+    <h1 class="display">meu pmoc — gestão em um simples <em>QR code</em>.</h1>
+    <div class="cs-cover" style="position:relative; background:var(--pmoc-blue);">
+      <img src="assets/cases/meupmoc/logo-fundo-azul.png" alt="Meu PMOC brand cover" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
+    </div>
   </div>
 </section>
 
 <div class="info-strip">
   <div class="container">
     <div class="info-cell"><div class="label">cliente</div><div class="val">meu pmoc</div></div>
-    <div class="info-cell"><div class="label">setor</div><div class="val">serviços · climatização</div></div>
-    <div class="info-cell"><div class="label">entregas</div><div class="val">brand · manual · papelaria</div></div>
-    <div class="info-cell"><div class="label">ano</div><div class="val">2024</div></div>
+    <div class="info-cell"><div class="label">setor</div><div class="val">app · climatização</div></div>
+    <div class="info-cell"><div class="label">entregas</div><div class="val">rebranding + brandbook</div></div>
+    <div class="info-cell"><div class="label">ano</div><div class="val">2025</div></div>
   </div>
 </div>
 
@@ -166,7 +168,7 @@
 <section class="logo-system">
   <div class="container">
     <div class="eyebrow" style="color: var(--pmoc-light); opacity: .7;">— sistema de marca</div>
-    <h2 class="display" style="margin-top: 12px;">aplicações do logo</h2>
+    <h2 class="display" style="margin-top: 12px;">aplicações visuais</h2>
     <div class="logo-grid">
       <div class="logo-tile t-blue"><img src="assets/cases/meupmoc/logo-branco.png" alt="logo branco" /><span class="tag">fundo azul</span></div>
       <div class="logo-tile t-white"><img src="assets/cases/meupmoc/logo-azul.png" alt="logo azul" /><span class="tag">fundo claro</span></div>
@@ -194,19 +196,6 @@
   </div>
 </section>
 
-<section class="deliverables">
-  <div class="container">
-    <div class="eyebrow" style="color: var(--pmoc-deep);">— entregáveis</div>
-    <h2 class="display" style="margin-top: 12px;">o que ficou pronto</h2>
-    <div class="deliv-list">
-      <div class="deliv-item"><span class="name">logotipo principal</span><span class="meta">positivo + negativo</span></div>
-      <div class="deliv-item"><span class="name">símbolo isolado</span><span class="meta">app icon</span></div>
-      <div class="deliv-item"><span class="name">paleta cromática</span><span class="meta">4 cores</span></div>
-      <div class="deliv-item"><span class="name">tipografia oficial</span><span class="meta">display + ui</span></div>
-      <div class="deliv-item"><span class="name">diretrizes de aplicação</span><span class="meta">áreas de proteção</span></div>
-    </div>
-  </div>
-</section>
 
 <section class="cta">
   <div class="container">
