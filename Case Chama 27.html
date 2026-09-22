@@ -17,34 +17,36 @@
   .top-bar a.back:hover { color: var(--c27-green); }
   .top-bar .crumb { font-family: var(--font-display); font-style: italic; font-size: 18px; }
 
-  section { padding: clamp(48px,7vw,96px) clamp(20px,5vw,80px); }
+  section { padding: clamp(72px,9vw,128px) clamp(20px,5vw,80px); }
   .container { max-width: 1200px; margin: 0 auto; }
   .display { font-family: var(--font-display); font-weight: 300; line-height: .95; letter-spacing: -.04em; }
   .eyebrow { font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--fg-3); font-weight: 500; }
 
-  .cs-hero { background: var(--c27-mint); padding-top: 56px; color: var(--c27-deep); }
-  .cs-hero .meta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
-  .chip { border: 1.5px solid var(--c27-deep); border-radius: 999px; padding: 6px 16px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 500; }
+  .cs-hero { background: var(--c27-mint); padding-top: 80px; color: var(--c27-deep); }
+  .cs-hero .meta-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 32px; }
+  .chip { border: 1.5px solid var(--c27-deep); border-radius: 999px; padding: 7px 18px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 500; }
   .chip--solid { background: var(--c27-green); color: #fff; border-color: var(--c27-green); }
-  .cs-hero h1 { font-size: clamp(56px,10vw,152px); margin: 0 0 32px; }
+  .cs-hero h1 { font-size: clamp(56px,10vw,152px); margin: 0 0 10px; line-height: .88; }
   .cs-hero h1 em { font-style: italic; color: var(--c27-green); }
+  .cs-tagline { font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: clamp(20px,2.6vw,34px); line-height: 1.3; letter-spacing: -.02em; margin: 0 0 48px; max-width: 680px; opacity: .8; }
+  .cs-tagline em { color: var(--c27-green); font-style: italic; opacity: 1; }
   .cs-cover { aspect-ratio: 16/9; border: 2px solid var(--c27-deep); border-radius: 32px; overflow: hidden; background: var(--c27-green); display: flex; align-items: center; justify-content: center; position: relative; }
   .cs-cover .star { position: absolute; width: 60px; height: 60px; opacity: .9; }
 
   .info-strip { background: var(--c27-deep); color: var(--c27-mint); }
-  .info-strip .container { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; padding: 32px 0; }
+  .info-strip .container { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; padding: 48px 0; }
   .info-cell .label { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; opacity: .6; margin-bottom: 6px; }
   .info-cell .val { font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: 22px; }
 
   .overview { background: var(--bc-sand); }
-  .overview .grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 56px; align-items: start; }
+  .overview .grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 80px; align-items: start; }
   .overview h2 { font-size: clamp(36px,5vw,64px); margin: 0; }
-  .overview p { font-size: 17px; line-height: 1.7; color: var(--fg-1); margin: 0 0 18px; }
+  .overview p { font-size: 17px; line-height: 1.75; color: var(--fg-1); margin: 0 0 24px; }
   .overview p strong { font-weight: 500; }
 
   .ca-section { background: var(--bc-cream); }
-  .ca-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-  .ca-card { border: 1.5px solid var(--bc-ink); border-radius: 28px; padding: 36px 32px; }
+  .ca-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .ca-card { border: 1.5px solid var(--bc-ink); border-radius: 28px; padding: 48px 40px; }
   .ca-card.challenge { background: var(--c27-yellow); transform: rotate(-1deg); color: var(--c27-deep); border-color: var(--c27-deep); }
   .ca-card.approach { background: var(--c27-yellow); color: var(--c27-deep); transform: rotate(1deg); border-color: var(--c27-deep); }
   .ca-card .num { font-family: var(--font-display); font-weight: 300; font-size: 56px; letter-spacing: -.04em; }
@@ -121,7 +123,8 @@
       <span class="chip">mobilidade urbana</span>
       <span class="chip">2025</span>
     </div>
-    <h1 class="display">chama 27: mobilidade urbana com <em>sotaque capixaba</em>.</h1>
+    <h1 class="display">chama 27</h1>
+    <p class="cs-tagline">mobilidade urbana com <em>sotaque capixaba</em>.</p>
     <div class="cs-cover" style="position:relative; background:var(--c27-deep);">
       <img src="assets/cases/chama27/cover.png" alt="Chama 27 brand cover" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;" />
     </div>
