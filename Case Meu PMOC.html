@@ -54,12 +54,14 @@
   .logo-system { background: var(--pmoc-deep); color: var(--pmoc-light); }
   .logo-system h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 40px; }
   .logo-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-bottom: 32px; }
-  .logo-tile { aspect-ratio: 1; border: 1.5px solid var(--pmoc-light); border-radius: 22px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; transition: transform .3s var(--ease-soft); padding: 24px; }
+  .logo-tile { aspect-ratio: 1; border: 1.5px solid var(--pmoc-light); border-radius: 22px; position: relative; overflow: hidden; transition: transform .3s var(--ease-soft); }
   .logo-tile:hover { transform: rotate(-1deg); }
-  .logo-tile img { max-width: 70%; max-height: 70%; object-fit: contain; }
-  .logo-tile .tag { position: absolute; bottom: 14px; left: 14px; background: var(--pmoc-light); color: var(--pmoc-deep); border-radius: 999px; padding: 4px 12px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; font-weight: 500; }
+  .logo-tile image-slot { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .logo-tile image-slot::part(frame) { border-radius: 0; }
+  .logo-tile image-slot::part(ring) { display: none; }
+  .logo-tile .tag { position: absolute; bottom: 14px; left: 14px; background: var(--pmoc-light); color: var(--pmoc-deep); border-radius: 999px; padding: 4px 12px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; font-weight: 500; z-index: 2; }
   .logo-tile.t-blue { background: var(--pmoc-blue); }
-  .logo-tile.t-white { background: var(--pmoc-light); }
+  .logo-tile.t-white { background: var(--pmoc-light); border-color: var(--pmoc-blue); }
   .logo-tile.t-deep { background: var(--pmoc-deep); border-color: var(--pmoc-blue); }
   .gallery-wrapper { position: relative; padding: 0 52px; }
   .gallery-track { display: flex; gap: 16px; overflow-x: scroll; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; }
@@ -178,9 +180,9 @@
     <div class="eyebrow" style="color: var(--pmoc-light); opacity: .7;">— sistema de marca</div>
     <h2 class="display" style="margin-top: 12px;">aplicações visuais</h2>
     <div class="logo-row">
-      <div class="logo-tile t-blue"><img src="assets/cases/meupmoc/logo-branco.png" alt="logo branco" /><span class="tag">fundo azul</span></div>
-      <div class="logo-tile t-white"><img src="assets/cases/meupmoc/logo-azul.png" alt="logo azul" /><span class="tag">fundo claro</span></div>
-      <div class="logo-tile t-deep"><img src="assets/cases/meupmoc/simbolo.png" alt="símbolo" /><span class="tag">símbolo</span></div>
+      <div class="logo-tile t-blue"><image-slot fit="contain" src="assets/cases/meupmoc/logo-branco.png" placeholder="logo branco"></image-slot><span class="tag">fundo azul</span></div>
+      <div class="logo-tile t-white"><image-slot fit="contain" src="assets/cases/meupmoc/logo-azul.png" placeholder="logo azul"></image-slot><span class="tag">fundo claro</span></div>
+      <div class="logo-tile t-deep"><image-slot fit="contain" src="assets/cases/meupmoc/simbolo.png" placeholder="símbolo"></image-slot><span class="tag">símbolo</span></div>
     </div>
     <div class="gallery-wrapper">
       <button class="gal-btn gal-prev" aria-label="anterior">&#8592;</button>
@@ -196,20 +198,6 @@
     </div>
   </div>
 </section>
-
-<section class="palette">
-  <div class="container">
-    <div class="eyebrow">— paleta cromática</div>
-    <h2 class="display" style="margin-top: 12px;">cores da marca</h2>
-    <div class="palette-row">
-      <div class="swatch" style="background: var(--pmoc-blue); color: #fff;"><span class="name">azul fluxo</span><span class="hex">#2B45FB</span></div>
-      <div class="swatch" style="background: var(--pmoc-deep); color: #fff;"><span class="name">deep</span><span class="hex">#0B1554</span></div>
-      <div class="swatch" style="background: var(--pmoc-light); color: var(--pmoc-deep);"><span class="name">céu claro</span><span class="hex">#E6EBFF</span></div>
-      <div class="swatch" style="background: #fff; color: var(--pmoc-deep);"><span class="name">branco</span><span class="hex">#FFFFFF</span></div>
-    </div>
-  </div>
-</section>
-
 
 <section class="cta">
   <div class="container">

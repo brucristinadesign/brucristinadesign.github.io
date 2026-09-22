@@ -57,7 +57,8 @@
   .ca-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   .ca-card { border: 1.5px solid var(--en-marrom); border-radius: 28px; padding: 36px 32px; }
   .ca-card.challenge { background: var(--bc-cream); transform: rotate(-1deg); border-color: var(--en-marrom); }
-  .ca-card.approach { background: var(--en-marrom); color: var(--en-creme); transform: rotate(1deg); border-color: var(--en-creme); }
+  .ca-card.approach { background: var(--bc-cream); color: var(--en-marrom); transform: rotate(1deg); border-color: var(--en-marrom); }
+  .ca-card.approach .num { color: var(--en-terra); }
   .ca-card .num { font-family: var(--font-display); font-weight: 300; font-size: 56px; letter-spacing: -.04em; color: var(--en-terra); }
   .ca-card.approach .num { color: var(--en-pessego); }
   .ca-card h3 { font-family: var(--font-display); font-style: italic; font-weight: 300; font-size: 36px; margin: 0 0 14px; }
@@ -158,25 +159,6 @@
   </div>
 </section>
 
-<section class="ba-section">
-  <div class="container">
-    <div class="eyebrow">— antes &amp; depois</div>
-    <h2 class="display" style="margin-top: 12px;">a transformação</h2>
-    <div class="ba-grid">
-      <div class="ba-card before">
-        <span class="tag">antes</span>
-        <h3>logo amador</h3>
-        <p>tipografia sem personalidade, cores fora de tom, sem sistema de aplicação.</p>
-      </div>
-      <div class="ba-card after">
-        <span class="tag">depois</span>
-        <h3>marca atual</h3>
-        <p>logotipo manuscrito, paleta terrosa, papelaria texturizada — feita pra durar.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
 <section class="ca-section">
   <div class="container">
     <div class="ca-grid">
@@ -194,20 +176,6 @@
   </div>
 </section>
 
-<section class="palette">
-  <div class="container">
-    <div class="eyebrow" style="color: var(--en-marrom);">— paleta cromática</div>
-    <h2 class="display" style="margin-top: 12px;">cores da marca</h2>
-    <div class="palette-row">
-      <div class="swatch" style="background: var(--en-terra); color: var(--en-creme);"><span class="name">terra</span><span class="hex">#C4622D</span></div>
-      <div class="swatch" style="background: var(--en-marrom); color: var(--en-creme);"><span class="name">marrom</span><span class="hex">#5C3317</span></div>
-      <div class="swatch" style="background: var(--en-pessego); color: var(--en-marrom);"><span class="name">pêssego</span><span class="hex">#E8A882</span></div>
-      <div class="swatch" style="background: var(--en-ocre); color: var(--en-marrom);"><span class="name">ocre</span><span class="hex">#C8963C</span></div>
-      <div class="swatch" style="background: var(--en-creme); color: var(--en-marrom);"><span class="name">creme</span><span class="hex">#F5EAD8</span></div>
-    </div>
-  </div>
-</section>
-
 <section class="mockup">
   <div class="container">
     <div class="eyebrow">— aplicações</div>
@@ -218,12 +186,6 @@
         <image-slot class="gal-slide" src="assets/cases/enrolae/sacola.jpg" placeholder="sacola"></image-slot>
         <image-slot class="gal-slide" src="assets/cases/enrolae/moodboard.jpg" placeholder="moodboard"></image-slot>
         <image-slot class="gal-slide" src="assets/cases/enrolae/logo-fundo-ocre.jpg" placeholder="logo principal"></image-slot>
-        <image-slot class="gal-slide" fit="cover" src="assets/cases/enrolae/mockups/logo-ocre-marrom.jpg" placeholder="logo ocre"></image-slot>
-        <image-slot class="gal-slide" fit="cover" src="assets/cases/enrolae/mockups/logo-marrom-creme.jpg" placeholder="logo marrom"></image-slot>
-        <image-slot class="gal-slide" fit="cover" src="assets/cases/enrolae/mockups/logo-creme-terracota.jpg" placeholder="logo terracota"></image-slot>
-        <image-slot class="gal-slide" fit="cover" src="assets/cases/enrolae/mockups/logo-creme-pessego.jpg" placeholder="logo pêssego"></image-slot>
-        <image-slot class="gal-slide" fit="cover" src="assets/cases/enrolae/mockups/logo-ocre-terracota.jpg" placeholder="logo variação"></image-slot>
-        <image-slot class="gal-slide" fit="cover" src="assets/cases/enrolae/mockups/logo-pessego-marrom.jpg" placeholder="logo variação"></image-slot>
       </div>
       <button class="gal-btn gal-next" aria-label="próximo">&#8594;</button>
     </div>
