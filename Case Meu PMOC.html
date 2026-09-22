@@ -44,7 +44,7 @@
   .ca-section { background: var(--bc-cream); }
   .ca-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   .ca-card { border: 1.5px solid var(--bc-ink); border-radius: 28px; padding: 36px 32px; }
-  .ca-card.challenge { background: var(--pmoc-light); transform: rotate(-1deg); }
+  .ca-card.challenge { background: var(--pmoc-light); transform: rotate(-1deg); border-color: var(--pmoc-deep); }
   .ca-card.approach { background: var(--pmoc-light); color: var(--pmoc-deep); transform: rotate(1deg); border-color: var(--pmoc-deep); }
   .ca-card .num { font-family: var(--font-display); font-weight: 300; font-size: 56px; letter-spacing: -.04em; }
   .ca-card.challenge .num { color: var(--pmoc-blue); }
@@ -53,7 +53,7 @@
 
   .logo-system { background: var(--pmoc-deep); color: var(--pmoc-light); }
   .logo-system h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 40px; }
-  .logo-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+  .logo-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; margin-bottom: 32px; }
   .logo-tile { aspect-ratio: 1; border: 1.5px solid var(--pmoc-light); border-radius: 22px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; transition: transform .3s var(--ease-soft); padding: 24px; }
   .logo-tile:hover { transform: rotate(-1deg); }
   .logo-tile img { max-width: 70%; max-height: 70%; object-fit: contain; }
@@ -61,10 +61,16 @@
   .logo-tile.t-blue { background: var(--pmoc-blue); }
   .logo-tile.t-white { background: var(--pmoc-light); }
   .logo-tile.t-deep { background: var(--pmoc-deep); border-color: var(--pmoc-blue); }
-  .logo-tile.t-slot { background: var(--pmoc-deep); border-color: var(--pmoc-light); padding: 0; }
-  .logo-tile.t-slot image-slot { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-  .logo-tile.t-slot image-slot::part(frame) { border-radius: 0; }
-  .logo-tile.t-slot image-slot::part(ring) { display: none; }
+  .gallery-wrapper { position: relative; padding: 0 52px; }
+  .gallery-track { display: flex; gap: 16px; overflow-x: scroll; scroll-snap-type: x mandatory; scrollbar-width: none; -ms-overflow-style: none; }
+  .gallery-track::-webkit-scrollbar { display: none; }
+  .gal-slide { flex: 0 0 calc(33.33% - 11px); aspect-ratio: 1; border: 1.5px solid var(--pmoc-light); border-radius: 22px; overflow: hidden; scroll-snap-align: start; display: block; background: var(--pmoc-deep); }
+  .gal-slide::part(frame) { border-radius: 0; }
+  .gal-slide::part(ring) { display: none; }
+  .gal-btn { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; width: 44px; height: 44px; border-radius: 50%; background: var(--pmoc-deep); border: 1.5px solid var(--pmoc-light); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: background .2s; padding: 0; line-height: 1; color: var(--pmoc-light); }
+  .gal-btn:hover { background: var(--pmoc-blue); border-color: var(--pmoc-blue); }
+  .gal-prev { left: 0; }
+  .gal-next { right: 0; }
 
   .palette { background: var(--bc-cream); }
   .palette h2 { font-size: clamp(36px,5vw,64px); margin: 0 0 32px; }
@@ -96,8 +102,10 @@
   footer { background: var(--bc-ink); color: var(--bc-cream); padding: 24px clamp(20px,5vw,80px); display: flex; justify-content: space-between; align-items: center; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; flex-wrap: wrap; gap: 16px; }
 
   @media (max-width: 900px) {
-    .info-strip .container, .palette-row, .logo-grid { grid-template-columns: repeat(2, 1fr); }
+    .info-strip .container, .palette-row, .logo-row { grid-template-columns: repeat(2, 1fr); }
     .overview .grid, .ca-grid, .deliv-list { grid-template-columns: 1fr; }
+    .gal-slide { flex: 0 0 calc(50% - 8px); }
+    .gallery-wrapper { padding: 0 36px; }
   }
 </style>
 <script async type='text/javascript' src='https://static.klaviyo.com/onsite/js/YxFfpH/klaviyo.js?company_id=YxFfpH'></script>
@@ -108,7 +116,7 @@
 <body>
 
 <div class="top-bar">
-  <a href="index.html" class="back">← voltar ao portfólio</a>
+  <a href="index.html" class="back">← voltar ao portifólio</a>
   <span class="crumb">case study · meu pmoc</span>
 </div>
 
@@ -169,16 +177,22 @@
   <div class="container">
     <div class="eyebrow" style="color: var(--pmoc-light); opacity: .7;">— sistema de marca</div>
     <h2 class="display" style="margin-top: 12px;">aplicações visuais</h2>
-    <div class="logo-grid">
+    <div class="logo-row">
       <div class="logo-tile t-blue"><img src="assets/cases/meupmoc/logo-branco.png" alt="logo branco" /><span class="tag">fundo azul</span></div>
       <div class="logo-tile t-white"><img src="assets/cases/meupmoc/logo-azul.png" alt="logo azul" /><span class="tag">fundo claro</span></div>
       <div class="logo-tile t-deep"><img src="assets/cases/meupmoc/simbolo.png" alt="símbolo" /><span class="tag">símbolo</span></div>
-      <div class="logo-tile t-slot"><image-slot id="pmoc-mockup-1" src="assets/cases/meupmoc/mockups/papelaria.jpg" placeholder="papelaria"></image-slot></div>
-      <div class="logo-tile t-slot"><image-slot id="pmoc-mockup-2" src="assets/cases/meupmoc/mockups/app-iphone.jpg" placeholder="app"></image-slot></div>
-      <div class="logo-tile t-slot"><image-slot id="pmoc-mockup-3" src="assets/cases/meupmoc/mockups/notebook.jpg" placeholder="notebook"></image-slot></div>
-      <div class="logo-tile t-slot"><image-slot id="pmoc-mockup-4" src="assets/cases/meupmoc/mockups/instagram.jpg" placeholder="social"></image-slot></div>
-      <div class="logo-tile t-slot"><image-slot id="pmoc-mockup-5" src="assets/cases/meupmoc/mockups/camisa.jpg" placeholder="vestuário"></image-slot></div>
-      <div class="logo-tile t-slot"><image-slot id="pmoc-mockup-6" src="assets/cases/meupmoc/mockups/simbolo-3d.jpg" placeholder="símbolo 3d"></image-slot></div>
+    </div>
+    <div class="gallery-wrapper">
+      <button class="gal-btn gal-prev" aria-label="anterior">&#8592;</button>
+      <div class="gallery-track">
+        <image-slot class="gal-slide" src="assets/cases/meupmoc/mockups/papelaria.jpg" placeholder="papelaria"></image-slot>
+        <image-slot class="gal-slide" src="assets/cases/meupmoc/mockups/app-iphone.jpg" placeholder="app"></image-slot>
+        <image-slot class="gal-slide" src="assets/cases/meupmoc/mockups/notebook.jpg" placeholder="notebook"></image-slot>
+        <image-slot class="gal-slide" src="assets/cases/meupmoc/mockups/instagram.jpg" placeholder="social"></image-slot>
+        <image-slot class="gal-slide" src="assets/cases/meupmoc/mockups/camisa.jpg" placeholder="vestuário"></image-slot>
+        <image-slot class="gal-slide" src="assets/cases/meupmoc/mockups/simbolo-3d.jpg" placeholder="símbolo 3d"></image-slot>
+      </div>
+      <button class="gal-btn gal-next" aria-label="próximo">&#8594;</button>
     </div>
   </div>
 </section>
@@ -213,5 +227,18 @@
   <div>case study · meu pmoc</div>
 </footer>
 
+<script>
+(function(){
+  document.querySelectorAll('.gallery-wrapper').forEach(function(w){
+    var t = w.querySelector('.gallery-track');
+    w.querySelector('.gal-prev').addEventListener('click', function(){
+      t.scrollBy({left: -(t.clientWidth * 0.67), behavior: 'smooth'});
+    });
+    w.querySelector('.gal-next').addEventListener('click', function(){
+      t.scrollBy({left: t.clientWidth * 0.67, behavior: 'smooth'});
+    });
+  });
+})();
+</script>
 </body>
 </html>
