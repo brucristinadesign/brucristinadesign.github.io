@@ -790,119 +790,64 @@
 </script>
 <script>
 /* ── i18n language toggle ── */
-var LANG = {
-  pt: {
-    'nav-home': 'início',
-    'nav-services': 'serviços',
-    'nav-contact': 'contato',
-    'cover-meta1': 'portfólio · 2026',
-    'cover-title': 'portfólio',
-    'hero-eyebrow': '— quem sou eu',
-    'hero-headline': 'oie,<br>sou <em>bruna ;)</em>',
-    'hero-tagline': 'design gráfico com estratégia por trás',
-    'hero-p1': 'trabalho com marcas que precisam se posicionar, comunicar melhor e vender. há mais de 4 anos transformo briefing em peça pronta, do conceito de marca ao criativo que vai pro ads.',
-    'hero-p2': 'atuo em identidade visual, criativos de performance, e-mail marketing e direção criativa. a ia acelera a produção e traz mais possibilidades, mas a direção continua sendo minha.',
-    'hero-cta1': 'ver trabalhos →',
-    'hero-cta2': 'vamos conversar',
-    'clients-head': 'marcas que confiaram no meu trabalho',
-    'svc-eyebrow': '— o que eu faço',
-    'svc-title': 'meus <em>serviços</em>',
-    'svc-1-name': 'criativos estáticos',
-    'svc-1-desc': 'posts, carrosséis, ads e banners',
-    'svc-2-name': 'e-mail marketing',
-    'svc-2-desc': 'e-mails estratégicos, automáticos &amp; manuais',
-    'svc-3-name': 'branding &amp; identidade visual',
-    'svc-3-desc': 'do conceito ao manual de uso',
-    'ads-eyebrow': '— criativos de conversão',
-    'ads-title': 'criativos <em>ads</em>',
-    'email-eyebrow': '— estratégia + conversão',
-    'email-title': 'e-mail <em>marketing</em>',
-    'email-label': 'cliente',
-    'brand-eyebrow': '— do conceito à aplicação',
-    'brand-title': 'branding &amp; <em>identidade visual</em>',
-    'brand-chip': 'do conceito à aplicação',
-    'brand-tag-1': 'naming visual',
-    'brand-tag-2': 'conceito estratégico',
-    'brand-tag-3': 'paleta + tipografia',
-    'brand-tag-4': 'logo + variações',
-    'brand-tag-5': 'manual de uso',
-    'brand-tag-6': 'aplicações',
-    'meta-1': 'moda fitness · case principal',
-    'meta-2': 'serviços · B2B',
-    'meta-3': 'mobilidade · app',
-    'meta-4': 'rebranding · artesanal',
-    'ver-case': 'ver case →',
-    'testi-eyebrow': '— o que dizem por aí',
-    'testi-title': 'depoimentos <em>reais</em>',
-    'testi-q1': '"você soube expressar cada detalhe aos quais nem mesmo podíamos perceber. <em>não temos palavras pra expressar toda gratidão</em>."',
-    'testi-by1': 'cliente de identidade visual · 2025',
-    'testi-q2': '"<em>essa comunicação que queremos seguir.</em> animal!"',
-    'testi-by2': 'cliente de e-mail marketing · 2025',
-    'testi-q3': '"acho que você pegou bem nossa <em>linha visual</em>. já passei por alguns freelas e isso é um desafio."',
-    'testi-by3': 'cliente de criativo ads · 2024',
-    'cta-eyebrow': '— vamos trabalhar juntos?',
-    'cta-title': 'vamos trabalhar<br><em>juntos?</em>',
-    'cta-sub': 'se você chegou até aqui, já é um bom sinal. estou aberta a projetos freelance e a oportunidades em time. me chama que a gente conversa :)',
-    'cta-btn': 'entrar em contato →',
-    'wa-label': 'entrar em contato',
-    'footer-rights': 'todos os direitos reservados'
-  },
-  en: {
-    'nav-home': 'home',
-    'nav-services': 'services',
-    'nav-contact': 'contact',
-    'cover-meta1': 'portfolio · 2026',
-    'cover-title': 'portfolio',
-    'hero-eyebrow': '— about me',
-    'hero-headline': 'hey,<br>i\'m <em>bruna ;)</em>',
-    'hero-tagline': 'graphic design with strategy behind it',
-    'hero-p1': 'I work with brands that need to position themselves, communicate better and sell. For over 4 years I\'ve been turning briefs into finished work — from brand concept to the creative that runs in ads.',
-    'hero-p2': 'I work in visual identity, performance creatives, email marketing and creative direction. AI speeds up production and opens new possibilities, but the direction is always mine.',
-    'hero-cta1': 'see work →',
-    'hero-cta2': 'let\'s talk',
-    'clients-head': 'brands that trusted my work',
-    'svc-eyebrow': '— what I do',
-    'svc-title': 'my <em>services</em>',
-    'svc-1-name': 'static creatives',
-    'svc-1-desc': 'posts, carousels, ads &amp; banners',
-    'svc-2-name': 'email marketing',
-    'svc-2-desc': 'strategic, automated &amp; manual emails',
-    'svc-3-name': 'branding &amp; visual identity',
-    'svc-3-desc': 'from concept to brand guidelines',
-    'ads-eyebrow': '— conversion creatives',
-    'ads-title': 'ads <em>creatives</em>',
-    'email-eyebrow': '— strategy + conversion',
-    'email-title': 'email <em>marketing</em>',
-    'email-label': 'client',
-    'brand-eyebrow': '— from concept to application',
-    'brand-title': 'branding &amp; <em>visual identity</em>',
-    'brand-chip': 'from concept to application',
-    'brand-tag-1': 'visual naming',
-    'brand-tag-2': 'strategic concept',
-    'brand-tag-3': 'palette + typography',
-    'brand-tag-4': 'logo + variations',
-    'brand-tag-5': 'brand guidelines',
-    'brand-tag-6': 'applications',
-    'meta-1': 'fitness fashion · main case',
-    'meta-2': 'services · B2B',
-    'meta-3': 'mobility · app',
-    'meta-4': 'rebranding · artisan',
-    'ver-case': 'view case →',
-    'testi-eyebrow': '— what people say',
-    'testi-title': '<em>real</em> testimonials',
-    'testi-q1': '"you knew how to express every detail we couldn\'t even notice ourselves. <em>we have no words to express our gratitude</em>."',
-    'testi-by1': 'visual identity client · 2025',
-    'testi-q2': '"<em>this is the communication we want to keep.</em> amazing!"',
-    'testi-by2': 'email marketing client · 2025',
-    'testi-q3': '"you nailed our <em>visual direction</em>. I\'ve worked with a few freelancers and that\'s always the challenge."',
-    'testi-by3': 'ads creative client · 2024',
-    'cta-eyebrow': '— let\'s work together?',
-    'cta-title': 'let\'s work<br><em>together?</em>',
-    'cta-sub': 'if you made it this far, that\'s already a good sign. I\'m open to freelance projects and team opportunities. reach out and let\'s talk :)',
-    'cta-btn': 'get in touch →',
-    'wa-label': 'get in touch',
-    'footer-rights': 'all rights reserved'
-  }
+/* PT originals are captured from the HTML at load time — never rewritten manually */
+var _ptOriginals = {};
+
+var LANG_EN = {
+  'nav-home': 'home',
+  'nav-services': 'services',
+  'nav-contact': 'contact',
+  'cover-meta1': 'portfolio · 2026',
+  'cover-title': 'portfolio',
+  'hero-eyebrow': '— about me',
+  'hero-headline': 'hey,<br>i\'m <em>bruna ;)</em>',
+  'hero-tagline': 'graphic design with strategy behind it',
+  'hero-p1': 'I work with brands that need to position themselves, communicate better and sell. For over 4 years I\'ve been turning briefs into finished work — from brand concept to the creative that runs in ads.',
+  'hero-p2': 'I work in visual identity, performance creatives, email marketing and creative direction. AI speeds up production and opens new possibilities, but the direction is always mine.',
+  'hero-cta1': 'see work →',
+  'hero-cta2': 'let\'s talk',
+  'clients-head': 'brands that trusted my work',
+  'svc-eyebrow': '— what I do',
+  'svc-title': 'my <em>services</em>',
+  'svc-1-name': 'static creatives',
+  'svc-1-desc': 'posts, carousels, ads &amp; banners',
+  'svc-2-name': 'email marketing',
+  'svc-2-desc': 'strategic, automated &amp; manual emails',
+  'svc-3-name': 'branding &amp; visual identity',
+  'svc-3-desc': 'from concept to brand guidelines',
+  'ads-eyebrow': '— conversion creatives',
+  'ads-title': 'ads <em>creatives</em>',
+  'email-eyebrow': '— strategy + conversion',
+  'email-title': 'email <em>marketing</em>',
+  'email-label': 'client',
+  'brand-eyebrow': '— from concept to application',
+  'brand-title': 'branding &amp; <em>visual identity</em>',
+  'brand-chip': 'from concept to application',
+  'brand-tag-1': 'visual naming',
+  'brand-tag-2': 'strategic concept',
+  'brand-tag-3': 'palette + typography',
+  'brand-tag-4': 'logo + variations',
+  'brand-tag-5': 'brand guidelines',
+  'brand-tag-6': 'applications',
+  'meta-1': 'fitness fashion · main case',
+  'meta-2': 'services · B2B',
+  'meta-3': 'mobility · app',
+  'meta-4': 'rebranding · artisan',
+  'ver-case': 'view case →',
+  'testi-eyebrow': '— what people say',
+  'testi-title': '<em>real</em> testimonials',
+  'testi-q1': '"you knew how to express every detail we couldn\'t even notice ourselves. <em>we have no words to express our gratitude</em>."',
+  'testi-by1': 'visual identity client · 2025',
+  'testi-q2': '"<em>this is the communication we want to keep.</em> amazing!"',
+  'testi-by2': 'email marketing client · 2025',
+  'testi-q3': '"you nailed our <em>visual direction</em>. I\'ve worked with a few freelancers and that\'s always the challenge."',
+  'testi-by3': 'ads creative client · 2024',
+  'cta-eyebrow': '— let\'s work together?',
+  'cta-title': 'let\'s work<br><em>together?</em>',
+  'cta-sub': 'if you made it this far, that\'s already a good sign. I\'m open to freelance projects and team opportunities. reach out and let\'s talk :)',
+  'cta-btn': 'get in touch →',
+  'wa-label': 'get in touch',
+  'footer-rights': 'all rights reserved'
 };
 
 function toggleLang() {
@@ -913,11 +858,13 @@ function toggleLang() {
 }
 
 function applyLang(lang) {
-  var dict = LANG[lang];
-  if (!dict) return;
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
     var key = el.getAttribute('data-i18n');
-    if (dict[key] !== undefined) el.innerHTML = dict[key];
+    if (lang === 'en') {
+      if (LANG_EN[key] !== undefined) el.innerHTML = LANG_EN[key];
+    } else {
+      if (_ptOriginals[key] !== undefined) el.innerHTML = _ptOriginals[key];
+    }
   });
   document.documentElement.lang = lang === 'en' ? 'en' : 'pt-BR';
   document.title = lang === 'en'
@@ -931,8 +878,11 @@ function applyLang(lang) {
     : 'https://wa.me/5571981491865?text=Oi%20Bruna!%20Vi%20seu%20portf%C3%B3lio%20e%20queria%20conversar%20sobre%20um%20projeto.';
 }
 
-// init from localStorage
+// capture PT originals before any changes, then init from localStorage
 (function() {
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    _ptOriginals[el.getAttribute('data-i18n')] = el.innerHTML;
+  });
   var saved;
   try { saved = localStorage.getItem('bc-lang'); } catch(e) {}
   if (saved === 'en') applyLang('en');
