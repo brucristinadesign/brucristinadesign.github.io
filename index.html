@@ -4,8 +4,15 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>portfólio · bruna cristina · graphic designer</title>
+<meta name="description" content="Bruna Cristina — designer gráfica especializada em identidade visual, criativos de performance e e-mail marketing." />
+<!-- preconnect externos -->
+<link rel="preconnect" href="https://static.klaviyo.com" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- preload imagem crítica (above the fold) -->
+<link rel="preload" as="image" href="assets/portrait-bruna.jpg" />
 <link rel="stylesheet" href="colors_and_type.css" />
-<script src="image-slot.js"></script>
+<script src="image-slot.js" defer></script>
 <style>
   :root {
     --navy: #1C1B4B;
@@ -260,7 +267,7 @@
     .ads-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
   }
 </style>
-<script async type='text/javascript' src='https://static.klaviyo.com/onsite/js/YxFfpH/klaviyo.js?company_id=YxFfpH'></script>
+<script defer type='text/javascript' src='https://static.klaviyo.com/onsite/js/YxFfpH/klaviyo.js?company_id=YxFfpH'></script>
 <script type="text/javascript">
 !function(){if(!window.klaviyo){window._klOnsite=window._klOnsite||[];try{window.klaviyo=new Proxy({},{get:function(n,i){return"push"===i?function(){var n;(n=window._klOnsite).push.apply(n,arguments)}:function(){for(var n=arguments.length,o=new Array(n),w=0;w<n;w++)o[w]=arguments[w];var t="function"==typeof o[o.length-1]?o.pop():void 0,e=new Promise((function(n){window._klOnsite.push([i].concat(o,[function(i){t&&t(i),n(i)}]))}));return e}}})}catch(n){window.klaviyo=window.klaviyo||[],window.klaviyo.push=function(){var n;(n=window._klOnsite).push.apply(n,arguments)}}}}();
 </script>
@@ -314,8 +321,8 @@
     </div>
     <div class="hero-portrait" id="portrait">
       <img src="assets/portrait-bruna.jpg" alt="Bruna Cristina — graphic designer" class="portrait-img" loading="eager">
-      <img src="assets/star-8point.svg" class="star-deco star-orange" style="left:-30px; top:30%; width:140px; height:140px;" alt="" data-parallax="0.4">
-      <img src="assets/star-8point.svg" class="star-deco star-yellow" style="right:-20px; bottom:20%; width:90px; height:90px;" alt="" data-parallax="-0.3">
+      <img src="assets/star-8point.svg" class="star-deco star-orange" style="left:-30px; top:30%; width:140px; height:140px;" alt="" data-parallax="0.4" loading="lazy">
+      <img src="assets/star-8point.svg" class="star-deco star-yellow" style="right:-20px; bottom:20%; width:90px; height:90px;" alt="" data-parallax="-0.3" loading="lazy">
     </div>
   </div>
 </section>
@@ -376,12 +383,12 @@
       <div class="case-sub"></div>
     </div>
     <div class="email-grid">
-      <div class="email-card"><div class="email-scroll"><img src="assets/email/oticas-lancamento.jpg" alt="Óticas Paris" /><div class="scroll-hint">↓ scroll</div></div><div class="email-meta"><span class="label" data-i18n="email-label">cliente</span><span class="name">Óticas Paris</span></div></div>
-      <div class="email-card"><div class="email-scroll"><img src="assets/email/narte-forms.jpg" alt="Nart'e" /><div class="scroll-hint">↓ scroll</div></div><div class="email-meta"><span class="label" data-i18n="email-label">cliente</span><span class="name">Nart'e</span></div></div>
-      <div class="email-card"><div class="email-scroll"><img src="assets/email/cadiveu-oferta.jpg" alt="Cadiveu" /><div class="scroll-hint">↓ scroll</div></div><div class="email-meta"><span class="label" data-i18n="email-label">cliente</span><span class="name">Cadiveu</span></div></div>
-      <div class="email-card"><div class="email-scroll"><img src="assets/email/guday-email.jpg" alt="Guday" /><div class="scroll-hint">↓ scroll</div></div><div class="email-meta"><span class="label" data-i18n="email-label">cliente</span><span class="name">Guday</span></div></div>
-      <div class="email-card"><div class="email-scroll"><img src="assets/email/favorito-sunflower.jpg" alt="Favorito Crochê" /><div class="scroll-hint">↓ scroll</div></div><div class="email-meta"><span class="label" data-i18n="email-label">cliente</span><span class="name">Favorito Crochê</span></div></div>
-      <div class="email-card"><div class="email-scroll"><img src="assets/email/bready-email.jpg" alt="Bready" /><div class="scroll-hint">↓ scroll</div></div><div class="email-meta"><span class="label" data-i18n="email-label">cliente</span><span class="name">Bready</span></div></div>
+      <div class="email-card"><div class="email-scroll"><img src="assets/email/oticas-lancamento.jpg" alt="Óticas Paris" loading="lazy" /><div class="scroll-hint">↓ scroll</div></div><div class="email-meta"><span class="label" data-i18n="email-label">cliente</span><span class="name">Óticas Paris</span></div></div>
+      <div class="email-card"><div class="email-scroll"><img src="assets/email/narte-forms.jpg" alt="Nart'e" loading="lazy" /><div class="scroll-hint">↓ scroll</div></div><div class="email-meta"><span class="label" data-i18n="email-label">cliente</span><span class="name">Nart'e</span></div></div>
+      <div class="email-card"><div class="email-scroll"><img src="assets/email/cadiveu-oferta.jpg" alt="Cadiveu" loading="lazy" /><div class="scroll-hint">↓ scroll</div></div><div class="email-meta"><span class="label" data-i18n="email-label">cliente</span><span class="name">Cadiveu</span></div></div>
+      <div class="email-card"><div class="email-scroll"><img src="assets/email/guday-email.jpg" alt="Guday" loading="lazy" /><div class="scroll-hint">↓ scroll</div></div><div class="email-meta"><span class="label" data-i18n="email-label">cliente</span><span class="name">Guday</span></div></div>
+      <div class="email-card"><div class="email-scroll"><img src="assets/email/favorito-sunflower.jpg" alt="Favorito Crochê" loading="lazy" /><div class="scroll-hint">↓ scroll</div></div><div class="email-meta"><span class="label" data-i18n="email-label">cliente</span><span class="name">Favorito Crochê</span></div></div>
+      <div class="email-card"><div class="email-scroll"><img src="assets/email/bready-email.jpg" alt="Bready" loading="lazy" /><div class="scroll-hint">↓ scroll</div></div><div class="email-meta"><span class="label" data-i18n="email-label">cliente</span><span class="name">Bready</span></div></div>
     </div>
   </div>
 </section>
